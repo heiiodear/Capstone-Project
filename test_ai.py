@@ -10,9 +10,11 @@ model = YOLO(model_path)
 app = Flask(__name__)
 
 def generate_frames(source):
+
+    if isinstance(source, str) and source.isdigit():
+        source = int(source)
+
     cap = cv2.VideoCapture(source)
-    if source == '0' :
-        cap = cv2.VideoCapture(1)
 
     while cap.isOpened():
         success, frame = cap.read()
@@ -45,6 +47,7 @@ def index():
     <html>
         <body>
             <img src='/video_feed?src=0'>
+            <img src='/video_feed?src=1'>
         </body>
     </html>
     """
