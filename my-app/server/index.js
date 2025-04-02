@@ -13,7 +13,6 @@ app.use(cors({
     allowedHeaders: ['Content-Type'] 
   }));
   
-
 mongoose.connect("mongodb+srv://amytr1234:ueV0LjDO8mK9NQR5@capstoneproject.tekjtkq.mongodb.net/Capstone", {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -25,7 +24,7 @@ mongoose.connect("mongodb+srv://amytr1234:ueV0LjDO8mK9NQR5@capstoneproject.tekjt
   });
 
 app.post("/register", async (req, res) => {
-  const { username, email, password } = req.body;
+  const { username, tel, discord, email, password } = req.body;
 
   try {
     const existingUser = await UserModel.findOne({ email });
@@ -33,8 +32,8 @@ app.post("/register", async (req, res) => {
       return res.status(400).json({ error: "User already exists" });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10); // If you want to hash the password
-    const newUser = new UserModel({ username, email, password: hashedPassword });
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const newUser = new UserModel({ username, tel, discord, email, password: hashedPassword });
 
     await newUser.save();
 

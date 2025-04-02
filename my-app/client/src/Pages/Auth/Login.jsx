@@ -38,26 +38,25 @@ function Login() {
             <h1 className="text-2xl sm:text-5xl font-bold mb-1 sm:mb-2">Project Name</h1>
             <p className="text-base sm:text-xl text-indigo-200">Welcome back!</p>
           </div>
-          <button
-            onClick={handleSignUpClick}
-            className="hidden lg:block ml-4 sm:ml-10 font-semibold text-white rounded-full px-4 sm:px-6 py-2 w-28 sm:w-32 outline-1 outline-offset-1 outline-white
-                    hover:bg-white hover:text-indigo-950 transition-transform active:scale-95"
-          >
-            SIGN UP
+          <button onClick={handleSignUpClick}
+          className="hidden lg:block ml-4 sm:ml-10 font-semibold text-white rounded-lg px-4 sm:px-6 py-2 w-28 sm:w-32 outline-1 outline-offset-1 outline-white
+                    hover:bg-white hover:text-indigo-950 transition-transform active:scale-95">
+            Signup
           </button>
         </div>
 
         <div className="w-full sm:w-2/3 flex justify-center items-center p-6 sm:p-10 border-t sm:border-l sm:border-t-0 border-blue-200">
           <div className="w-full max-w-md px-4 flex flex-col items-center">
-            <h2 className="text-3xl sm:text-5xl text-indigo-950 font-bold text-center mb-8 sm:mb-12">
-              LOGIN
-            </h2>
+
             <form onSubmit={handleSubmit} className="w-full">
+              <h1 className="text-3xl sm:text-5xl text-indigo-950 font-bold text-center mb-8 sm:mb-12">
+                Login
+              </h1>
               <div className="mb-4 w-full">
                 <input
                   type="email"
                   placeholder="Email"
-                  className="w-full px-4 py-3 rounded-full bg-indigo-100 focus:outline-none focus:ring-1 focus:ring-indigo-950"
+                  className="w-full px-4 py-3 rounded-lg border border-indigo-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:outline-none transition-all"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
@@ -67,7 +66,7 @@ function Login() {
                 <input
                   type="password"
                   placeholder="Password"
-                  className="w-full px-4 py-3 rounded-full bg-indigo-100 focus:outline-none focus:ring-1 focus:ring-indigo-950"
+                  className="w-full px-4 py-3 rounded-lg border border-indigo-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:outline-none transition-all"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
@@ -80,18 +79,18 @@ function Login() {
               </div>
               <button
                 type="submit"
-                className="w-full bg-indigo-950 text-white font-semibold py-3 rounded-full hover:bg-indigo-900 active:scale-95 transition-all"
+                className="w-full bg-indigo-950 text-white font-medium py-3.5 rounded-lg hover:bg-indigo-900 active:scale-98 transition-all shadow-md"
               >
-                LOGIN
+                Login
               </button>
             </form>
             <div className="lg:hidden mt-8 text-center text-sm text-gray-600">
               Don't have an account?{" "}
               <span
-                onClick={() => navigate("/register")}
+                onClick={handleSignUpClick}
                 className="text-indigo-950 font-medium hover:text-indigo-900 cursor-pointer"
               >
-                SIGN UP
+                Signup
               </span>
             </div>
             {message && <div className="mt-3 text-red-500 text-center">{message}</div>}
