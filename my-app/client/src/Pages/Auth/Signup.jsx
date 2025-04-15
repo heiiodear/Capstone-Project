@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { motion } from "framer-motion";
 
 const Signup = () => {
   const [formData, setFormData] = useState({
@@ -26,6 +27,7 @@ const Signup = () => {
         },
       });
       setMessage(res.data.message);
+      setTimeout(() => navigate("/login"), 2000);
     } catch (error) {
       setMessage(error.response?.data?.error || "Registration failed");
     }
@@ -38,7 +40,6 @@ const Signup = () => {
   return (
     <div className="flex flex-col md:flex-row h-screen">
       <div className="w-full sm:w-2/3 flex justify-center items-center p-6 sm:p-10 border-t sm:border-l sm:border-t-0 border-blue-200">
-
         <form onSubmit={handleSubmit} className="w-full max-w-md mx-auto space-y-6">
           <h1 className="text-3xl sm:text-5xl text-indigo-950 font-bold text-center mb-8 sm:mb-12">
             Create Account
@@ -97,16 +98,22 @@ const Signup = () => {
         {message && <p className="mt-3 text-center text-blue-500">{message}</p>}
       </div>
 
-      <div className="w-full sm:w-1/3 bg-indigo-950 text-white p-6 sm:p-10 flex flex-col justify-center h-40 sm:h-auto">
+      {/* Blue Sidebar with Animation */}
+      <motion.div
+        initial={{ x: 200, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        transition={{ duration: 0.6, ease: "easeInOut" }}
+        className="w-full sm:w-1/3 bg-indigo-950 text-white p-6 sm:p-10 flex flex-col justify-center h-40 sm:h-auto"
+      >
         <div className="max-w-xs mx-auto">
           <h2 className="text-4xl md:text-5xl font-bold mb-4">Project Name</h2>
           <p className="text-xl mb-8">Hello, there!</p>
           <button onClick={handleLoginClick}
-          className="border border-white text-white font-medium py-2.5 px-8 rounded-lg hover:bg-white hover:text-indigo-950 transition-all">
+            className="border border-white text-white font-medium py-2.5 px-8 rounded-lg hover:bg-white hover:text-indigo-950 transition-all">
             Login
           </button>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 };
