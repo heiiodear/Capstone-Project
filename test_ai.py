@@ -33,58 +33,50 @@ def generate_frames(source, user_id):
     if isinstance(source, str) and source.isdigit():
         source = int(source)
 
-    cap = cv2.VideoCapture(source)
     fall_start_time = None
     fall_detected = False
 
-    while cap.isOpened():
-        success, frame = cap.read()
-        if not success:
-            break
+    stream = model.track(source=source, stream=True, imgsz=320, persist=True, verbose=False)
 
-        results = model(frame)[0]
+    for result in stream:
+        frame = result.orig_img.copy() 
         fall_detected_now = False
 
-        for box in results.boxes:
-            x1, y1, x2, y2 = map(int, box.xyxy[0])
-            confidence = box.conf[0].item()
+        for box in result.boxes:
             cls = int(box.cls[0].item())
-            label_name = results.names[cls]
-            label = f"{label_name}: {confidence:.2f}"
+            label_name = result.names[cls]
+            confidence = box.conf[0].item()
+            x1, y1, x2, y2 = map(int, box.xyxy[0])
 
-            cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
-            cv2.putText(frame, label, (x1, y1 - 10),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+            color = (0, 255, 0) if label_name != "fall" else (0, 0, 255)
+            cv2.rectangle(frame, (x1, y1), (x2, y2), color, 2)
+            label_text = f"{label_name} {confidence:.2f}"
+            cv2.putText(frame, label_text, (x1, y1 - 10),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
 
+            # ตรวจจับการล้ม
             if label_name == "fall":
                 fall_detected_now = True
                 if fall_start_time is None:
                     fall_start_time = time.time()
-                elif time.time() - fall_start_time >= 0.5 and not fall_detected:
+                elif time.time() - fall_start_time >= 999999 and not fall_detected:
                     timestamp = time.strftime("%Y%m%d-%H%M%S")
                     filename = f"fall_{user_id}_{timestamp}.jpg"
 
-                    # แปลงภาพเป็นบัฟเฟอร์ JPEG
                     _, img_encoded = cv2.imencode('.jpg', frame)
                     img_bytes = img_encoded.tobytes()
 
                     try:
-                        # อัปโหลดไฟล์ไปยัง S3
                         s3.upload_fileobj(BytesIO(img_bytes), bucket_name, f"user_{user_id}/{filename}")
-                        print(f"[INFO] Uploaded {filename} to S3 bucket '{bucket_name}'")
-                        
-                        # สร้าง URL ของภาพ
-                        image_url = f"https://{bucket_name}.s3.{s3.meta.region_name}.amazonaws.com/user_{user_id}/{filename}"
-                        print(f"[INFO] Image URL: {image_url}")
+                        print(f"[INFO] Uploaded {filename} to S3")
 
-                        # บันทึก URL ลง MongoDB
+                        image_url = f"https://{bucket_name}.s3.{s3.meta.region_name}.amazonaws.com/user_{user_id}/{filename}"
                         image_data = {
                             "user_id": user_id,
                             "image_url": image_url,
                             "timestamp": timestamp
                         }
-                        collection.insert_one(image_data) 
-
+                        collection.insert_one(image_data)
                     except NoCredentialsError:
                         print("[ERROR] AWS credentials not found.")
 
@@ -99,7 +91,6 @@ def generate_frames(source, user_id):
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n')
 
-
 @app.route('/video_feed')
 def video_feed():
     source = request.args.get('src', "0")  # default = 0
@@ -112,7 +103,7 @@ def index():
     return """
     <html>
         <body>
-            <img src='/video_feed?src=0&user_id=67ed73ae73e7097a367ed449'>
+            <img src='/video_feed?src=0&user_id=test'>
         </body>
     </html>
     """
