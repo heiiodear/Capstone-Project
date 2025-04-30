@@ -1,6 +1,8 @@
+import os
 import cv2
 import torch
 import numpy as np
+from dotenv import load_dotenv
 from flask import Flask, Response, render_template, request
 from ultralytics import YOLO
 import time
@@ -17,6 +19,8 @@ from pathlib import Path
 
 executor = ThreadPoolExecutor(max_workers=5)
 
+load_dotenv()
+
 app = Flask(__name__)
 CORS(app)
 
@@ -30,16 +34,16 @@ model = YOLO(model_path)
 # ตั้งค่า AWS S3
 s3 = boto3.client(
     's3',
-    aws_access_key_id='AKIAU6N4A5PHMEV3HIYW',
-    aws_secret_access_key='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',
-    region_name='ap-southeast-2'
+    aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
+    aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY"),
+    region_name=os.getenv("AWS_REGION")
 )
-bucket_name = 'capstone-acs-falldetect'
+bucket_name = os.getenv("AWS_BUCKET_NAME")
 
 # ตั้งค่า MongoDB
-client = MongoClient("mongodb+srv://torn_txe:1234@capstoneproject.tekjtkq.mongodb.net/?retryWrites=true&w=majority&appName=CapstoneProject")
-db = client["Capstone"]
-collection = db["fall"]
+client = MongoClient(os.getenv("MONGODB_URI"))
+db = client[os.getenv("MONGODB_DB")]
+collection = db[os.getenv("MONGODB_COLLECTION")]
 
 # ปรับขนาดภาพ
 # def resize_frame(frame, target_width=640):
