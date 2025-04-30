@@ -1,38 +1,54 @@
 import cv2
 import torch
 import numpy as np
-from flask import Flask, Response, request
+from flask import Flask, Response, render_template, request
 from ultralytics import YOLO
 import time
-import os
 import boto3
 from botocore.exceptions import NoCredentialsError
 from io import BytesIO
 from pymongo import MongoClient
 from collections import deque
+from flask_cors import CORS
+from threading import Thread
+from queue import Queue
+from concurrent.futures import ThreadPoolExecutor
+from pathlib import Path
 
-# model_path = "D:/capstone/Capstone-Project/test.pt"
-# model_path = "D:\capstone\Capstone-Project\yolov11m_train_new\kaggle\working\ur-fall-detection-project\yolov11m_train7\weights\best.pt"
-# model_path = "D:/capstone/Capstone-Project/yolov11s_train_new/kaggle/working/ur-fall-detection-project/yolov11m_train8/weights/best.pt"
-model_path = "D:/capstone/Capstone-Project/yolov11n_train_new/kaggle/working/ur-fall-detection-project/yolov11n_train/weights/best.pt"
+executor = ThreadPoolExecutor(max_workers=5)
+
+app = Flask(__name__)
+CORS(app)
+
+stream_queues = {}
+
+# โหลดโมเดล YOLO
+current_file = Path(__file__).resolve()
+model_path = current_file.parent / "model_11n320.pt"
 model = YOLO(model_path)
 
 # ตั้งค่า AWS S3
 s3 = boto3.client(
     's3',
-    aws_access_key_id='AKIAU6N4A5PHMEV3HIYW',             
-    aws_secret_access_key='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',          
-    region_name='ap-southeast-2'                       
+    aws_access_key_id='AKIAU6N4A5PHMEV3HIYW',
+    aws_secret_access_key='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',
+    region_name='ap-southeast-2'
 )
-bucket_name = 'capstone-acs-falldetect'            
+bucket_name = 'capstone-acs-falldetect'
 
 # ตั้งค่า MongoDB
-client = MongoClient("mongodb+srv://torn_txe:1234@capstoneproject.tekjtkq.mongodb.net/?retryWrites=true&w=majority&appName=CapstoneProject")  
-db = client["Capstone"]  
-collection = db["fall"] 
+client = MongoClient("mongodb+srv://torn_txe:1234@capstoneproject.tekjtkq.mongodb.net/?retryWrites=true&w=majority&appName=CapstoneProject")
+db = client["Capstone"]
+collection = db["fall"]
 
-app = Flask(__name__)
+# ปรับขนาดภาพ
+# def resize_frame(frame, target_width=640):
+#     height, width = frame.shape[:2]
+#     aspect_ratio = width / height
+#     target_height = int(target_width / aspect_ratio)
+#     return cv2.resize(frame, (target_width, target_height))
 
+# ปรับแสง
 def auto_brightness(frame, target_brightness=100):
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     brightness = np.mean(gray)
@@ -40,25 +56,29 @@ def auto_brightness(frame, target_brightness=100):
     if brightness < target_brightness:
         gamma = target_brightness / max(brightness, 1)
         gamma = min(gamma, 3.0)
-        look_up_table = np.array([((i / 255.0) ** (1.0 / gamma)) * 255
-                                  for i in np.arange(0, 256)]).astype("uint8")
+        look_up_table = np.array([((i / 255.0) ** (1.0 / gamma)) * 255 for i in np.arange(0, 256)]).astype("uint8")
         return cv2.LUT(frame, look_up_table)
     else:
         return frame
 
+# ประมวลผลภาพ
+def process_frame(frame):
+    frame = auto_brightness(frame)
+    # frame = resize_frame(frame)
+    results = model.predict(frame, 
+                            conf=0.5, 
+                            iou=0.5, 
+                            stream=True, 
+                            imgsz=320,
+                            verbose=False)
+    return frame, results
+
+# สำหรับสร้างเฟรม
 def generate_frames(source, user_id):
     if isinstance(source, str) and source.isdigit():
         source = int(source)
 
-    stream = model.track(
-        source=source,
-        stream=True,
-        imgsz=640,
-        persist=True,
-        verbose=False,
-        conf=0.5,
-        iou=0.5
-    )
+    cap = cv2.VideoCapture(source)
 
     buffer_seconds = 3
     fps = 10
@@ -70,27 +90,31 @@ def generate_frames(source, user_id):
 
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')
 
-    for result in stream:
-        frame = result.orig_img.copy()
+    while True:
+        ret, frame = cap.read()
+        if not ret:
+            break
 
-        frame = auto_brightness(frame)
-
+        future = executor.submit(process_frame, frame)
+        frame, results = future.result()
         fall_detected_now = False
         frame_buffer.append(frame.copy())
 
-        for box in result.boxes:
-            cls = int(box.cls[0].item())
-            label_name = result.names[cls]
-            confidence = box.conf[0].item()
-            x1, y1, x2, y2 = map(int, box.xyxy[0])
-            color = (0, 255, 0) if label_name != "fall" else (0, 0, 255)
+        for result in results:
+            boxes = result.boxes
+            for box in boxes:
+                cls = int(box.cls[0].item())
+                label_name = result.names[cls]
+                confidence = box.conf[0].item()
+                x1, y1, x2, y2 = map(int, box.xyxy[0])
+                color = (0, 255, 0) if label_name != "fall" else (0, 0, 255)
 
-            label_text = f"{label_name} {confidence:.2f}"
-            cv2.rectangle(frame, (x1, y1), (x2, y2), color, 2)
-            cv2.putText(frame, label_text, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
+                label_text = f"{label_name} {confidence:.2f}"
+                cv2.rectangle(frame, (x1, y1), (x2, y2), color, 2)
+                cv2.putText(frame, label_text, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
 
-            if label_name == "fall":
-                fall_detected_now = True
+                if label_name == "fall":
+                    fall_detected_now = True
 
         if fall_detected_now:
             if fall_tracking_start is None:
@@ -131,7 +155,6 @@ def generate_frames(source, user_id):
 
                 except NoCredentialsError:
                     print("[ERROR] AWS credentials not found.")
-
         else:
             fall_tracking_start = None
             fall_confirmed = False
@@ -140,22 +163,45 @@ def generate_frames(source, user_id):
         frame_bytes = buffer.tobytes()
         yield (b'--frame\r\nContent-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n')
 
+    cap.release()
+
+# สำหรับจัดการสตรีม
+def generate_stream(source, user_id):
+    q = Queue(maxsize=1)
+    stream_queues[user_id] = q
+
+    def worker():
+        for frame in generate_frames(source, user_id):
+            if q.full():
+                try:
+                    q.get_nowait()
+                except:
+                    pass
+            q.put(frame)
+        q.put(None)
+
+    Thread(target=worker, daemon=True).start()
+
 @app.route('/video_feed')
 def video_feed():
-    source = request.args.get('src', "0")  # default = 0
-    user_id = request.args.get('user_id', None)
-    return Response(generate_frames(source, user_id), mimetype='multipart/x-mixed-replace; boundary=frame')
+    source = request.args.get('src', "0")
+    user_id = request.args.get('user_id', "anonymous")
 
+    if user_id not in stream_queues:
+        generate_stream(source, user_id)
 
-@app.route('/') # ใช้ test เฉยๆ
+    def stream():
+        while True:
+            frame = stream_queues[user_id].get()
+            if frame is None:
+                break
+            yield frame
+
+    return Response(stream(), mimetype='multipart/x-mixed-replace; boundary=frame')
+
+@app.route('/')
 def index():
-    return """
-    <html>
-        <body>
-            <img src='/video_feed?src=0&user_id=67ed73ae73e7097a367ed449'>
-        </body>
-    </html>
-    """
+    return render_template('index.html')
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
