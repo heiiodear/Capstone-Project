@@ -123,6 +123,7 @@ def generate_frames(source, user_id):
                         "user_id": user_id,
                         "image_url": image_url,
                         "video_url": video_url,
+                        "note": "",
                         "timestamp": timestamp
                     })
 
