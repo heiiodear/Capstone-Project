@@ -1,10 +1,10 @@
 import React from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import './App.css'
-import ProjectName from './Pages/ProjectName'
-import Login from './Pages/Auth/Login'
-import Signup from './Pages/Auth/Signup'
-import Contactus from './Pages/Contactus'
+import ProjectName from './pages/ProjectName'
+import Login from './pages/Login'
+import Signup from './pages/Signup'
+import Contactus from './pages/Contactus'
 
 function App() {
   return (
