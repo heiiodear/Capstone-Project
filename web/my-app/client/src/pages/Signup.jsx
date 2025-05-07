@@ -13,6 +13,7 @@ function Signup() {
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -112,15 +113,14 @@ function Signup() {
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute top-11 right-3 transform -translate-y-1/2 text-sm text-gray-500"
-            >
+              className="absolute top-11 right-3 transform -translate-y-1/2 text-sm text-gray-500">
               {showPassword ? "Hide" : "Show"}
             </button>
           </div>
-          <div>
+          <div className="relative">
             <label className="block text-sm font-medium text-gray-700">Confirm Password</label>
             <input
-              type={showPassword ? "text" : "password"}
+              type={showConfirmPassword ? "text" : "password"}
               name="confirmPassword"
               placeholder="••••••••"
               value={formData.confirmPassword}
@@ -128,6 +128,12 @@ function Signup() {
               required
               className="mt-1 w-full border border-gray-300 rounded-md px-3 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
+            <button
+              type="button"
+              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              className="absolute top-11 right-3 transform -translate-y-1/2 text-sm text-gray-500">
+              {showConfirmPassword ? "Hide" : "Show"}
+            </button>
           </div>
           
           <div className="flex items-center space-x-2">
