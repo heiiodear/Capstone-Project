@@ -23,7 +23,7 @@ function Login() {
   };
 
   return (
-    <div className="min-h-screen flex justify-center items-center p-4 bg-gray-100">
+    <div className="min-h-screen flex justify-center items-center p-4 bg-indigo-100">
       <div className="w-full max-w-md bg-white rounded-xl shadow-md p-6 space-y-4">
         <div className="text-center text-2xl font-bold text-indigo-800">Projectname</div>
         <div className="text-center text-2xl font-bold text-indigo-800">Welcome back</div>
@@ -37,7 +37,7 @@ function Login() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="you.email@example.com"
+              placeholder="your.email@example.com"
               required
               className="mt-1 w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
@@ -80,7 +80,7 @@ function Login() {
 
         <div className="text-center text-sm">
           Don't have an account?{" "}
-          <Link to="/register" className="text-indigo-500 hover:underline">
+          <Link to="/register" className="text-indigo-500 font-medium hover:underline">
             Sign up
           </Link>
         </div>

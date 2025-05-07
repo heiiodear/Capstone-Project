@@ -4,6 +4,7 @@ import './App.css'
 import ProjectName from './pages/ProjectName'
 import Login from './pages/Login'
 import Signup from './pages/Signup'
+import ForgotPassword from './pages/ForgotPassword'
 import Contactus from './pages/Contactus'
 
 function App() {
@@ -13,6 +14,7 @@ function App() {
           <Route path='/' element={<ProjectName />}></Route>
           <Route path='login' element={<Login />}></Route>
           <Route path='register' element={<Signup />}></Route>
+          <Route path='forgotpassword' element={<ForgotPassword />}></Route>
           <Route path='contactus' element={<Contactus />}></Route>
       </Routes>
     </BrowserRouter>
