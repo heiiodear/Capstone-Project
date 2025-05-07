@@ -5,6 +5,8 @@ import ProjectName from './pages/ProjectName'
 import Login from './pages/Login'
 import Signup from './pages/Signup'
 import ForgotPassword from './pages/ForgotPassword'
+import VerifyCode from './pages/VerifyCode'
+import ResetPassword from './pages/ResetPassword'
 import Contactus from './pages/Contactus'
 
 function App() {
@@ -15,6 +17,8 @@ function App() {
           <Route path='login' element={<Login />}></Route>
           <Route path='register' element={<Signup />}></Route>
           <Route path='forgotpassword' element={<ForgotPassword />}></Route>
+          <Route path='verifycode' element={<VerifyCode />}></Route>
+          <Route path='resetpassword' element={<ResetPassword />}></Route>
           <Route path='contactus' element={<Contactus />}></Route>
       </Routes>
     </BrowserRouter>
