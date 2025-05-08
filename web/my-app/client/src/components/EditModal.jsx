@@ -6,8 +6,8 @@ const EditModal = ({ type, formData, onChange, onCancel, onSave }) => {
         : ["plot", "road", "district", "province", "postal"];
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center z-50">
-        <div className="bg-white p-6 rounded-xl shadow-xl w-full max-w-md space-y-4">
+        <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
+        <div className="bg-white p-6 rounded-xl shadow-lg w-full max-w-md space-y-4">
             <h2 className="text-lg font-semibold text-indigo-900 capitalize">
                 Edit {type === "personal" ? "Personal Information" : "Address"}
             </h2>
