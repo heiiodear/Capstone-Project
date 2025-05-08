@@ -17,8 +17,9 @@ from queue import Queue
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from torch.cuda.amp import autocast
+import subprocess
 
-executor = ThreadPoolExecutor(max_workers=5)
+executor = ThreadPoolExecutor(max_workers=2)
 
 load_dotenv()
 
@@ -29,7 +30,7 @@ stream_queues = {}
 
 # โหลดโมเดล YOLO
 current_file = Path(__file__).resolve()
-model_path = current_file.parent / "model_11n-pose.pt"
+model_path = current_file.parent / "model_11n-new.pt"
 model = YOLO(model_path)
 
 print("Model task:", model.task)
@@ -64,10 +65,16 @@ def auto_brightness(frame, target_brightness=100):
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 model.to(device)
 
-# ประมวลผลภาพ
 def process_frame(frame):
     with autocast():
-        results = model.predict(frame, conf=0.4, iou=0.4, imgsz=320, device=device)
+        results = model.predict(frame, 
+                                conf=0.4, 
+                                iou=0.4, 
+                                imgsz=320, 
+                                device=device,
+                                stream=True,
+                                verbose=False,
+                                )
     
     return frame, results
 
@@ -97,12 +104,13 @@ def draw_keypoints(frame, keypoints_list, color=(255, 0, 255), radius=3):
                 if conf > 0.5: 
                     cv2.circle(frame, (int(x), int(y)), radius, color, -1)
 
-# สำหรับสร้างเฟรม
 def generate_frames(source, user_id):
     if isinstance(source, str) and source.isdigit():
         source = int(source)
 
     cap = cv2.VideoCapture(source)
+    if not cap.isOpened():
+        return
 
     buffer_seconds = 3
     fps = 10
@@ -121,6 +129,7 @@ def generate_frames(source, user_id):
 
         future = executor.submit(process_frame, frame)
         frame, results = future.result()
+
         fall_detected_now = False
         frame_buffer.append(frame.copy())
 
@@ -197,9 +206,8 @@ def generate_frames(source, user_id):
 
     cap.release()
 
-# สำหรับจัดการสตรีม
 def generate_stream(source, user_id):
-    q = Queue(maxsize=1)
+    q = Queue(maxsize=10)
     stream_queues[user_id] = q
 
     def worker():
@@ -228,6 +236,7 @@ def video_feed():
             if frame is None:
                 break
             yield frame
+
 
     return Response(stream(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
