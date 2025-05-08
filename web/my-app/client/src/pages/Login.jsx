@@ -27,8 +27,8 @@ function Login() {
   return (
     <div className="min-h-screen flex justify-center items-center p-4 bg-indigo-100">
       <div className="w-full max-w-md bg-white rounded-xl shadow-md p-6 space-y-4">
-        <div className="text-center text-2xl font-bold text-indigo-800">Projectname</div>
-        <div className="text-center text-2xl font-bold text-indigo-800">Welcome back</div>
+        <div className="text-center text-2xl font-bold text-indigo-900">Projectname</div>
+        <div className="text-center text-2xl font-bold text-indigo-900">Welcome back</div>
         <p className="text-center text-gray-500 text-sm">Please sign in to access your account</p>
         {message && <div className="text-center text-red-600 text-sm">{message}</div>}
 
@@ -74,7 +74,7 @@ function Login() {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-indigo-800 text-white py-2 rounded-md hover:bg-indigo-900 transition"
+            className="w-full bg-indigo-900 text-white py-2 rounded-md transition"
           >
             {isLoading ? "Logging in..." : "Sign in"}
           </button>

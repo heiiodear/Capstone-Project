@@ -16,8 +16,8 @@ function ForgotPassword() {
         <div className="min-h-screen  bg-indigo-100 flex justify-center items-center p-4">
             <div className="w-full max-w-md bg-white border border-gray-200 shadow-md rounded-lg p-6 animate-fade-in">
                 <div className="text-center space-y-2 mb-6">
-                <div className="text-center text-2xl font-bold text-indigo-800">Projectname</div>
-                <div className="text-center text-2xl font-bold text-indigo-800">Reset Password</div>
+                <div className="text-center text-2xl font-bold text-indigo-900">Projectname</div>
+                <div className="text-center text-2xl font-bold text-indigo-900">Reset Password</div>
                 <p className="text-sm text-gray-600">Enter your email to receive a verification code</p>
                 </div>
         
@@ -35,7 +35,7 @@ function ForgotPassword() {
             
                     <button
                         type="submit"
-                        className="w-full bg-indigo-800 text-white py-2 rounded hover:bg-indigo-700 transition flex justify-center items-center gap-2">
+                        className="w-full bg-indigo-900 text-white py-2 rounded hover:bg-indigo-700 transition flex justify-center items-center gap-2">
                             Send Verification Code
                     </button>
                 </form>

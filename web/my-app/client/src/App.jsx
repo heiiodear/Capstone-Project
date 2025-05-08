@@ -7,7 +7,9 @@ import Signup from './pages/Signup'
 import ForgotPassword from './pages/ForgotPassword'
 import VerifyCode from './pages/VerifyCode'
 import ResetPassword from './pages/ResetPassword'
+import Profile from './pages/Profile'
 import Contactus from './pages/Contactus'
+import Test from './pages/Testcom'
 
 function App() {
   return (
@@ -19,7 +21,9 @@ function App() {
           <Route path='forgotpassword' element={<ForgotPassword />}></Route>
           <Route path='verifycode' element={<VerifyCode />}></Route>
           <Route path='resetpassword' element={<ResetPassword />}></Route>
+          <Route path='profile' element={<Profile />}></Route>
           <Route path='contactus' element={<Contactus />}></Route>
+          <Route path='test' element={<Test />}></Route>
       </Routes>
     </BrowserRouter>
   )
