@@ -3,6 +3,13 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 function ForgotPassword() {
+    const navigate = useNavigate();
+    
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        navigate("/resetpassword");
+    };
+
     return (
         <div className="min-h-screen bg-indigo-100 flex justify-center items-center p-4">
             <div className="w-full max-w-md bg-white border border-gray-200 shadow-md rounded-lg p-6 animate-fade-in">
@@ -12,7 +19,7 @@ function ForgotPassword() {
                 <p className="text-sm text-gray-600">Enter the 6-digit code sent to your email</p>
                 </div>
 
-                <form className="space-y-4">
+                <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
                         <input
                         type="text"
@@ -32,7 +39,7 @@ function ForgotPassword() {
 
                     <div className="text-center text-sm text-gray-500">
                         Didn’t receive the code?{" "}
-                        <Link to="/forgot-password" className="text-blue-700 hover:underline">
+                        <Link to="/forgotpassword" className="text-blue-700 hover:underline">
                             Request again
                         </Link>
                     </div>

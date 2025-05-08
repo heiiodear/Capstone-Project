@@ -22,14 +22,12 @@ function Signup() {
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const handleSubmit = async (e) => {
-    // if (!acceptTerms) {
-    //   setMessage("Please accept the terms and conditions.");
-    //   return;
-    // }
-    // จะให้มันแสดงข้อความว่ายังไม่ได้เช็คเงื่อนไข แต่มันยังไม่ขึ้น (ตอนนี้ถ้าไม่เช็คจะกด signup ไม่ได้)
-
-    setIsLoading(true);
     e.preventDefault();
+    if (!acceptTerms) { //ข้อความยังไม่แสดง
+      setMessage("Please accept the terms and conditions.");
+      return;
+    }
+    setIsLoading(true);
     try {
       const res = await axios.post("http://localhost:5000/register", formData, {
         headers: {
@@ -145,9 +143,9 @@ function Signup() {
             />
             <label htmlFor="terms" className="text-sm">
               I accept the{" "}
-              <a href="/terms" className="text-indigo-600 hover:underline">
+              <Link to="/terms" className="text-indigo-600 hover:underline">
                 terms and conditions
-              </a>
+              </Link>
             </label>
           </div>
 

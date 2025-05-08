@@ -5,6 +5,12 @@ import axios from "axios";
 function ResetPassword() {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const navigate = useNavigate();
+        
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        navigate("/login");
+    };
 
     return (
         <div className="min-h-screen bg-indigo-100 flex justify-center items-center p-4">
@@ -15,7 +21,7 @@ function ResetPassword() {
                     <p className="text-sm text-gray-600">Create your new password</p>
                 </div>
 
-                <form className="space-y-4">
+                <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
                         <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">New Password</label>
                         <div className="relative">

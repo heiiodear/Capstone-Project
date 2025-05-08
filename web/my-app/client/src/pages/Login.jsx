@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 function Login() {
@@ -8,6 +8,7 @@ function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -16,6 +17,7 @@ function Login() {
       const res = await axios.post("http://localhost:5000/login", { email, password });
       localStorage.setItem("authToken", res.data.token);
       setMessage(res.data.message);
+      navigate("/dashboard");
     } catch (error) {
       setMessage(error.response?.data?.error || "Login failed");
     }
@@ -63,7 +65,7 @@ function Login() {
               </button>
             </div>
             <div className="text-right text-sm mt-1">
-              <Link to="/forgot-password" className="text-indigo-500 hover:underline">
+              <Link to="/forgotpassword" className="text-indigo-500 hover:underline">
                 Forgot password?
               </Link>
             </div>
