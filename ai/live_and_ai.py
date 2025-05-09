@@ -12,13 +12,13 @@ from io import BytesIO
 from pymongo import MongoClient
 from collections import deque
 from flask_cors import CORS
-from threading import Thread
+from threading import Thread, Event
 from queue import Queue
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from torch.cuda.amp import autocast
 
-executor = ThreadPoolExecutor(max_workers=5)
+executor = ThreadPoolExecutor(max_workers=2)
 
 load_dotenv()
 
@@ -26,10 +26,13 @@ app = Flask(__name__)
 CORS(app)
 
 stream_queues = {}
+stream_caps = {}
+stream_threads = {}
+stop_events = {}  
 
 # โหลดโมเดล YOLO
 current_file = Path(__file__).resolve()
-model_path = current_file.parent / "model_11n-pose.pt"
+model_path = current_file.parent / "model_11n-new.pt"
 model = YOLO(model_path)
 
 print("Model task:", model.task)
@@ -45,10 +48,9 @@ bucket_name = os.getenv("AWS_BUCKET_NAME")
 
 # ตั้งค่า MongoDB
 client = MongoClient(os.getenv("MONGODB_URI"))
-db = "Capstone"
-collection = "fall"
+db = client[os.getenv("MONGODB_DB")]
+collection = db[os.getenv("MONGODB_COLLECTION")]
 
-# ปรับแสง
 def auto_brightness(frame, target_brightness=100):
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     brightness = np.mean(gray)
@@ -64,10 +66,16 @@ def auto_brightness(frame, target_brightness=100):
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 model.to(device)
 
-# ประมวลผลภาพ
 def process_frame(frame):
     with autocast():
-        results = model.predict(frame, conf=0.4, iou=0.4, imgsz=320, device=device)
+        results = model.predict(frame, 
+                                conf=0.4, 
+                                iou=0.4, 
+                                imgsz=320, 
+                                device=device,
+                                stream=True,
+                                verbose=True,
+                                )
     
     return frame, results
 
@@ -97,12 +105,13 @@ def draw_keypoints(frame, keypoints_list, color=(255, 0, 255), radius=3):
                 if conf > 0.5: 
                     cv2.circle(frame, (int(x), int(y)), radius, color, -1)
 
-# สำหรับสร้างเฟรม
 def generate_frames(source, user_id):
     if isinstance(source, str) and source.isdigit():
         source = int(source)
 
     cap = cv2.VideoCapture(source)
+    if not cap.isOpened():
+        return
 
     buffer_seconds = 3
     fps = 10
@@ -121,6 +130,7 @@ def generate_frames(source, user_id):
 
         future = executor.submit(process_frame, frame)
         frame, results = future.result()
+
         fall_detected_now = False
         frame_buffer.append(frame.copy())
 
@@ -197,22 +207,29 @@ def generate_frames(source, user_id):
 
     cap.release()
 
-# สำหรับจัดการสตรีม
 def generate_stream(source, user_id):
-    q = Queue(maxsize=1)
+    key = (user_id, str(source))
+    q = Queue(maxsize=10)
     stream_queues[user_id] = q
+    stop_event = Event()
+    stop_events[key] = stop_event
 
     def worker():
         for frame in generate_frames(source, user_id):
+            if stop_event.is_set():
+                break  
             if q.full():
                 try:
                     q.get_nowait()
                 except:
                     pass
             q.put(frame)
-        q.put(None)
+        q.put(None)  
+        stop_events.pop(key, None)  
 
-    Thread(target=worker, daemon=True).start()
+    thread = Thread(target=worker, daemon=True)
+    thread.start()
+    stream_threads[key] = thread
 
 @app.route('/video_feed')
 def video_feed():
@@ -230,6 +247,29 @@ def video_feed():
             yield frame
 
     return Response(stream(), mimetype='multipart/x-mixed-replace; boundary=frame')
+
+@app.route('/clear_camera')
+def clear_camera():
+    src = request.args.get('src')
+    user_id = request.args.get('user_id')
+
+    key = (user_id, str(src))
+
+    if key in stream_threads:
+        if key in stop_events:
+            stop_events[key].set()
+
+        if key in stream_caps:
+            stream_caps[key].release()
+            stream_caps.pop(key)
+
+        stream_threads.pop(key)
+        stream_queues.pop(user_id, None)
+        stop_events.pop(key, None)
+
+        return {"status": "camera cleared"}, 200
+    else:
+        return {"error": "camera not found"}, 404
 
 @app.route('/')
 def index():
