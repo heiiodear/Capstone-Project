@@ -12,12 +12,11 @@ from io import BytesIO
 from pymongo import MongoClient
 from collections import deque
 from flask_cors import CORS
-from threading import Thread
+from threading import Thread, Event
 from queue import Queue
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from torch.cuda.amp import autocast
-import subprocess
 
 executor = ThreadPoolExecutor(max_workers=2)
 
@@ -27,6 +26,9 @@ app = Flask(__name__)
 CORS(app)
 
 stream_queues = {}
+stream_caps = {}
+stream_threads = {}
+stop_events = {}  
 
 # โหลดโมเดล YOLO
 current_file = Path(__file__).resolve()
@@ -49,7 +51,6 @@ client = MongoClient(os.getenv("MONGODB_URI"))
 db = client[os.getenv("MONGODB_DB")]
 collection = db[os.getenv("MONGODB_COLLECTION")]
 
-# ปรับแสง
 def auto_brightness(frame, target_brightness=100):
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     brightness = np.mean(gray)
@@ -73,7 +74,7 @@ def process_frame(frame):
                                 imgsz=320, 
                                 device=device,
                                 stream=True,
-                                verbose=False,
+                                verbose=True,
                                 )
     
     return frame, results
@@ -207,20 +208,28 @@ def generate_frames(source, user_id):
     cap.release()
 
 def generate_stream(source, user_id):
+    key = (user_id, str(source))
     q = Queue(maxsize=10)
     stream_queues[user_id] = q
+    stop_event = Event()
+    stop_events[key] = stop_event
 
     def worker():
         for frame in generate_frames(source, user_id):
+            if stop_event.is_set():
+                break  
             if q.full():
                 try:
                     q.get_nowait()
                 except:
                     pass
             q.put(frame)
-        q.put(None)
+        q.put(None)  
+        stop_events.pop(key, None)  
 
-    Thread(target=worker, daemon=True).start()
+    thread = Thread(target=worker, daemon=True)
+    thread.start()
+    stream_threads[key] = thread
 
 @app.route('/video_feed')
 def video_feed():
@@ -237,8 +246,30 @@ def video_feed():
                 break
             yield frame
 
-
     return Response(stream(), mimetype='multipart/x-mixed-replace; boundary=frame')
+
+@app.route('/clear_camera')
+def clear_camera():
+    src = request.args.get('src')
+    user_id = request.args.get('user_id')
+
+    key = (user_id, str(src))
+
+    if key in stream_threads:
+        if key in stop_events:
+            stop_events[key].set()
+
+        if key in stream_caps:
+            stream_caps[key].release()
+            stream_caps.pop(key)
+
+        stream_threads.pop(key)
+        stream_queues.pop(user_id, None)
+        stop_events.pop(key, None)
+
+        return {"status": "camera cleared"}, 200
+    else:
+        return {"error": "camera not found"}, 404
 
 @app.route('/')
 def index():
