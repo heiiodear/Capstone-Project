@@ -48,8 +48,8 @@ bucket_name = os.getenv("AWS_BUCKET_NAME")
 
 # ตั้งค่า MongoDB
 client = MongoClient(os.getenv("MONGODB_URI"))
-db = client[os.getenv("MONGODB_DB")]
-collection = db[os.getenv("MONGODB_COLLECTION")]
+db = "Capstone"
+collection = "fall"
 
 def auto_brightness(frame, target_brightness=100):
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
