@@ -6,14 +6,15 @@ import CamLayout from "./../components/CamLayout";
 function Cameras() {
     const [layout, setLayout] = useState("grid");
     const [selectedCamera, setSelectedCamera] = useState(0);
+    const user_id = 1111111111111
 
     const rooms = [
-        { id: 1, name: "Bedroom" },
-        { id: 2, name: "Kitchen" },
-        { id: 3, name: "Living Room" },
-        { id: 4, name: "Bathroom" },
-        { id: 5, name: "Laundry Room" },
-    ];
+        { id: 1, name: "Bedroom" ,src: "0" },
+        { id: 2, name: "Kitchen" ,src: "1" },
+        { id: 3, name: "Living Room" ,src: "rtsp://localhost:8554/live" },
+        { id: 4, name: "Bathroom" ,src: null }, 
+        { id: 5, name: "Laundry Room" ,src: null },
+    ];    
 
     return (
     <div className="min-h-screen bg-gray-50">
@@ -28,15 +29,17 @@ function Cameras() {
         {layout === "grid" ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {rooms.map((room) => (
-                <CameraView key={room.id} id={room.id} name={room.name} />
+                <CameraView key={room.id} id={room.id} name={room.name} src={room.src} user_id={user_id}/>
             ))}
             </div>
         ) : (
             <div className="space-y-4">
             <div className="max-w-xxl mx-auto">
-                <CameraView
-                    id={rooms[selectedCamera].id}
-                    name={rooms[selectedCamera].name}
+            <CameraView
+                id={rooms[selectedCamera].id}
+                name={rooms[selectedCamera].name}
+                src={rooms[selectedCamera].src}
+                user_id={user_id}
                 />
             </div>
             <div className="flex gap-2 overflow-x-auto pb-2 max-w-xxl mx-auto">

@@ -18,7 +18,7 @@ from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from torch.cuda.amp import autocast
 
-executor = ThreadPoolExecutor(max_workers=2)
+executor = ThreadPoolExecutor(max_workers=5)
 
 load_dotenv()
 
@@ -74,7 +74,7 @@ def process_frame(frame):
                                 imgsz=320, 
                                 device=device,
                                 stream=True,
-                                verbose=True,
+                                verbose=False,
                                 )
     
     return frame, results
@@ -210,7 +210,7 @@ def generate_frames(source, user_id):
 def generate_stream(source, user_id):
     key = (user_id, str(source))
     q = Queue(maxsize=10)
-    stream_queues[user_id] = q
+    stream_queues[key] = q  
     stop_event = Event()
     stop_events[key] = stop_event
 
@@ -224,8 +224,8 @@ def generate_stream(source, user_id):
                 except:
                     pass
             q.put(frame)
-        q.put(None)  
-        stop_events.pop(key, None)  
+        q.put(None)
+        stop_events.pop(key, None)
 
     thread = Thread(target=worker, daemon=True)
     thread.start()
@@ -235,13 +235,14 @@ def generate_stream(source, user_id):
 def video_feed():
     source = request.args.get('src', "0")
     user_id = request.args.get('user_id', "anonymous")
+    key = (user_id, str(source))  
 
-    if user_id not in stream_queues:
+    if key not in stream_queues:
         generate_stream(source, user_id)
 
     def stream():
         while True:
-            frame = stream_queues[user_id].get()
+            frame = stream_queues[key].get()  
             if frame is None:
                 break
             yield frame
@@ -252,7 +253,6 @@ def video_feed():
 def clear_camera():
     src = request.args.get('src')
     user_id = request.args.get('user_id')
-
     key = (user_id, str(src))
 
     if key in stream_threads:
@@ -264,7 +264,7 @@ def clear_camera():
             stream_caps.pop(key)
 
         stream_threads.pop(key)
-        stream_queues.pop(user_id, None)
+        stream_queues.pop(key, None) 
         stop_events.pop(key, None)
 
         return {"status": "camera cleared"}, 200
@@ -276,4 +276,4 @@ def index():
     return render_template('index.html')
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=3000, debug=True)
