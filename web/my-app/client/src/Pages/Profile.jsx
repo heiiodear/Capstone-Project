@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import EditModal from "./../components/EditModal";
 import Header from "./../components/Header";
 
@@ -22,15 +23,16 @@ function Profile() {
     const [isEditing, setIsEditing] = useState(false);
     const [editingField, setEditingField] = useState("");
     const [formData, setFormData] = useState({});
+    const navigate = useNavigate();
 
     const openModal = (type) => {
         setEditingField(type);
         setFormData(type === "address" ? mockdata.address : {
-        username: mockdata.username,
-        email: mockdata.email,
-        password: mockdata.password,
-        discord: mockdata.discord,
-        phone: mockdata.phone,
+            username: mockdata.username,
+            email: mockdata.email,
+            password: mockdata.password,
+            discord: mockdata.discord,
+            phone: mockdata.phone,
         });
         setIsEditing(true);
     };
@@ -90,11 +92,11 @@ function Profile() {
                 </button>
                 </div>
                 {[
-                { label: "Username", value: mockdata.username },
-                { label: "Email", value: mockdata.email },
-                { label: "Password", value: mockdata.password },
-                { label: "Discord Account", value: mockdata.discord },
-                { label: "Phone number", value: mockdata.phone },
+                    { label: "Username", value: mockdata.username },
+                    { label: "Email", value: mockdata.email },
+                    { label: "Password", value: mockdata.password },
+                    { label: "Discord Account", value: mockdata.discord },
+                    { label: "Phone number", value: mockdata.phone },
                 ].map((field) => (
                 <div key={field.label} className="flex justify-between items-center border-b pb-2">
                     <div>
@@ -116,11 +118,11 @@ function Profile() {
                 </button>
                 </div>
                 {[
-                { label: "Plot / House number, Village", value: mockdata.address?.plot },
-                { label: "Road", value: mockdata.address?.road },
-                { label: "District", value: mockdata.address?.district },
-                { label: "Province", value: mockdata.address?.province },
-                { label: "Postal Code District Province", value: mockdata.address?.postal },
+                    { label: "Plot / House number, Village", value: mockdata.address?.plot },
+                    { label: "Road", value: mockdata.address?.road },
+                    { label: "District", value: mockdata.address?.district },
+                    { label: "Province", value: mockdata.address?.province },
+                    { label: "Postal Code District Province", value: mockdata.address?.postal },
                 ].map((field) => (
                 <div key={field.label} className="flex justify-between items-center border-b pb-2">
                     <div>
