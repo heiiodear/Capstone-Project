@@ -48,6 +48,12 @@ function Signup() {
       setMessage("Please accept the terms and conditions.");
       return;
     }
+
+    if (formData.password !== formData.confirmPassword) {
+      setMessage("Passwords do not match.");
+      return;
+    }
+    
     setIsLoading(true);
     try {
       const res = await axios.post("http://localhost:5000/register", formData, {
@@ -67,7 +73,7 @@ function Signup() {
     <div className="min-h-screen flex items-center justify-center bg-indigo-100 px-4 py-6">
       <div className="w-full max-w-2xl bg-white rounded-xl shadow-md p-8 space-y-6">
         <div className="text-center text-3xl font-bold text-indigo-900">Projectname</div>
-        <div className="text-center text-3xl font-bold text-indigo-900">Create an Account</div>
+        <div className="text-center text-3xl font-bold text-indigo-900 ">Create an Account</div>
         <p className="text-center text-gray-500 text-sm">Enter your information to register</p>
 
         {message && <div className="text-center text-red-600 text-sm">{message}</div>}
@@ -151,6 +157,10 @@ function Signup() {
                 required
                 className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 pr-10 focus:ring-2 focus:ring-indigo-500"
               />
+              {formData.confirmPassword && formData.password !== formData.confirmPassword &&(
+                <p className="text-sm mt-1 text-red-600">Passwords do not match</p>
+              )}
+
               <button
                 type="button"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
@@ -228,7 +238,7 @@ function Signup() {
           <button
             type="submit"
             disabled={isLoading || !acceptTerms}
-            className="w-full bg-indigo-900 text-white py-2 rounded-md transition"
+            className="w-full bg-indigo-900 text-white py-2 rounded-md transition cursor-pointer"
           >
             {isLoading ? "Creating account..." : "Create Account"}
           </button>
