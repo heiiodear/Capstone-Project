@@ -100,7 +100,7 @@ function Profile() {
                 ].map((field) => (
                 <div key={field.label} className="flex justify-between items-center border-b pb-2">
                     <div>
-                    <div className="text-xs text-gray-500 pb-1">{field.label}</div>
+                    <div className="text-xs text-gray-500 pb-1.5">{field.label}</div>
                     <div className="text-sm font-medium">{field.value}</div>
                     </div>
                 </div>
