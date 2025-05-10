@@ -59,6 +59,44 @@ user_collection = db_fetch["users"]
 EMAIL_SENDER = os.getenv("EMAIL_SENDER")
 EMAIL_PASSWORD = os.getenv("EMAIL_PASSWORD")
 
+def handle_fall_event_async(frame, frame_buffer, user_id, name, video_filename, image_filename, timestamp):
+    try:
+        h, w = frame.shape[:2]
+        video_writer = cv2.VideoWriter(video_filename, cv2.VideoWriter_fourcc(*'mp4v'), 10, (w, h))
+        for buffered_frame in frame_buffer:
+            video_writer.write(buffered_frame)
+        video_writer.write(frame)
+        video_writer.release()
+
+        _, img_encoded = cv2.imencode('.jpg', frame)
+        img_bytes = img_encoded.tobytes()
+
+        s3.upload_fileobj(BytesIO(img_bytes), bucket_name, f"user_{user_id}/{image_filename}")
+        with open(video_filename, 'rb') as video_file:
+            s3.upload_fileobj(video_file, bucket_name, f"user_{user_id}/{video_filename}")
+
+        image_url = f"https://{bucket_name}.s3.{s3.meta.region_name}.amazonaws.com/user_{user_id}/{image_filename}"
+        video_url = f"https://{bucket_name}.s3.{s3.meta.region_name}.amazonaws.com/user_{user_id}/{video_filename}"
+
+        collection.insert_one({
+            "user_id": user_id,
+            "name": name,
+            "image_url": image_url,
+            "video_url": video_url,
+            "note": "",
+            "timestamp": timestamp
+        })
+
+        user = user_collection.find_one({"user_id": ObjectId(user_id)})
+        to_email = user["email"]
+        send_email(to_email=to_email, image_url=image_url, video_url=video_url)
+
+        print(f"[INFO] Uploaded + Email sent at {timestamp}")
+
+    except NoCredentialsError:
+        print("[ERROR] AWS credentials not found.")
+    except Exception as e:
+        print(f"[ERROR] Exception in background task: {e}")
 
 def send_email(to_email, image_url, video_url):
     try:
@@ -89,7 +127,7 @@ def send_email(to_email, image_url, video_url):
 
     except Exception as e:
         print(f"[ERROR] Failed to send email: {e}")
-        
+
 def auto_brightness(frame, target_brightness=100):
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     brightness = np.mean(gray)
@@ -144,7 +182,7 @@ def draw_keypoints(frame, keypoints_list, color=(255, 0, 255), radius=3):
                 if conf > 0.5: 
                     cv2.circle(frame, (int(x), int(y)), radius, color, -1)
 
-def generate_frames(source, user_id):
+def generate_frames(source, user_id, name):
     if isinstance(source, str) and source.isdigit():
         source = int(source)
 
@@ -206,43 +244,8 @@ def generate_frames(source, user_id):
                 video_filename = f"fall_{user_id}_{timestamp}.mp4"
                 image_filename = f"fall_{user_id}_{timestamp}.jpg"
 
-                h, w = frame.shape[:2]
-                video_writer = cv2.VideoWriter(video_filename, fourcc, fps, (w, h))
-                for buffered_frame in frame_buffer:
-                    video_writer.write(buffered_frame)
-                video_writer.write(frame)
-                video_writer.release()
+                executor.submit(handle_fall_event_async, frame.copy(), list(frame_buffer), user_id, name, video_filename, image_filename, timestamp)
 
-                _, img_encoded = cv2.imencode('.jpg', frame)
-                img_bytes = img_encoded.tobytes()
-
-                try:
-                    s3.upload_fileobj(BytesIO(img_bytes), bucket_name, f"user_{user_id}/{image_filename}")
-                    with open(video_filename, 'rb') as video_file:
-                        s3.upload_fileobj(video_file, bucket_name, f"user_{user_id}/{video_filename}")
-
-                    image_url = f"https://{bucket_name}.s3.{s3.meta.region_name}.amazonaws.com/user_{user_id}/{image_filename}"
-                    video_url = f"https://{bucket_name}.s3.{s3.meta.region_name}.amazonaws.com/user_{user_id}/{video_filename}"
-
-                    collection.insert_one({
-                        "user_id": user_id,
-                        "image_url": image_url,
-                        "video_url": video_url,
-                        "note": "",
-                        "timestamp": timestamp
-                    })
-
-                    user = user_collection.find_one({"user_id":  ObjectId(user_id)})
-                    to_email = user["email"]
-                    send_email(
-                        to_email=to_email,
-                        image_bytes=img_bytes,
-                        video_path=video_filename
-                    )
-                    print(f"[INFO] Uploaded image + video at {timestamp}")
-
-                except NoCredentialsError:
-                    print("[ERROR] AWS credentials not found.")
         else:
             fall_tracking_start = None
             fall_confirmed = False
@@ -253,7 +256,7 @@ def generate_frames(source, user_id):
 
     cap.release()
 
-def generate_stream(source, user_id):
+def generate_stream(source, user_id, name):
     key = (user_id, str(source))
     q = Queue(maxsize=10)
     stream_queues[key] = q  
@@ -261,7 +264,7 @@ def generate_stream(source, user_id):
     stop_events[key] = stop_event
 
     def worker():
-        for frame in generate_frames(source, user_id):
+        for frame in generate_frames(source, user_id, name):
             if stop_event.is_set():
                 break  
             if q.full():
@@ -281,10 +284,11 @@ def generate_stream(source, user_id):
 def video_feed():
     source = request.args.get('src', "0")
     user_id = request.args.get('user_id', "anonymous")
+    name = request.args.get('name')
     key = (user_id, str(source))  
 
     if key not in stream_queues:
-        generate_stream(source, user_id)
+        generate_stream(source, user_id, name)
 
     def stream():
         while True:
