@@ -1,16 +1,9 @@
-server:
-  rtc:
-    listen: ":8554"
-  rtmp:
-    listen: ":1935"
-  hls:
-    listen: ":8888"
-  webrtc:
-    listen: ":8889"
-  srt:
-    listen: ":8890"
+rtsp: yes
+rtmp: yes
+hls: yes
+webrtc: yes
+srt: yes
 
 paths:
   live:
-    source: "rtsp://localhost:8554/live"
-    runOnInit: ffmpeg -i /path/to/input -c:v libx264 -f rtsp rtsp://localhost:8554/live
+    source: publisher

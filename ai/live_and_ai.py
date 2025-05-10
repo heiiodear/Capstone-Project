@@ -1,5 +1,8 @@
+from email.message import EmailMessage
 import os
+import smtplib
 import cv2
+import requests
 import torch
 import numpy as np
 from dotenv import load_dotenv
@@ -17,6 +20,7 @@ from queue import Queue
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from torch.cuda.amp import autocast
+from bson import ObjectId
 
 executor = ThreadPoolExecutor(max_workers=5)
 
@@ -35,8 +39,6 @@ current_file = Path(__file__).resolve()
 model_path = current_file.parent / "model_11n-new.pt"
 model = YOLO(model_path)
 
-print("Model task:", model.task)
-
 # ตั้งค่า AWS S3
 s3 = boto3.client(
     's3',
@@ -50,7 +52,44 @@ bucket_name = os.getenv("AWS_BUCKET_NAME")
 client = MongoClient(os.getenv("MONGODB_URI"))
 db = "Capstone"
 collection = "fall"
+db_fetch = client["Capstone"]
+user_collection = db_fetch["users"]
 
+# Email sender
+EMAIL_SENDER = os.getenv("EMAIL_SENDER")
+EMAIL_PASSWORD = os.getenv("EMAIL_PASSWORD")
+
+
+def send_email(to_email, image_url, video_url):
+    try:
+        msg = EmailMessage()
+        msg['Subject'] = '🚨 แจ้งเตือนด่วนจาก Secura.com: ตรวจพบการล้ม!'
+        msg['From'] = EMAIL_SENDER
+        msg['To'] = to_email
+        msg.set_content(
+            "ระบบเฝ้าระวังจาก Secura.com ได้ตรวจพบเหตุการณ์ **การล้ม** ของผู้ใช้งาน!\n\n"
+            "ระบบได้บันทึกภาพนิ่งและวิดีโอของเหตุการณ์ไว้เรียบร้อย เพื่อให้คุณสามารถ ประเมินสถานการณ์ และ ดำเนินการช่วยเหลือได้ทันที\n\n"
+            "โปรดดำเนินการตรวจสอบสถานการณ์ของผู้ใช้งานโดยด่วน เพื่อป้องกันเหตุการณ์ร้ายแรง\n\n"
+            "ขอขอบคุณที่ไว้วางใจใช้ระบบแจ้งเตือนความปลอดภัยอัตโนมัติของเรา\n\n"
+            "-- ทีมงาน Secura.com --"
+        )
+
+        image_response = requests.get(image_url)
+        if image_response.status_code == 200:
+            msg.add_attachment(image_response.content, maintype='image', subtype='jpeg', filename='fall.jpg')
+
+        video_response = requests.get(video_url)
+        if video_response.status_code == 200:
+            msg.add_attachment(video_response.content, maintype='video', subtype='mp4', filename='fall.mp4')
+
+        with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
+            smtp.login(EMAIL_SENDER, EMAIL_PASSWORD)
+            smtp.send_message(msg)
+            print(f"[INFO] Email sent to {to_email}")
+
+    except Exception as e:
+        print(f"[ERROR] Failed to send email: {e}")
+        
 def auto_brightness(frame, target_brightness=100):
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     brightness = np.mean(gray)
@@ -193,6 +232,13 @@ def generate_frames(source, user_id):
                         "timestamp": timestamp
                     })
 
+                    user = user_collection.find_one({"user_id":  ObjectId(user_id)})
+                    to_email = user["email"]
+                    send_email(
+                        to_email=to_email,
+                        image_bytes=img_bytes,
+                        video_path=video_filename
+                    )
                     print(f"[INFO] Uploaded image + video at {timestamp}")
 
                 except NoCredentialsError:

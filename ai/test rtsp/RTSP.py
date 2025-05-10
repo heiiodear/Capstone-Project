@@ -9,8 +9,8 @@ if not cap.isOpened():
     print(f"ไม่สามารถเปิดกล้องหมายเลข {camera_index} ได้")
     exit()
 
-width = 640
-height = 640
+width = 1280
+height = 720
 fps = 30
 
 ffmpeg_command = [
@@ -59,7 +59,7 @@ try:
             print("ไม่สามารถส่งข้อมูลไปยัง FFmpeg ได้ (Broken Pipe)")
             break
 
-        time.sleep(0.8)
+        time.sleep(0.3)
 
 finally:
     cap.release()
