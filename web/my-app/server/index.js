@@ -4,6 +4,7 @@ const cors = require("cors");
 const UserModel = require('./models/user');
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const AlertModel = require("./models/alert");
 
 const app = express();
 app.use(express.json());
@@ -69,6 +70,16 @@ app.post("/login", async (req, res) => {
       res.status(500).json({ error: "Login failed" });
     }
   });
+
+app.get("/alerts", async (req, res) => {
+    try {
+      const alerts = await AlertModel.find({}).sort({ timestamp: -1 });
+      res.json(alerts);
+    } catch (err) {
+      console.error("Error fetching alerts:", err);
+      res.status(500).json({ error: "Failed to fetch alerts" });
+    }
+});
 
 app.listen(5000, () => {
   console.log("server is running");
