@@ -7,7 +7,7 @@ function CamLayout({ layout, setLayout }) {
                 className={`px-4 py-2 rounded border ${
                     layout === "grid"
                     ? "bg-indigo-900 text-white"
-                    : "border-indigo-900 text-indigo-900 hover:bg-indigo-900/10"
+                    : "border-indigo-900 text-indigo-900 hover:bg-indigo-100"
                 }`}
                 onClick={() => setLayout("grid")}>
                 Grid View
@@ -16,7 +16,7 @@ function CamLayout({ layout, setLayout }) {
                 className={`px-4 py-2 rounded border ${
                     layout === "single"
                     ? "bg-indigo-900 text-white"
-                    : "border-indigo-900 text-indigo-900 hover:bg-indigo-900/10"
+                    : "border-indigo-900 text-indigo-900 hover:bg-indigo-100"
                 }`}
                 onClick={() => setLayout("single")}>
                 Single View

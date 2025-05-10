@@ -66,74 +66,74 @@ function Cameras() {
     };
 
     return (
-    <div className="min-h-screen bg-white">
-        <Header />
+        <div className="min-h-screen bg-white">
+            <Header />
 
-        <div className="container mx-auto py-6 px-4">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6">
-            <h1 className="text-3xl font-bold text-indigo-900">Cameras</h1>
-            <CamLayout layout={layout} setLayout={setLayout} />
-        </div>
+            <div className="container mx-auto py-6 px-4">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6">
+                <h1 className="text-3xl font-bold text-indigo-900">Cameras</h1>
+                <CamLayout layout={layout} setLayout={setLayout} />
+            </div>
 
-        {layout === "grid" ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {rooms.map((room, index) => (
-                            <CameraView
-                                key={room.id}
-                                id={room.id}
-                                name={room.name}
-                                src={room.src}
-                                user_id={user_id}
-                                isActive={room.isActive}
-                                toggleActive={() => toggleActive(room.id)}
-                                onEdit={() => handleEditCamera(index)}
-                                onDelete={() => handleDeleteCamera(room.id)}
-                            />
-                        ))}
+            {layout === "grid" ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {rooms.map((room, index) => (
+                    <CameraView
+                        key={room.id}
+                        id={room.id}
+                        name={room.name}
+                        src={room.src}
+                        user_id={user_id}
+                        isActive={room.isActive}
+                        toggleActive={() => toggleActive(room.id)}
+                        onEdit={() => handleEditCamera(index)}
+                        onDelete={() => handleDeleteCamera(room.id)}
+                    />
+                ))}
 
-                        {/* Add Camera */}
-                        <div
-                            onClick={handleAddCamera}
-                            className="w-full bg-gray-200 hover:bg-gray-300 cursor-pointer rounded shadow-md p-4 flex items-center justify-center">
-                            <span className="text-indigo-900 font-semibold">+ Add Camera</span>
-                        </div>
-                    </div>
+                {/* Add Camera */}
+                <div
+                    onClick={handleAddCamera}
+                    className="w-full bg-indigo-100 hover:bg-indigo-200 cursor-pointer rounded shadow-md p-4 flex items-center justify-center">
+                    <span className="text-indigo-900 font-semibold">+ Add Camera</span>
+                </div>
+                </div>
                 ) : (
-                    <div className="space-y-4">
-                        <div className="max-w-xxl mx-auto">
-                            <CameraView
-                                id={rooms[selectedCamera].id}
-                                name={rooms[selectedCamera].name}
-                                src={rooms[selectedCamera].src}
-                                user_id={user_id}
-                                isActive={rooms[selectedCamera].isActive}
-                                toggleActive={() => toggleActive(rooms[selectedCamera].id)}
-                                onEdit={() => handleEditCamera(selectedCamera)}
-                                onDelete={() => handleDeleteCamera(rooms[selectedCamera].id)}
-                            />
-                        </div>
-                        <div className="flex gap-2 overflow-x-auto pb-2 max-w-xxl mx-auto">
-                            {rooms.map((room, idx) => (
-                                <button
-                                    key={room.id}
-                                    className={`px-3 py-2 rounded border whitespace-nowrap flex-shrink-0 ${
-                                        selectedCamera === idx
-                                            ? "bg-indigo-900 text-white"
-                                            : "border-indigo-900 text-indigo-900 hover:bg-indigo-900/10"
-                                    }`}
-                                    onClick={() => setSelectedCamera(idx)}
-                                >
-                                    {room.name}
-                                </button>
-                            ))}
-                            {/* Add Camera */}
-                            <div
-                                onClick={handleAddCamera}
-                                className="px-3 py-2 bg-gray-200 hover:bg-gray-300 cursor-pointer rounded shadow-md p-4 flex items-center justify-center">
-                                <span className="text-indigo-900 font-semibold">+ Add Camera</span>
-                            </div>
-                        </div>
+                <div className="space-y-4">
+                <div className="max-w-xxl mx-auto">
+                    <CameraView
+                        id={rooms[selectedCamera].id}
+                        name={rooms[selectedCamera].name}
+                        src={rooms[selectedCamera].src}
+                        user_id={user_id}
+                        isActive={rooms[selectedCamera].isActive}
+                        toggleActive={() => toggleActive(rooms[selectedCamera].id)}
+                        onEdit={() => handleEditCamera(selectedCamera)}
+                        onDelete={() => handleDeleteCamera(rooms[selectedCamera].id)}
+                    />
+                </div>
+                <div className="flex gap-2 overflow-x-auto pb-2 max-w-xxl mx-auto">
+                    {rooms.map((room, idx) => (
+                        <button
+                            key={room.id}
+                            className={`px-3 py-2 rounded border whitespace-nowrap flex-shrink-0 ${
+                                selectedCamera === idx
+                                    ? "bg-indigo-900 text-white"
+                                    : "border-indigo-900 text-indigo-900 hover:bg-indigo-100"
+                            }`}
+                            onClick={() => setSelectedCamera(idx)}
+                        >
+                            {room.name}
+                        </button>
+                    ))}
+                    {/* Add Camera */}
+                    <div
+                        onClick={handleAddCamera}
+                        className="px-3 py-2 bg-indigo-100 hover:bg-indigo-200 cursor-pointer rounded shadow-md p-4 flex items-center justify-center">
+                        <span className="text-indigo-900 font-semibold">+ Add Camera</span>
                     </div>
+                </div>
+                </div>
                 )}
             </div>
 

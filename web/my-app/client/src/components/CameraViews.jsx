@@ -2,7 +2,7 @@ import React from "react";
 
 function CameraViews({ name, src, user_id, onEdit, onDelete }) {
   return (
-    <div className="w-full bg-white border border-gray-200 rounded shadow-md p-4 relative">
+    <div className="w-full bg-white border-2 border-gray-200 rounded shadow-md p-4 relative">
       <h2 className="text-lg font-semibold mb-2">{name}</h2>
 
       <div className="relative w-full pt-[56.25%] bg-black rounded overflow-hidden">
