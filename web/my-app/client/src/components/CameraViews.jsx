@@ -1,9 +1,8 @@
 import React from "react";
 
-function CameraViews({name, src, user_id }) {
-    console.log(src);
+function CameraViews({ name, src, user_id, onEdit, onDelete }) {
   return (
-    <div className="w-full bg-white rounded shadow p-4">
+    <div className="w-full bg-white border border-gray-200 rounded shadow-md p-4 relative">
       <h2 className="text-lg font-semibold mb-2">{name}</h2>
 
       <div className="relative w-full pt-[56.25%] bg-black rounded overflow-hidden">
@@ -19,6 +18,29 @@ function CameraViews({name, src, user_id }) {
           )}
         </div>
       </div>
+
+      {(onEdit || onDelete) && (
+        <div className="absolute top-2 right-2 flex gap-2 z-10">
+          {onEdit && (
+            <button
+              onClick={onEdit}
+              className="bg-white border-white hover:bg-gray-100 text-sm px-2 py-1 rounded"
+              title="Edit Camera"
+            >
+              edit
+            </button>
+          )}
+          {onDelete && (
+            <button
+              onClick={onDelete}
+              className="bg-white border-white hover:bg-red-100 text-sm px-2 py-1 rounded"
+              title="Delete Camera"
+            >
+              delete
+            </button>
+          )}
+        </div>
+      )}
     </div>
   );
 }
