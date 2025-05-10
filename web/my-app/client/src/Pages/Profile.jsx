@@ -82,7 +82,7 @@ function Profile() {
             </div>
 
             {/* Personal Info */}
-            <div className="w-full max-w-xl mx-auto mt-8 bg-white rounded-xl shadow-lg border border-gray-200 p-6 space-y-4">
+            <div className="w-full max-w-xl mx-auto mt-8 bg-white rounded-xl shadow-lg border-2 border-gray-200 p-6 space-y-4">
                 <div className="flex justify-between items-center">
                 <h2 className="text-lg font-semibold text-left">Personal Information</h2>
                 <button
