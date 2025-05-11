@@ -25,6 +25,20 @@ function Login() {
   };
 
   return (
+    <>
+    <style>
+      {`
+        input[type="password"]::-ms-reveal,
+        input[type="password"]::-ms-clear {
+          display: none;
+        }
+
+        input[type="password"]::-webkit-credentials-auto-fill-button,
+        input[type="password"]::-webkit-textfield-decoration-container {
+          display: none !important;
+        }
+      `}
+    </style>
     <div className="min-h-screen flex justify-center items-center p-4 bg-indigo-100">
       <div className="w-full max-w-md bg-white rounded-xl shadow-md p-6 space-y-4">
         <div className="text-center text-2xl font-bold text-indigo-900">Projectname</div>
@@ -88,6 +102,7 @@ function Login() {
         </div>
       </div>
     </div>
+    </>
   );
 }
 

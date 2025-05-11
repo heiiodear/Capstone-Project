@@ -1,14 +1,61 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaBars } from "react-icons/fa";
+import axios from "axios";
 
 function Header() {
     const navigate = useNavigate();
-    
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+    const [profileImage, setProfileImage] = useState("https://www.engineering.columbia.edu/sites/default/files/styles/full_size_1_1/public/2024-07/Columbia_Engineering_Headshot_1_B.png?itok=n6_TL_JQ");
+    const [isLoading, setIsLoading] = useState(true); 
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        const fetchUserProfile = async () => {
+            const token = localStorage.getItem("token");
+             if (!token) {
+                console.error("No token found");
+                setError("No token found");
+                setIsLoading(false);
+                return;
+            }
+
+            console.log("Fetching user profile with token:", token);
+
+            try {
+                const response = await axios.get("http://localhost:5000/profile", {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+                if (response.data.profileImage) {
+                    console.log("User profile image fetched:", response.data.profileImage);
+                    setProfileImage(response.data.profileImage);
+                } else {
+                    console.log("No profile image found, using default");
+                    setProfileImage(
+                        "https://www.engineering.columbia.edu/sites/default/files/styles/full_size_1_1/public/2024-07/Columbia_Engineering_Headshot_1_B.png?itok=n6_TL_JQ"
+                    );
+                }
+            } catch (error) {
+                console.error("Failed to fetch user profile", error);
+                setError("Failed to fetch profile image");
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchUserProfile();
+    }, []);
+
+    const handleLogout = () => {
+        localStorage.removeItem("token");
         navigate("/");
     };
+    
+    // const handleSubmit = async (e) => {
+    //     e.preventDefault();
+    //     navigate("/");
+    // };
 
     return (
         <div className="bg-indigo-900 text-white shadow-md py-3 px-5">
@@ -40,16 +87,21 @@ function Header() {
                         {/* <FaUser className="w-5 h-5"/> */}
                         <div className="relative w-8 h-8 rounded-full overflow-hidden">
                             <img
-                            src="https://i.pinimg.com/originals/a8/44/c8/a844c8bcff2ad5328aa25f12637fb1ca.jpg"
-                            alt="Profile"
-                            className="object-cover w-full h-full"
-                            />
+                                src={profileImage}
+                                alt="Profile"
+                                className="object-cover w-full h-full"
+                                onError={(e) => {
+                                    e.target.onerror = null;
+                                    e.target.src = "https://www.engineering.columbia.edu/sites/default/files/styles/full_size_1_1/public/2024-07/Columbia_Engineering_Headshot_1_B.png?itok=n6_TL_JQ";
+                                }}
+                                />
+
                         </div>
                     </Link>
                     <button
                         type="submit"
-                        onClick={handleSubmit}
-                        className="bg-red-600 hover:bg-red-700 text-white text-sm px-3 font-semibold py-1 rounded-md">
+                        onClick={handleLogout}
+                        className="bg-red-600 hover:bg-red-700 text-white text-sm px-3 font-semibold py-1 rounded-md cursor-pointer">
                         Logout
                     </button>
                 </div>
