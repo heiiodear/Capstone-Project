@@ -28,10 +28,16 @@ app.post("/register", async (req, res) => {
   const { username, tel, discord, email, password } = req.body;
 
   try {
+    const existingUsername = await UserModel.findOne({ username });
+    if (existingUsername) {
+      return res.status(400).json({ error: "Username is already taken" });
+    }
     const existingUser = await UserModel.findOne({ email });
     if (existingUser) {
-      return res.status(400).json({ error: "User already exists" });
+      return res.status(400).json({ error: "Email has already been registerd" });
     }
+
+   
 
     const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = new UserModel({ username, tel, discord, email, password: hashedPassword });
