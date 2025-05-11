@@ -142,7 +142,7 @@ function Signup() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">Discord Account</label>
+            <label className="block text-sm font-medium text-gray-700">User Discord URL</label>
             <input
               type="text"
               name="discord"

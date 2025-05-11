@@ -12,7 +12,6 @@ import Dashboard from './pages/Dashboard'
 import Alerts from './pages/Alerts'
 import Cameras from './pages/Cameras'
 import Contactus from './pages/Contactus'
-import Test from './pages/Testcom'
 
 function App() {
   return (
@@ -29,7 +28,6 @@ function App() {
           <Route path='alerts' element={<Alerts />}></Route>
           <Route path='cameras' element={<Cameras />}></Route>
           <Route path='contactus' element={<Contactus />}></Route>
-          <Route path='test' element={<Test />}></Route>
       </Routes>
     </BrowserRouter>
   )

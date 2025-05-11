@@ -6,7 +6,7 @@ const EditModal = ({ type, formData, onChange, onCancel, onSave }) => {
         ? ["username", "email", "password", "phone"]
         : type === "address"
         ? ["plot", "road", "district", "province", "postal"]
-        : ["name", "src"];
+        : ["name", "camera address"];
 
     const getTitle = () => {
     switch (type) {
