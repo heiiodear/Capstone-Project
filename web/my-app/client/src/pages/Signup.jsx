@@ -70,13 +70,38 @@ function Signup() {
   };
 
   return (
+     <>
+    <style>
+      {`
+        input[type="password"]::-ms-reveal,
+        input[type="password"]::-ms-clear {
+          display: none;
+        }
+
+        input[type="password"]::-webkit-credentials-auto-fill-button,
+        input[type="password"]::-webkit-textfield-decoration-container {
+          display: none !important;
+        }
+      `}
+    </style>
     <div className="min-h-screen flex items-center justify-center bg-indigo-100 px-4 py-6">
       <div className="w-full max-w-2xl bg-white rounded-xl shadow-md p-8 space-y-6">
         <div className="text-center text-3xl font-bold text-indigo-900">Projectname</div>
         <div className="text-center text-3xl font-bold text-indigo-900 ">Create an Account</div>
         <p className="text-center text-gray-500 text-sm">Enter your information to register</p>
 
-        {message && <div className="text-center text-red-600 text-sm">{message}</div>}
+        {message && (
+          <div
+            className={`text-center text-sm ${
+              message.toLowerCase().includes("success") || message.toLowerCase().includes("created")
+                ? "text-green-600"
+                : "text-red-600"
+            }`}
+          >
+            {message}
+          </div>
+        )}
+
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Personal Info */}
@@ -252,6 +277,7 @@ function Signup() {
         </div>
       </div>
     </div>
+    </>
   );
 }
 
