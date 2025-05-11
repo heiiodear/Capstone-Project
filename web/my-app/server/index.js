@@ -5,12 +5,13 @@ const UserModel = require('./models/user');
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const AlertModel = require("./models/alert");
+const { ObjectId } = require("mongoose");
 
 const app = express();
 app.use(express.json());
 app.use(cors({
     origin: 'http://localhost:5173',
-    methods: ['GET', 'POST', 'PUT', 'DELETE'], 
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'], 
     allowedHeaders: ['Content-Type'] 
   }));
   
@@ -79,6 +80,48 @@ app.get("/alerts", async (req, res) => {
       console.error("Error fetching alerts:", err);
       res.status(500).json({ error: "Failed to fetch alerts" });
     }
+});
+
+app.patch("/alerts/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updatedAlert = await AlertModel.findByIdAndUpdate(
+      id,
+      { resolved: true },
+      { new: true }
+    );
+    if (!updatedAlert) return res.status(404).json({ error: "Alert not found" });
+    res.json(updatedAlert);
+  } catch (err) {
+    console.error("Error resolving alert:", err);
+    res.status(500).json({ error: "Failed to resolve alert" });
+  }
+});
+
+app.get("/dashboard", async (req, res) => {
+  try {
+    const alerts = await AlertModel.find({});
+
+    const activeAlerts = alerts.filter(alert => !alert.resolved).length;
+    const safeRooms = alerts.filter(alert => alert.resolved).length;
+
+    const roomStatuses = {};
+
+    alerts.forEach((alert) => {
+      const room = alert.room || "Unknown";
+      const status = alert.resolved ? "safe" : "alert";
+      roomStatuses[room] = status; //รอกล้อง
+    });
+
+    res.json({
+      activeAlerts,
+      safeRooms,
+      roomStatuses,
+    });
+  } catch (err) {
+    console.error("Error generating dashboard:", err);
+    res.status(500).json({ error: "Failed to generate dashboard" });
+  }
 });
 
 app.listen(5000, () => {

@@ -6,6 +6,10 @@ const alertSchema = new mongoose.Schema({
   video_url: String,
   note: String,
   timestamp: String,
+  resolved: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const AlertModel = mongoose.model("fall", alertSchema, "fall");
