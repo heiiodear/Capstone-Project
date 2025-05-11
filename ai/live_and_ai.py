@@ -22,7 +22,7 @@ from pathlib import Path
 from torch.cuda.amp import autocast
 from bson import ObjectId
 
-executor = ThreadPoolExecutor(max_workers=5)
+executor = ThreadPoolExecutor(max_workers=12)
 
 load_dotenv()
 
@@ -91,7 +91,21 @@ def handle_fall_event_async(frame, frame_buffer, user_id, name, video_filename, 
         to_email = user["email"]
         send_email(to_email=to_email, image_url=image_url, video_url=video_url)
 
-        print(f"[INFO] Uploaded + Email sent at {timestamp}")
+        try:
+            alert_api_url = "http://localhost:5000/alert" 
+            payload = {
+                "image_url": image_url,
+                "video_url": video_url
+            }
+
+            alert_response = requests.post(alert_api_url, json=payload)
+            if alert_response.status_code == 200:
+                print("[INFO] แจ้งเตือน dicord สำเร็จ")
+            else:
+                print(f"[WARN] แจ้งเตือน dicord ล้มเหลว: {alert_response.status_code} - {alert_response.text}")
+
+        except Exception as e:
+            print(f"[ERROR] แจ้งเตือน dicord ล้มเหลว: {e}")
 
     except NoCredentialsError:
         print("[ERROR] AWS credentials not found.")
@@ -258,7 +272,7 @@ def generate_frames(source, user_id, name):
 
 def generate_stream(source, user_id, name):
     key = (user_id, str(source))
-    q = Queue(maxsize=10)
+    q = Queue(maxsize=24)
     stream_queues[key] = q  
     stop_event = Event()
     stop_events[key] = stop_event
