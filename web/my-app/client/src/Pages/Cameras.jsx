@@ -19,8 +19,8 @@ function Cameras() {
         { id: 1, name: "Bedroom", src: "0", isActive: true },
         { id: 2, name: "Kitchen", src: "1", isActive: true },
         { id: 3, name: "Living Room", src: "rtsp://localhost:8554/live", isActive: true },
-        { id: 4, name: "Bathroom", src: null, isActive: true }, 
-        { id: 5, name: "Laundry Room", src: null, isActive: true },
+        { id: 4, name: "Bathroom", src: "2", isActive: true }, 
+        { id: 5, name: "Laundry Room", src: "3", isActive: true },
     ]);   
     
     const toggleActive = (id) => {

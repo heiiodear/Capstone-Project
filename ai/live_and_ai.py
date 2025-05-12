@@ -214,69 +214,86 @@ def generate_frames(source, user_id, name):
     fall_tracking_start = None
     fall_confirmed = False
 
-    fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+    frame_count = 0
+    process_every_n = 2
+
+    future_result = None
+
+    actual_fps = cap.get(cv2.CAP_PROP_FPS)
+    target_fps = actual_fps if actual_fps > 0 else 30
+    frame_interval = 1.0 / target_fps
 
     while True:
+        loop_start_time = time.time()
+
         ret, frame = cap.read()
         if not ret:
             break
 
-        future = executor.submit(process_frame, frame)
-        frame, results = future.result()
-
-        fall_detected_now = False
-        frame_buffer.append(frame.copy())
-
+        frame = cv2.resize(frame, (540, 360))
         frame = auto_brightness(frame)
+        frame_buffer.append(frame.copy())
+        frame_count += 1
 
-        for result in results:
-            boxes = result.boxes
-            keypoints = result.keypoints 
+        if frame_count % process_every_n == 0:
+            future_result = executor.submit(process_frame, frame.copy())
 
-            if boxes is not None:
-                for i, box in enumerate(boxes):
-                    cls = int(box.cls[0].item())
-                    label_name = result.names[cls]
-                    confidence = box.conf[0].item()
-                    x1, y1, x2, y2 = map(int, box.xyxy[0])
-                    color = (0, 255, 0) if label_name != "fall" else (0, 0, 255)
+        if future_result and future_result.done():
+            frame, results = future_result.result()
+            fall_detected_now = False
 
-                    label_text = f"{label_name} {confidence:.2f}"
-                    cv2.rectangle(frame, (x1, y1), (x2, y2), color, 2)
-                    cv2.putText(frame, label_text, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
+            for result in results:
+                boxes = result.boxes
+                keypoints = result.keypoints
 
-                    if keypoints is not None and i < len(keypoints.data):
-                        kpts = keypoints.data[i].cpu().numpy().reshape(-1, 3)
-                        draw_keypoints(frame, [kpts]) 
-                        draw_skeleton(frame, kpts, SKELETON_CONNECTIONS, color) 
+                if boxes is not None:
+                    for i, box in enumerate(boxes):
+                        cls = int(box.cls[0].item())
+                        label_name = result.names[cls]
+                        confidence = box.conf[0].item()
+                        x1, y1, x2, y2 = map(int, box.xyxy[0])
+                        color = (0, 255, 0) if label_name != "fall" else (0, 0, 255)
 
-                    if label_name == "fall":
-                        fall_detected_now = True
+                        label_text = f"{label_name} {confidence:.2f}"
+                        cv2.rectangle(frame, (x1, y1), (x2, y2), color, 2)
+                        cv2.putText(frame, label_text, (x1, y1 - 10),
+                                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
 
-        if fall_detected_now:
-            if fall_tracking_start is None:
-                fall_tracking_start = time.time()
-            elif time.time() - fall_tracking_start >= 3.0 and not fall_confirmed:
-                fall_confirmed = True
-                timestamp = time.strftime("%Y%m%d-%H%M%S")
-                video_filename = f"fall_{user_id}_{timestamp}.mp4"
-                image_filename = f"fall_{user_id}_{timestamp}.jpg"
+                        if keypoints is not None and i < len(keypoints.data):
+                            kpts = keypoints.data[i].cpu().numpy().reshape(-1, 3)
+                            draw_keypoints(frame, [kpts])
+                            draw_skeleton(frame, kpts, SKELETON_CONNECTIONS, color)
 
-                executor.submit(handle_fall_event_async, frame.copy(), list(frame_buffer), user_id, name, video_filename, image_filename, timestamp)
+                        if label_name == "fall":
+                            fall_detected_now = True
 
-        else:
-            fall_tracking_start = None
-            fall_confirmed = False
+            if fall_detected_now:
+                if fall_tracking_start is None:
+                    fall_tracking_start = time.time()
+                elif time.time() - fall_tracking_start >= 3.0 and not fall_confirmed:
+                    fall_confirmed = True
+                    timestamp = time.strftime("%Y%m%d-%H%M%S")
+                    video_filename = f"fall_{user_id}_{timestamp}.mp4"
+                    image_filename = f"fall_{user_id}_{timestamp}.jpg"
+                    executor.submit(handle_fall_event_async, frame.copy(), list(frame_buffer),
+                                    user_id, name, video_filename, image_filename, timestamp)
+            else:
+                fall_tracking_start = None
+                fall_confirmed = False
 
         _, buffer = cv2.imencode('.jpg', frame)
         frame_bytes = buffer.tobytes()
         yield (b'--frame\r\nContent-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n')
 
+        elapsed = time.time() - loop_start_time
+        sleep_time = max(0, frame_interval - elapsed)
+        time.sleep(sleep_time)
+
     cap.release()
 
 def generate_stream(source, user_id, name):
     key = (user_id, str(source))
-    q = Queue(maxsize=24)
+    q = Queue(maxsize=32)
     stream_queues[key] = q  
     stop_event = Event()
     stop_events[key] = stop_event
