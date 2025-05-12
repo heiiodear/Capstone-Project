@@ -58,61 +58,6 @@ user_collection = db["users"]
 EMAIL_SENDER = os.getenv("EMAIL_SENDER")
 EMAIL_PASSWORD = os.getenv("EMAIL_PASSWORD")
 
-def handle_fall_event_async(frame, frame_buffer, user_id, name, video_filename, image_filename, timestamp):
-    try:
-        h, w = frame.shape[:2]
-        video_writer = cv2.VideoWriter(video_filename, cv2.VideoWriter_fourcc(*'mp4v'), 10, (w, h))
-        for buffered_frame in frame_buffer:
-            video_writer.write(buffered_frame)
-        video_writer.write(frame)
-        video_writer.release()
-
-        _, img_encoded = cv2.imencode('.jpg', frame)
-        img_bytes = img_encoded.tobytes()
-
-        s3.upload_fileobj(BytesIO(img_bytes), bucket_name, f"user_{user_id}/{image_filename}")
-        with open(video_filename, 'rb') as video_file:
-            s3.upload_fileobj(video_file, bucket_name, f"user_{user_id}/{video_filename}")
-
-        image_url = f"https://{bucket_name}.s3.{s3.meta.region_name}.amazonaws.com/user_{user_id}/{image_filename}"
-        video_url = f"https://{bucket_name}.s3.{s3.meta.region_name}.amazonaws.com/user_{user_id}/{video_filename}"
-        
-        collection.insert_one({
-            "user_id": user_id,
-            "name": name,
-            "image_url": image_url,
-            "video_url": video_url,
-            "note": "",
-            "timestamp": timestamp,
-            "resolved": True
-        })
-
-        user = user_collection.find_one({"user_id": ObjectId(user_id)})
-        to_email = user["email"]
-        send_email(to_email=to_email, image_url=image_url, video_url=video_url)
-
-        try:
-            alert_api_url = "http://localhost:5000/alert" 
-            payload = {
-                "image_url": image_url,
-                "video_url": video_url,
-                "user_id": user_id
-            }
-
-            alert_response = requests.post(alert_api_url, json=payload)
-            if alert_response.status_code == 200:
-                print("[INFO] แจ้งเตือน dicord สำเร็จ")
-            else:
-                print(f"[WARN] แจ้งเตือน dicord ล้มเหลว: {alert_response.status_code} - {alert_response.text}")
-
-        except Exception as e:
-            print(f"[ERROR] แจ้งเตือน dicord ล้มเหลว: {e}")
-
-    except NoCredentialsError:
-        print("[ERROR] AWS credentials not found.")
-    except Exception as e:
-        print(f"[ERROR] Exception in background task: {e}")
-
 def send_email(to_email, image_url, video_url):
     try:
         msg = EmailMessage()
@@ -142,6 +87,62 @@ def send_email(to_email, image_url, video_url):
 
     except Exception as e:
         print(f"[ERROR] Failed to send email: {e}")
+
+def handle_fall_event_async(frame, frame_buffer, user_id, name, video_filename, image_filename, timestamp):
+    try:
+        h, w = frame.shape[:2]
+        video_writer = cv2.VideoWriter(video_filename, cv2.VideoWriter_fourcc(*'mp4v'), 10, (w, h))
+        for buffered_frame in frame_buffer:
+            video_writer.write(buffered_frame)
+        video_writer.write(frame)
+        video_writer.release()
+
+        _, img_encoded = cv2.imencode('.jpg', frame)
+        img_bytes = img_encoded.tobytes()
+
+        s3.upload_fileobj(BytesIO(img_bytes), bucket_name, f"user_{user_id}/{image_filename}")
+        with open(video_filename, 'rb') as video_file:
+            s3.upload_fileobj(video_file, bucket_name, f"user_{user_id}/{video_filename}")
+
+        image_url = f"https://{bucket_name}.s3.{s3.meta.region_name}.amazonaws.com/user_{user_id}/{image_filename}"
+        video_url = f"https://{bucket_name}.s3.{s3.meta.region_name}.amazonaws.com/user_{user_id}/{video_filename}"
+        
+        collection.insert_one({
+            "user_id": user_id,
+            "name": name,
+            "image_url": image_url,
+            "video_url": video_url,
+            "note": "",
+            "timestamp": timestamp,
+            "resolved": True
+        })
+
+        user = user_collection.find_one({"_id": ObjectId(user_id)})
+        to_email = user["email"]
+
+        send_email(to_email=to_email, image_url=image_url, video_url=video_url)
+
+        try:
+            alert_api_url = "http://localhost:5000/alert" 
+            payload = {
+                "image_url": image_url,
+                "video_url": video_url,
+                "user_id": user_id
+            }
+
+            alert_response = requests.post(alert_api_url, json=payload)
+            if alert_response.status_code == 200:
+                print("[INFO] แจ้งเตือน dicord สำเร็จ")
+            else:
+                print(f"[WARN] แจ้งเตือน dicord ล้มเหลว: {alert_response.status_code} - {alert_response.text}")
+
+        except Exception as e:
+            print(f"[ERROR] แจ้งเตือน dicord ล้มเหลว: {e}")
+
+    except NoCredentialsError:
+        print("[ERROR] AWS credentials not found.")
+    except Exception as e:
+        print(f"[ERROR] Exception in background task: {e}")
 
 def auto_brightness(frame, target_brightness=100):
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -226,7 +227,7 @@ def generate_frames(source, user_id, name):
         fall_detected_now = False
         frame_buffer.append(frame.copy())
 
-        # frame = auto_brightness(frame)
+        frame = auto_brightness(frame)
 
         for result in results:
             boxes = result.boxes
