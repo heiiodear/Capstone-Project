@@ -89,7 +89,7 @@ function Header() {
                         <FontAwesomeIcon icon="fa-solid fa-bell" style={{ color: "#ffffff" }} />
                     </Link>
                     <Link to="/profile">
-                        <div className="relative w-8 h-8 border border-white rounded-full overflow-hidden">
+                        <div className="relative w-8 h-8 rounded-full overflow-hidden">
                             <img
                                 src={profileImage}
                                 alt="Profile"
