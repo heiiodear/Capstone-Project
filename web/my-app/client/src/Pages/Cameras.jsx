@@ -7,7 +7,7 @@ import EditModal from "./../components/EditModal";
 function Cameras() {
     const [layout, setLayout] = useState("grid");
     const [selectedCamera, setSelectedCamera] = useState(0);
-    const user_id = 1111111111111
+    const user_id = "681df7bffa6d23f0cc888ec0"
 
     const [rooms, setRooms] = useState([
         { id: 1, name: "Bedroom", src: "0", isActive: true },

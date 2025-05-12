@@ -36,7 +36,7 @@ stop_events = {}
 
 # โหลดโมเดล YOLO
 current_file = Path(__file__).resolve()
-model_path = current_file.parent / "model_11n-new.pt"
+model_path = current_file.parent / "model.pt"
 model = YOLO(model_path)
 
 # ตั้งค่า AWS S3
@@ -50,10 +50,9 @@ bucket_name = os.getenv("AWS_BUCKET_NAME")
 
 # ตั้งค่า MongoDB
 client = MongoClient(os.getenv("MONGODB_URI"))
-db = "Capstone"
-collection = "fall"
-db_fetch = client["Capstone"]
-user_collection = db_fetch["users"]
+db = client["Capstone"]
+collection = db["fall"]
+user_collection = db["users"]
 
 # Email sender
 EMAIL_SENDER = os.getenv("EMAIL_SENDER")
@@ -77,14 +76,15 @@ def handle_fall_event_async(frame, frame_buffer, user_id, name, video_filename, 
 
         image_url = f"https://{bucket_name}.s3.{s3.meta.region_name}.amazonaws.com/user_{user_id}/{image_filename}"
         video_url = f"https://{bucket_name}.s3.{s3.meta.region_name}.amazonaws.com/user_{user_id}/{video_filename}"
-
+        
         collection.insert_one({
             "user_id": user_id,
             "name": name,
             "image_url": image_url,
             "video_url": video_url,
             "note": "",
-            "timestamp": timestamp
+            "timestamp": timestamp,
+            "resolved": True
         })
 
         user = user_collection.find_one({"user_id": ObjectId(user_id)})
@@ -95,7 +95,8 @@ def handle_fall_event_async(frame, frame_buffer, user_id, name, video_filename, 
             alert_api_url = "http://localhost:5000/alert" 
             payload = {
                 "image_url": image_url,
-                "video_url": video_url
+                "video_url": video_url,
+                "user_id": user_id
             }
 
             alert_response = requests.post(alert_api_url, json=payload)
@@ -224,6 +225,8 @@ def generate_frames(source, user_id, name):
 
         fall_detected_now = False
         frame_buffer.append(frame.copy())
+
+        # frame = auto_brightness(frame)
 
         for result in results:
             boxes = result.boxes
