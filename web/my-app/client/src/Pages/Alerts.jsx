@@ -3,6 +3,7 @@ import Header from "./../components/Header";
 import AlertModal from "./../components/AlertModal";
 import { formatDate } from "../utils/formatDate";
 import axios from "axios";
+import ReactPlayer from 'react-player';
 
 
 function Alerts() {
@@ -45,6 +46,7 @@ function Alerts() {
   return (
     <div className="min-h-screen bg-white">
       <Header />
+      
 
       <div className="container mx-auto py-6 px-4">
         <h1 className="text-3xl font-bold text-indigo-900 mb-6 mt-0.75">Alert Center</h1>
@@ -106,7 +108,7 @@ function Alerts() {
               <div className="flex justify-between items-start gap-4">
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
-                    <h2 className="font-semibold text-xl">
+                    <h2 className="font-semibold text-xl text-indigo-900">
                       {alert.roomName || alert.user_id}
                     </h2>
                     <span
