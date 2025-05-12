@@ -1,6 +1,13 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaBars } from "react-icons/fa";
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { fas } from '@fortawesome/free-solid-svg-icons'; 
+import { fab } from '@fortawesome/free-brands-svg-icons'; 
+import { far } from '@fortawesome/free-regular-svg-icons';
+import ReactDOM from 'react-dom'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+library.add(fas, fab, far);
 
 function Header() {
     const navigate = useNavigate();
@@ -27,18 +34,15 @@ function Header() {
                     <Link to="/dashboard" className="hover:underline">Dashboard</Link>
                     <Link to="/alerts" className="hover:underline">Alerts</Link>
                     <Link to="/cameras" className="hover:underline">Cameras</Link>
-                    <Link to="/settings" className="hover:underline">Settings</Link>
+                    <Link to="/contactus" className="hover:underline">Contact Us</Link>
                 </nav>
 
                 <div className="flex items-center gap-4 relative">
-                    {/* <Link to="/alerts" className="relative">
-                        <FaBell className="w-5 h-5" />
-                        <span className="absolute -top-1 -right-2 bg-red-500 text-xs text-white rounded-full px-1.5 py-0.5">
-                        </span>
-                    </Link> */}
+                    <Link to="/alerts" className="relative text-xl">
+                        <FontAwesomeIcon icon="fa-solid fa-bell" style={{ color: "#ffffff" }} />
+                    </Link>
                     <Link to="/profile">
-                        {/* <FaUser className="w-5 h-5"/> */}
-                        <div className="relative w-8 h-8 rounded-full overflow-hidden">
+                        <div className="relative w-8 h-8 border border-white rounded-full overflow-hidden">
                             <img
                             src="https://i.pinimg.com/originals/a8/44/c8/a844c8bcff2ad5328aa25f12637fb1ca.jpg"
                             alt="Profile"
