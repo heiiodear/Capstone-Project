@@ -114,7 +114,7 @@ def handle_fall_event_async(frame, frame_buffer, user_id, name, video_filename, 
             "video_url": video_url,
             "note": "",
             "timestamp": timestamp,
-            "resolved": True
+            "resolved": False
         })
 
         user = user_collection.find_one({"_id": ObjectId(user_id)})
