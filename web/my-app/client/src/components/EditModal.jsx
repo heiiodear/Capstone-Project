@@ -42,7 +42,7 @@ const EditModal = ({ type, formData, onChange, onCancel, onSave }) => {
             <div className="flex justify-end space-x-2 pt-2">
             <button
                 onClick={onCancel}
-                className="px-4 py-2 text-sm rounded-md border bg-gray-100 hover:bg-gray-200"
+                className="px-4 py-2 text-sm rounded-md bg-gray-100 hover:bg-gray-200"
             >
                 Cancel
             </button>

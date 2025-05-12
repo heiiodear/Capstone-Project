@@ -6,13 +6,14 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const AlertModel = require("./models/alert");
 const axios = require("axios");
+const FormData = require('form-data');
 
 const app = express();
 app.use(express.json());
 app.use(cors({
     origin: 'http://localhost:5173',
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'], 
-    allowedHeaders: ['Content-Type'] 
+    methods: ['GET', 'POST', 'PUT', 'DELETE','PATCH'], 
+    allowedHeaders: ['Content-Type', 'Authorization']
   }));
   
 mongoose.connect("mongodb+srv://amytr1234:ueV0LjDO8mK9NQR5@capstoneproject.tekjtkq.mongodb.net/Capstone", {
@@ -26,7 +27,7 @@ mongoose.connect("mongodb+srv://amytr1234:ueV0LjDO8mK9NQR5@capstoneproject.tekjt
   });
 
 app.post("/register", async (req, res) => {
-  const { username, tel, discord, email, password } = req.body;
+  const { username, tel, discord, email, password, address } = req.body;
 
   try {
     const existingUsername = await UserModel.findOne({ username });
@@ -39,7 +40,7 @@ app.post("/register", async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = new UserModel({ username, tel, discord, email, password: hashedPassword });
+    const newUser = new UserModel({ username, tel, discord, email, password: hashedPassword, address });
 
     await newUser.save();
 
@@ -76,40 +77,48 @@ app.post("/login", async (req, res) => {
     }
   });
 
-// Update Alert
 app.post("/alert", async (req, res) => {
     const { user_id, image_url, video_url } = req.body;
-  
+
     if (!user_id || !image_url || !video_url) {
       return res.status(400).json({ error: "Missing required fields." });
     }
-  
+
     try {
-      const user = await UserModel.findOne({ user_id: user_id });
-  
+      const user = await UserModel.findById(user_id);
       if (!user || !user.discord) {
         return res.status(404).json({ error: "User or webhook not found." });
       }
-  
+
       const webhookURL = user.discord;
-  
-      await axios.post(webhookURL, {
-        content: "🚨 **พบเหตุการณ์ล้ม!**",
+      const videoStream = await axios.get(video_url, { responseType: "stream" });
+      const form = new FormData();
+
+      form.append("payload_json", JSON.stringify({
+        content: "🚨 พบเหตุการณ์ล้ม!",
         embeds: [
           {
-            title: "🎥 ดูคลิป",
-            description: `[คลิกที่นี่เพื่อดูวิดีโอ](${video_url})`,
-            image: { url: image_url },
+            title: "โปรดดำเนินการตรวจสอบสถานการณ์โดยด่วน",
+            image: { url: image_url }, 
             color: 15158332
           }
         ]
+      }));
+
+      form.append("file", videoStream.data, {
+        filename: "fall_video.mp4",
+        contentType: "video/mp4"
       });
-  
+
+      await axios.post(webhookURL, form, {
+        headers: form.getHeaders()
+      });
+
       console.log("✅ แจ้งเตือนสำเร็จ:", user.username || user_id);
       res.status(200).json({ message: "แจ้งเตือนสำเร็จ" });
-  
+
     } catch (error) {
-      console.error("❌ แจ้งเตือนล้มเหลว:", error);
+      console.error("❌ แจ้งเตือนล้มเหลว:", error.message);
       res.status(500).json({ error: "แจ้งเตือนล้มเหลว" });
     }
 });
@@ -123,6 +132,111 @@ app.get("/alerts", async (req, res) => {
       res.status(500).json({ error: "Failed to fetch alerts" });
     }
 });
+
+app.get("/profile", async (req, res) => {
+    try {
+        const token = req.headers.authorization.split(" ")[1]; 
+        if (!token) return res.status(401).json({ error: "Unauthorized" });
+
+        const decoded = jwt.verify(token, "your-secret-key"); 
+        const user = await UserModel.findById(decoded.id); 
+
+        if (!user) return res.status(404).json({ error: "User not found" });
+
+        const { password, ...userData } = user.toObject();
+        res.status(200).json(userData);
+    } catch (error) {
+        console.error("Error fetching user data:", error);
+        res.status(500).json({ error: "Failed to fetch user data" });
+    }
+});
+
+app.put("/profile/image", async (req, res) => {
+  try {
+    const token = req.headers.authorization.split(" ")[1];
+    if (!token) return res.status(401).json({ error: "Unauthorized" });
+
+    const decoded = jwt.verify(token, "your-secret-key");
+    const userId = decoded.id;
+
+    const { profileImage } = req.body;
+    if (!profileImage) {
+      return res.status(400).json({ error: "No image URL provided" });
+    }
+
+    const updatedUser = await UserModel.findByIdAndUpdate(
+      userId,
+      { profileImage },
+      { new: true }
+    );
+
+    if (!updatedUser) return res.status(404).json({ error: "User not found" });
+
+    const { password, ...userData } = updatedUser.toObject();
+    res.status(200).json(userData);
+  } catch (error) {
+    console.error("Error updating profile image:", error);
+    res.status(500).json({ error: "Failed to update profile image" });
+  }
+});
+
+app.put("/profile", async (req, res) => {
+  try {
+    const token = req.headers.authorization.split(" ")[1]; 
+    if (!token) return res.status(401).json({ error: "Unauthorized" });
+
+    const decoded = jwt.verify(token, "your-secret-key"); 
+    const userId = decoded.id;
+
+    const { username, email, discord, tel, address, profileImage } = req.body;
+
+    const updates = {};
+
+    
+    if (username) updates.username = username;
+    if (email) updates.email = email;
+    if (discord) updates.discord = discord;
+    if (tel) updates.tel = tel;
+    if (address) updates.address = address;
+    if (profileImage) updates.profileImage = profileImage;
+
+ 
+    const updatedUser = await UserModel.findByIdAndUpdate(
+      userId,
+      { $set: updates },  
+      { new: true }
+    );
+
+    if (!updatedUser) return res.status(404).json({ error: "User not found" });
+
+    const { password: _, ...userData } = updatedUser.toObject();
+    res.status(200).json(userData);
+
+  } catch (error) {
+    console.error("Error updating user data:", error);
+    res.status(500).json({ error: "Failed to update user data" });
+  }
+});
+
+app.delete("/profile", async (req, res) => {
+  try {
+    const token = req.headers.authorization?.split(" ")[1];
+    if (!token) return res.status(401).json({ error: "Unauthorized" });
+
+    const decoded = jwt.verify(token, "your-secret-key");
+    const userId = decoded.id;
+
+    const deletedUser = await UserModel.findByIdAndDelete(userId);
+
+    if (!deletedUser) return res.status(404).json({ error: "User not found" });
+
+    res.status(200).json({ message: "User deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting user:", error);
+    res.status(500).json({ error: "Failed to delete user" });
+  }
+});
+
 
 app.patch("/alerts/:id", async (req, res) => {
   try {
