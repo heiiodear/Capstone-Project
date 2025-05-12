@@ -1,10 +1,12 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom"; // Add useLocation here
 import axios from "axios";
 
-function ForgotPassword() {
+function VerifyCode() {
     const navigate = useNavigate();
-    
+    const location = useLocation(); // Get location to access state
+    const email = location.state?.email; // This is the email passed from the ForgotPassword page
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         navigate("/resetpassword");
@@ -14,20 +16,21 @@ function ForgotPassword() {
         <div className="min-h-screen bg-indigo-100 flex justify-center items-center p-4">
             <div className="w-full max-w-md bg-white border border-gray-200 shadow-md rounded-lg p-6 animate-fade-in">
                 <div className="text-center mb-6">
-                <div className="text-center text-2xl font-bold text-indigo-900">Projectname</div>
-                <div className="text-center text-2xl font-bold text-indigo-900">Verify Code</div>
-                <p className="text-sm text-gray-600">Enter the 6-digit code sent to your email</p>
+                    <div className="text-center text-2xl font-bold text-indigo-900">Projectname</div>
+                    <div className="text-center text-2xl font-bold text-indigo-900">Verify Code</div>
+                    <p className="text-sm text-gray-600">Enter the 6-digit code sent to your email</p>
+                    <p className="text-sm text-gray-600">Verification code sent to: {email}</p> {/* Show the email */}
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
                         <input
-                        type="text"
-                        inputMode="numeric"
-                        maxLength={6}
-                        className="w-full text-center text-lg tracking-widest border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        placeholder="------"
-                        required
+                            type="text"
+                            inputMode="numeric"
+                            maxLength={6}
+                            className="w-full text-center text-lg tracking-widest border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            placeholder="------"
+                            required
                         />
                     </div>
 
@@ -56,4 +59,4 @@ function ForgotPassword() {
     );
 }
 
-export default ForgotPassword;
+export default VerifyCode;
