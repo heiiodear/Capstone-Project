@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 
 function ResetPassword() {
@@ -8,37 +8,46 @@ function ResetPassword() {
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
+    const [liveMismatch, setLiveMismatch] = useState(false);
 
     const navigate = useNavigate();
-        
-    const handleSubmit = async (e) => {
-    e.preventDefault();
-    setErrorMessage("");
+    const location = useLocation();
 
-    if (password !== confirmPassword) {
-        setErrorMessage("Passwords do not match.");
-        return;
-    }
-
-    try {
-        const email = location.state?.email;
-
-        const response = await axios.post("http://localhost:5000/api/reset-password", {
-            email,
-            newPassword: password,
-        });
-
-        if (response.status === 200) {
-            navigate("/login");
+    // 🔁 Live password matching check
+    useEffect(() => {
+        if (confirmPassword.length > 0) {
+            setLiveMismatch(password !== confirmPassword);
         } else {
-            setErrorMessage("Failed to reset password. Try again.");
+            setLiveMismatch(false);
         }
-    } catch (error) {
-        console.error(error);
-        setErrorMessage("An error occurred while resetting password.");
-    }
-};
+    }, [password, confirmPassword]);
 
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setErrorMessage("");
+
+        if (password !== confirmPassword) {
+            setErrorMessage("Passwords do not match.");
+            return;
+        }
+
+        try {
+            const email = location.state?.email;
+            const response = await axios.post("http://localhost:5000/api/reset-password", {
+                email,
+                newPassword: password,
+            });
+
+            if (response.status === 200) {
+                navigate("/login");
+            } else {
+                setErrorMessage("Failed to reset password. Try again.");
+            }
+        } catch (error) {
+            console.error(error);
+            setErrorMessage("An error occurred while resetting password.");
+        }
+    };
 
     return (
         <div className="min-h-screen bg-indigo-100 flex justify-center items-center p-4">
@@ -50,7 +59,6 @@ function ResetPassword() {
                     {errorMessage && (
                         <p className="text-red-600 text-sm text-center">{errorMessage}</p>
                     )}
-
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-4">
@@ -85,7 +93,7 @@ function ResetPassword() {
                                 required
                                 value={confirmPassword}
                                 onChange={(e) => setConfirmPassword(e.target.value)}
-                                className="w-full border border-gray-300 rounded-lg px-3 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="w-full border border-blue-300 rounded-lg px-3 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500"
                             />
                             <button
                                 type="button"
@@ -94,11 +102,15 @@ function ResetPassword() {
                                 {showConfirmPassword ? "Hide" : "Show"}
                             </button>
                         </div>
+                        {liveMismatch && (
+                            <p className="text-red-600 text-sm mt-1">Passwords do not match</p>
+                        )}
                     </div>
 
                     <button
                         type="submit"
-                        className="w-full bg-blue-900 text-white py-2 rounded-lg hover:bg-blue-700 transition flex items-center justify-center gap-2">
+                        className="w-full bg-blue-900 text-white py-2 rounded-lg hover:bg-blue-700 transition flex items-center justify-center gap-2"
+                        disabled={liveMismatch}>
                         Reset Password
                     </button>
                 </form>
