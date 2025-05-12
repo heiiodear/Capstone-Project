@@ -290,7 +290,11 @@ app.post("/api/send-verification-code", async (req, res) => {
     if (!email) {
         return res.status(400).send({ message: "Email is required" });
     }
-
+    
+    const user = await UserModel.findOne({ email });
+    if (!user) {
+        return res.status(404).send({ message: "Email not found" });
+    }
     
     const verificationCode = Math.floor(100000 + Math.random() * 900000);
 
@@ -323,6 +327,24 @@ app.post("/api/send-verification-code", async (req, res) => {
         res.status(500).send({ message: "Failed to send verification code" });
     }
 });
+
+app.post("/api/reset-password", async (req, res) => {
+    const { email, newPassword } = req.body;
+
+    if (!email || !newPassword) {
+        return res.status(400).send({ message: "Email and new password are required" });
+    }
+
+    try {
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        await UserModel.findOneAndUpdate({ email }, { password: hashedPassword });
+        res.status(200).send({ message: "Password updated successfully" });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({ message: "Error updating password" });
+    }
+});
+
 
 app.listen(5000, () => {
   console.log("server is running");

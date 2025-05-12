@@ -20,7 +20,11 @@ function ForgotPassword() {
                 navigate("/verifycode", { state: { email, code: response.data.code } });
             }
         } catch (err) {
-            setError("Failed to send verification code. Please try again.");
+            if (err.response && err.response.status === 404) {
+                setError("This email is not registered.");
+            } else {
+                setError("Failed to send verification code. Please try again.");
+            }
         } finally {
             setIsLoading(false);
         }

@@ -5,12 +5,40 @@ import axios from "axios";
 function ResetPassword() {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const [password, setPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
+    const [errorMessage, setErrorMessage] = useState("");
+
     const navigate = useNavigate();
         
     const handleSubmit = async (e) => {
-        e.preventDefault();
-        navigate("/login");
-    };
+    e.preventDefault();
+    setErrorMessage("");
+
+    if (password !== confirmPassword) {
+        setErrorMessage("Passwords do not match.");
+        return;
+    }
+
+    try {
+        const email = location.state?.email;
+
+        const response = await axios.post("http://localhost:5000/api/reset-password", {
+            email,
+            newPassword: password,
+        });
+
+        if (response.status === 200) {
+            navigate("/login");
+        } else {
+            setErrorMessage("Failed to reset password. Try again.");
+        }
+    } catch (error) {
+        console.error(error);
+        setErrorMessage("An error occurred while resetting password.");
+    }
+};
+
 
     return (
         <div className="min-h-screen bg-indigo-100 flex justify-center items-center p-4">
@@ -19,6 +47,10 @@ function ResetPassword() {
                     <div className="text-center text-2xl font-bold text-indigo-900">Projectname</div>
                     <div className="text-center text-2xl font-bold text-indigo-900">Reset Password</div>
                     <p className="text-sm text-gray-600">Create your new password</p>
+                    {errorMessage && (
+                        <p className="text-red-600 text-sm text-center">{errorMessage}</p>
+                    )}
+
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-4">
@@ -30,6 +62,8 @@ function ResetPassword() {
                                 type={showPassword ? "text" : "password"}
                                 placeholder="••••••••"
                                 required
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
                                 className="w-full border border-gray-300 rounded-lg px-3 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500"
                             />
                             <button
@@ -49,6 +83,8 @@ function ResetPassword() {
                                 type={showConfirmPassword ? "text" : "password"}
                                 placeholder="••••••••"
                                 required
+                                value={confirmPassword}
+                                onChange={(e) => setConfirmPassword(e.target.value)}
                                 className="w-full border border-gray-300 rounded-lg px-3 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500"
                             />
                             <button
@@ -66,13 +102,6 @@ function ResetPassword() {
                         Reset Password
                     </button>
                 </form>
-
-                <div className="text-center text-sm text-gray-600 mt-6">
-                    Remember your password?{" "}
-                    <Link to="/login" className="text-blue-700 font-medium hover:underline">
-                        Back to login
-                    </Link>
-                </div>
             </div>
         </div>
     );
