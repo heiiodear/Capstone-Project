@@ -48,7 +48,7 @@ const EditModal = ({ type, formData, onChange, onCancel, onSave }) => {
             </button>
             <button
                 onClick={onSave}
-                className="px-4 py-2 text-sm rounded-md bg-indigo-700 text-white hover:bg-indigo-900"
+                className="px-4 py-2 text-sm rounded-md bg-indigo-900 text-white hover:bg-indigo-800"
             >
                 Save
             </button>

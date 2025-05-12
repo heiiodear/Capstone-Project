@@ -106,7 +106,7 @@ function Alerts() {
               <div className="flex justify-between items-start gap-4">
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
-                    <h2 className="font-semibold text-xl">
+                    <h2 className="font-semibold text-xl text-indigo-900">
                       {alert.roomName || alert.user_id}
                     </h2>
                     <span

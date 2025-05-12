@@ -161,7 +161,7 @@ function Profile() {
             {/* Personal Info */}
             <div className="w-full max-w-xl mx-auto mt-8 bg-white rounded-xl shadow-lg border-2 border-gray-200 p-6 space-y-4">
                 <div className="flex justify-between items-center">
-                <h2 className="text-lg font-semibold text-left cursor-default">Personal Information</h2>
+                <h2 className="text-lg text-indigo-900 font-semibold text-left cursor-default">Personal Information</h2>
                 <button
                     onClick={() => openModal("personal")}
                     className="text-sm text-indigo-600 hover:underline font-semibold cursor-pointer">
@@ -187,7 +187,7 @@ function Profile() {
             {/* Address Info */}
             <div className="max-w-xl mx-auto mt-6 bg-white rounded-xl shadow-lg border border-gray-200 p-6 space-y-4">
                 <div className="flex justify-between items-center">
-                <h2 className="text-lg font-semibold text-left cursor-default">Address</h2>
+                <h2 className="text-lg text-indigo-900 font-semibold text-left cursor-default">Address</h2>
                 <button
                     onClick={() => openModal("address")}
                     className="text-sm text-indigo-600 hover:underline font-semibold cursor-pointer">
@@ -203,7 +203,7 @@ function Profile() {
                 ].map((field) => (
                 <div key={field.label} className="flex justify-between items-center border-b pb-2">
                     <div>
-                    <div className="text-xs text-gray-500 pb-1">{field.label}</div>
+                    <div className="text-xs text-gray-500 pb-1.5">{field.label}</div>
                     <div className="text-sm font-medium">{field.value}</div>
                     </div>
                 </div>
