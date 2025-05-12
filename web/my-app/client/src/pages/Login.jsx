@@ -47,9 +47,9 @@ function Login() {
     </style>
     <div className="min-h-screen flex justify-center items-center p-4 bg-indigo-100">
       <div className="w-full max-w-md bg-white rounded-lg shadow-md p-6 space-y-4">
-        <div className="text-center text-2xl font-bold text-indigo-900">Projectname</div>
-        <div className="text-center text-2xl font-bold text-indigo-900">Welcome back</div>
-        <p className="text-center text-gray-500 text-sm">Please sign in to access your account</p>
+        <div className="text-center text-2xl font-bold text-indigo-900 cursor-default">Projectname</div>
+        <div className="text-center text-2xl font-bold text-indigo-900 cursor-default">Welcome back</div>
+        <p className="text-center text-gray-500 text-sm cursor-default">Please sign in to access your account</p>
         {message && <div className="text-center text-red-600 text-sm">{message}</div>}
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -79,7 +79,7 @@ function Login() {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute top-1/2 right-3 transform -translate-y-1/2 text-sm text-gray-500"
+                className="absolute top-1/2 right-3 transform -translate-y-1/2 text-sm text-gray-500 cursor-pointer"
               >
                 {showPassword ? <FontAwesomeIcon icon="fa-regular fa-eye-slash" style={{color: "#6B7280",}} /> : <FontAwesomeIcon icon="fa-regular fa-eye" style={{color: "#6B7280",}} />}
               </button>
@@ -94,13 +94,13 @@ function Login() {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-indigo-900 text-white py-2 rounded-lg transition"
+            className="w-full bg-blue-900 text-white py-2 rounded-lg hover:bg-blue-700 transition flex justify-center items-center gap-2 cursor-pointer"
           >
             {isLoading ? "Logging in..." : "Sign in"}
           </button>
         </form>
 
-        <div className="text-center text-sm">
+        <div className="text-center text-sm cursor-default">
           Don't have an account?{" "}
           <Link to="/register" className="text-indigo-500 font-medium hover:underline">
             Sign up

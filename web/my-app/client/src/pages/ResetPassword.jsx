@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEye, faEyeSlash } from '@fortawesome/free-regular-svg-icons';
 
 function ResetPassword() {
     const [showPassword, setShowPassword] = useState(false);
@@ -13,7 +15,6 @@ function ResetPassword() {
     const navigate = useNavigate();
     const location = useLocation();
 
-    // 🔁 Live password matching check
     useEffect(() => {
         if (confirmPassword.length > 0) {
             setLiveMismatch(password !== confirmPassword);
@@ -53,9 +54,9 @@ function ResetPassword() {
         <div className="min-h-screen bg-indigo-100 flex justify-center items-center p-4">
             <div className="w-full max-w-md bg-white border border-gray-200 shadow-md rounded-lg p-6 animate-fade-in">
                 <div className="text-center mb-6">
-                    <div className="text-center text-2xl font-bold text-indigo-900">Projectname</div>
-                    <div className="text-center text-2xl font-bold text-indigo-900">Reset Password</div>
-                    <p className="text-sm text-gray-600">Create your new password</p>
+                    <div className="text-center text-2xl font-bold text-indigo-900 cursor-default">Projectname</div>
+                    <div className="text-center text-2xl font-bold text-indigo-900 cursor-default">Reset Password</div>
+                    <p className="text-sm text-gray-600 cursor-default">Create your new password</p>
                     {errorMessage && (
                         <p className="text-red-600 text-sm text-center">{errorMessage}</p>
                     )}
@@ -77,8 +78,8 @@ function ResetPassword() {
                             <button
                                 type="button"
                                 onClick={() => setShowPassword(!showPassword)}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-blue-700">
-                                {showPassword ? "Hide" : "Show"}
+                                className="absolute top-1/2 right-3 transform -translate-y-1/2 text-sm text-gray-500 cursor-pointer">
+                                 <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} style={{ color: "#6B7280" }} />
                             </button>
                         </div>
                     </div>
@@ -98,8 +99,8 @@ function ResetPassword() {
                             <button
                                 type="button"
                                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-blue-700">
-                                {showConfirmPassword ? "Hide" : "Show"}
+                                className="absolute top-1/2 right-3 transform -translate-y-1/2 text-sm text-gray-500 cursor-pointer">
+                                <FontAwesomeIcon icon={showConfirmPassword ? faEyeSlash : faEye} style={{ color: "#6B7280" }} />
                             </button>
                         </div>
                         {liveMismatch && (
@@ -109,7 +110,7 @@ function ResetPassword() {
 
                     <button
                         type="submit"
-                        className="w-full bg-blue-900 text-white py-2 rounded-lg hover:bg-blue-700 transition flex items-center justify-center gap-2"
+                        className="w-full bg-blue-900 text-white py-2 rounded-lg hover:bg-blue-700 transition flex items-center justify-center gap-2 cursor-pointer"
                         disabled={liveMismatch}>
                         Reset Password
                     </button>
