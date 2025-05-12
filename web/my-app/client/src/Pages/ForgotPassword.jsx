@@ -17,7 +17,7 @@ function ForgotPassword() {
             const response = await axios.post("http://localhost:5000/api/send-verification-code", { email });
 
             if (response.status === 200) {
-                navigate("/verifycode", { state: { email } });
+                navigate("/verifycode", { state: { email, code: response.data.code } });
             }
         } catch (err) {
             setError("Failed to send verification code. Please try again.");

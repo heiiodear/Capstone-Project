@@ -1,16 +1,27 @@
 import React, { useState } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom"; // Add useLocation here
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 
 function VerifyCode() {
+    const [userCode, setUserCode] = useState("");
     const navigate = useNavigate();
-    const location = useLocation(); // Get location to access state
-    const email = location.state?.email; // This is the email passed from the ForgotPassword page
+    const location = useLocation(); 
+    const email = location.state?.email; 
+    const expectedCode = location.state?.code;
+    const [errorMessage, setErrorMessage] = useState("");
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        navigate("/resetpassword");
-    };
+
+    const handleSubmit = (e) => {
+    e.preventDefault();
+    setErrorMessage("");
+
+    if (userCode === expectedCode.toString()) {
+        navigate("/resetpassword", { state: { email } });
+    } else {
+        setErrorMessage("Incorrect. Please try again.");
+    }
+};
+
 
     return (
         <div className="min-h-screen bg-indigo-100 flex justify-center items-center p-4">
@@ -20,6 +31,10 @@ function VerifyCode() {
                     <div className="text-center text-2xl font-bold text-indigo-900">Verify Code</div>
                     <p className="text-sm text-gray-600">Enter the 6-digit code sent to your email</p>
                     <p className="text-sm text-gray-600">Verification code sent to: {email}</p> {/* Show the email */}
+                    {errorMessage && (
+                        <p className="text-red-600 text-sm text-center">{errorMessage}</p>
+                    )}
+
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-4">
@@ -28,10 +43,12 @@ function VerifyCode() {
                             type="text"
                             inputMode="numeric"
                             maxLength={6}
+                            value={userCode}
+                            onChange={(e) => setUserCode(e.target.value)}
                             className="w-full text-center text-lg tracking-widest border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                             placeholder="------"
                             required
-                        />
+                            />
                     </div>
 
                     <button 
