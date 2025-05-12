@@ -159,7 +159,7 @@ function Profile() {
             </div>
 
             {/* Personal Info */}
-            <div className="w-full max-w-xl mx-auto mt-8 bg-white rounded-xl shadow-lg border-2 border-gray-200 p-6 space-y-4">
+            <div className="w-full max-w-xl mx-auto mt-8 bg-white rounded-lg shadow-lg border-2 border-gray-200 p-6 space-y-4">
                 <div className="flex justify-between items-center">
                 <h2 className="text-lg text-indigo-900 font-semibold text-left cursor-default">Personal Information</h2>
                 <button
@@ -185,7 +185,7 @@ function Profile() {
             </div>
 
             {/* Address Info */}
-            <div className="max-w-xl mx-auto mt-6 bg-white rounded-xl shadow-lg border border-gray-200 p-6 space-y-4">
+            <div className="max-w-xl mx-auto mt-6 bg-white rounded-lg shadow-lg border border-gray-200 p-6 space-y-4">
                 <div className="flex justify-between items-center">
                 <h2 className="text-lg text-indigo-900 font-semibold text-left cursor-default">Address</h2>
                 <button
@@ -229,7 +229,7 @@ function Profile() {
             <div className="flex flex-col items-center mt-8 space-y-2">
             <label
             htmlFor="profileImageInput"
-            className="inline-block cursor-pointer px-4 py-2 text-sm font-medium text-white bg-indigo-500 rounded-xl hover:bg-indigo-600 transition duration-150"
+            className="inline-block cursor-pointer px-4 py-2 text-sm font-medium text-white bg-indigo-500 rounded-lg hover:bg-indigo-600 transition duration-150"
             >
             Choose File
             </label>
@@ -259,14 +259,14 @@ function Profile() {
 
       <div className="flex justify-end space-x-2 pt-4">
         <button
-          className="px-4 py-2 text-sm bg-gray-100 rounded-md hover:bg-gray-200"
+          className="px-4 py-2 text-sm bg-gray-100 rounded-lg hover:bg-gray-200"
           onClick={() => setIsImageEditing(false)}
         >
           Cancel
         </button>
 
         <button
-        className="px-4 py-2 text-sm bg-indigo-700 text-white rounded-md hover:bg-indigo-900"
+        className="px-4 py-2 text-sm bg-indigo-700 text-white rounded-lg hover:bg-indigo-900"
         onClick={async () => {
             try {
             const token = localStorage.getItem("authToken");
@@ -306,7 +306,7 @@ function Profile() {
                 <button
                     type="button"
                     onClick={handleDeleteClick}
-                    className="w-full bg-red-600 hover:bg-red-700 text-white text-md py-2 font-semibold rounded-md cursor-pointer">
+                    className="w-full bg-red-600 hover:bg-red-700 text-white text-md py-2 font-semibold rounded-lg cursor-pointer">
                     Delete Account
                 </button>
             </div>

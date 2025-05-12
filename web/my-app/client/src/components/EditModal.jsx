@@ -38,7 +38,7 @@ const EditModal = ({ type, formData, onChange, onCancel, onSave }) => {
 
     return (
         <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
-        <div className="bg-white p-6 rounded-xl shadow-lg w-full max-w-md space-y-4">
+        <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md space-y-4">
             <h2 className="text-lg font-semibold text-indigo-900 cursor-default">{getTitle()}</h2>
 
             {fields.map((field) => (
@@ -49,7 +49,7 @@ const EditModal = ({ type, formData, onChange, onCancel, onSave }) => {
                 name={field.name}
                 value={formData[field.name] || ""}
                 onChange={onChange}
-                className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
                 />
             </div>
             ))}
@@ -58,13 +58,13 @@ const EditModal = ({ type, formData, onChange, onCancel, onSave }) => {
             <div className="flex justify-end space-x-2 pt-2">
             <button
                 onClick={onCancel}
-                className="px-4 py-2 text-sm rounded-md bg-gray-100 hover:bg-gray-200 cursor-pointer"
+                className="px-4 py-2 text-sm rounded-lg bg-gray-100 hover:bg-gray-200 cursor-pointer"
             >
                 Cancel
             </button>
             <button
                 onClick={onSave}
-                className="px-4 py-2 text-sm rounded-md bg-indigo-900 text-white hover:bg-indigo-800 cursor-pointer"
+                className="px-4 py-2 text-sm rounded-lg bg-indigo-900 text-white hover:bg-indigo-800 cursor-pointer"
             >
                 Save
             </button>

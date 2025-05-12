@@ -1,9 +1,16 @@
 import React, { useEffect, useState } from "react";
 import Header from "./../components/Header";
 import AlertModal from "./../components/AlertModal";
+import SettingModal from "./../components/SettingModal";
 import { formatDate } from "../utils/formatDate";
-import axios from "axios";
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { fas } from '@fortawesome/free-solid-svg-icons'; 
+import { fab } from '@fortawesome/free-brands-svg-icons'; 
+import { far } from '@fortawesome/free-regular-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+library.add(fas, fab, far);
 import ReactPlayer from 'react-player';
+import axios from "axios";
 
 
 function Alerts() {
@@ -11,6 +18,9 @@ function Alerts() {
   const [filter, setFilter] = useState("all");
   const [selectedAlert, setSelectedAlert] = useState(null);
   const [selectedDate, setSelectedDate] = useState("");
+  const [showSettings, setShowSettings] = useState(false);
+  const [emailEnabled, setEmailEnabled] = useState(true);
+  const [discordEnabled, setDiscordEnabled] = useState(false);
 
   const filteredAlerts = alerts.filter((alert) => {
     const matchFilter =
@@ -47,16 +57,34 @@ function Alerts() {
     <div className="min-h-screen bg-white">
       <Header />
       
-
       <div className="container mx-auto py-6 px-4">
-        <h1 className="text-3xl font-bold text-indigo-900 mb-6 mt-0.75">Alert Center</h1>
+        <div className="flex justify-between items-center mb-6 mt-0.75">
+          <h1 className="text-3xl font-bold text-indigo-900">Alert Center</h1>
+          <button
+            className="flex flex-col items-center text-indigo-900 hover:text-indigo-800"
+            title="Settings"
+            onClick={() => setShowSettings(true)}
+          >
+            <FontAwesomeIcon icon="fa-solid fa-gear" className="text-xl" />
+          </button>
+        </div>
+
+        <SettingModal
+          isOpen={showSettings}
+          onClose={() => setShowSettings(false)}
+          emailEnabled={emailEnabled}
+          setEmailEnabled={setEmailEnabled}
+          discordEnabled={discordEnabled}
+          setDiscordEnabled={setDiscordEnabled}
+        />
+
         <div className="flex flex-col sm:flex-row justify-between items-start">
           <div className="flex gap-4 items-center">
             <label htmlFor="date-filter" className="text-s font-medium text-gray-700">Date:</label>
             <input
               id="date-filter"
               type="date"
-              className="border border-gray-300 rounded px-2 py-1"
+              className="border border-gray-300 rounded-lg px-2 py-1"
               value={selectedDate}
               onChange={(e) => setSelectedDate(e.target.value)}
             />
@@ -66,7 +94,7 @@ function Alerts() {
             <div className="flex gap-2 flex-wrapm">
               <button
                 onClick={() => setFilter("all")}
-                className={`px-3 py-1 rounded ${
+                className={`px-3 py-1 rounded-lg ${
                   filter === "all" ? "bg-indigo-900 text-white" : "border border-gray-300"
                 }`}
               >
@@ -74,7 +102,7 @@ function Alerts() {
               </button>
               <button
                 onClick={() => setFilter("active")}
-                className={`px-3 py-1 rounded ${
+                className={`px-3 py-1 rounded-lg ${
                   filter === "active" ? "bg-indigo-900 text-white" : "border border-gray-300"
                 }`}
               >
@@ -82,7 +110,7 @@ function Alerts() {
               </button>
               <button
                 onClick={() => setFilter("resolved")}
-                className={`px-3 py-1 rounded ${
+                className={`px-3 py-1 rounded-lg ${
                   filter === "resolved" ? "bg-indigo-900 text-white" : "border border-gray-300"
                 }`}
               >
@@ -99,7 +127,7 @@ function Alerts() {
             <div
               key={idx}
               onClick={() => setSelectedAlert(alert)}
-              className={`cursor-pointer p-4 rounded border-2 shadow-md mb-5 ${
+              className={`cursor-pointer p-4 rounded-lg border-2 shadow-md mb-5 ${
                 alert.resolved
                   ? "bg-indigo-50 border-indigo-200 hover:bg-indigo-100"
                   : "bg-red-50 border-red-200 hover:bg-red-100"
@@ -131,7 +159,7 @@ function Alerts() {
                   <img
                     src={alert.image_url}
                     alt="Snapshot"
-                    className="h-36 w-auto rounded shadow object-cover"
+                    className="h-36 w-auto rounded-lg shadow object-cover"
                   />
                 )}
               </div>

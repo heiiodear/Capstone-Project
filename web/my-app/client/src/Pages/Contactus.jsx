@@ -23,7 +23,7 @@ const Contact = () => {
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 <div className="space-y-6">
-                <div className="bg-white shadow-lg rounded-xl border-2 border-gray-200 p-6">
+                <div className="bg-white shadow-lg rounded-lg border-2 border-gray-200 p-6">
                     <h2 className="text-xl font-medium text-indigo-900 mb-6">Contact Information</h2>
 
                     <div className="space-y-6">
@@ -116,20 +116,20 @@ const Contact = () => {
 
                 <div>
                 {submitted ? (
-                    <div className="bg-white shadow-lg p-8 rounded-xl text-center border-2 border-gray-200">
+                    <div className="bg-white shadow-lg p-8 rounded-lg text-center border-2 border-gray-200">
                         <h3 className="text-2xl font-medium mb-4  text-indigo-900">Thank You!</h3>
                         <p className="text-gray-600 mb-4">
                             Your message has been received. We'll get back to you shortly.
                         </p>
                         <button
                             onClick={() => setSubmitted(false)}
-                            className="bg-indigo-900 text-white px-4 py-2 rounded hover:bg-indigo-800"
+                            className="bg-indigo-900 text-white px-4 py-2 rounded-lg hover:bg-indigo-800"
                         >
                             Send Another Message
                         </button>
                     </div>
                 ) : (
-                    <div className="bg-white shadow-lg rounded-xl border-2 border-gray-200 p-6">
+                    <div className="bg-white shadow-lg rounded-lg border-2 border-gray-200 p-6">
                     <h3 className="text-xl text-indigo-900 font-semibold text-navy mb-6">Send Us a Message</h3>
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <div>
@@ -137,7 +137,7 @@ const Contact = () => {
                             <input
                                 type="text"
                                 required
-                                className="mt-1 w-full p-2 border rounded border-gray-300"
+                                className="mt-1 w-full p-2 border rounded-lg border-gray-300"
                             />
                         </div>
                         <div>
@@ -145,7 +145,7 @@ const Contact = () => {
                             <input
                                 type="email"
                                 required
-                                className="mt-1 w-full p-2 border rounded border-gray-300"
+                                className="mt-1 w-full p-2 border rounded-lg border-gray-300"
                             />
                         </div>
                         <div>
@@ -153,7 +153,7 @@ const Contact = () => {
                             <input
                                 type="phone"
                                 required
-                                className="mt-1 w-full p-2 border rounded border-gray-300"
+                                className="mt-1 w-full p-2 border rounded-lg border-gray-300"
                             />
                         </div>
                         <div>
@@ -161,19 +161,19 @@ const Contact = () => {
                             <input
                                 type="subject"
                                 required
-                                className="mt-1 w-full p-2 border rounded border-gray-300"
+                                className="mt-1 w-full p-2 border rounded-lg border-gray-300"
                             />
                         </div>
                         <div>
                             <label className="block font-medium">Message</label>
                             <textarea
                                 required
-                                className="mt-1 w-full p-2 border rounded border-gray-300 h-66"
+                                className="mt-1 w-full p-2 border rounded-lg border-gray-300 h-66"
                             ></textarea>
                         </div>
                         <button
                         type="submit"
-                        className="flex w-full justify-center bg-indigo-900 text-white font-medium px-4 py-2 rounded hover:bg-indigo-800"
+                        className="flex w-full justify-center bg-indigo-900 text-white px-4 py-2 rounded-lg hover:bg-indigo-800"
                         >
                             Send us a message
                         </button>

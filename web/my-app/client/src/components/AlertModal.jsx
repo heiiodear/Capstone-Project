@@ -31,7 +31,7 @@ const AlertModal = ({ alert, onClose, formatDate, onResolve }) => {
         </button>
         
         <h1 className="text-2xl font-bold mb-2 text-indigo-900">Alert Details</h1>
-        <p className="text-gray-700 text-s mb-2">Detailed information about this alert</p>
+        <p className="text-gray-700 text-s mb-4">Detailed information about this alert</p>
         <div className="flex items-center gap-2">
           <h2 className="text-2xl font-semibold mb-2">{alert.roomName || alert.user_id}</h2>
           <span
@@ -49,22 +49,18 @@ const AlertModal = ({ alert, onClose, formatDate, onResolve }) => {
         
         {alert.video_url && (
           <ReactPlayer
-  url="https://capstone-acs-falldetect.s3.ap-southeast-2.amazonaws.com/user_67ed73ae73e7097a367ed449/fall_67ed73ae73e7097a367ed449_20250430-212051.mp4"
-  controls
-  width="100%"
-  height="400px"
-/>
-
+          url="https://capstone-acs-falldetect.s3.ap-southeast-2.amazonaws.com/user_67ed73ae73e7097a367ed449/fall_67ed73ae73e7097a367ed449_20250430-212051.mp4"
+          controls
+          width="100%"
+          height="400px"
+        />
         )}
 
-        
-
-        
         {!alert.resolved && (
           <div className="flex justify-end mt-6">
             <button
               onClick={handleResolve}
-              className="bg-indigo-900 text-white px-4 py-2 rounded hover:bg-indigo-800"
+              className="bg-indigo-900 text-white px-4 py-2 rounded-lg hover:bg-indigo-800"
             >
               Resolved
             </button>

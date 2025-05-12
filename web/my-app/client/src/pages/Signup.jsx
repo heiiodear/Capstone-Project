@@ -1,5 +1,11 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { fas } from '@fortawesome/free-solid-svg-icons'; 
+import { fab } from '@fortawesome/free-brands-svg-icons'; 
+import { far } from '@fortawesome/free-regular-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+library.add(fas, fab, far);
 import axios from "axios";
 
 function Signup() {
@@ -85,7 +91,7 @@ function Signup() {
       `}
     </style>
     <div className="min-h-screen flex items-center justify-center bg-indigo-100 px-4 py-6">
-      <div className="w-full max-w-2xl bg-white rounded-xl shadow-md p-8 space-y-6">
+      <div className="w-full max-w-2xl bg-white rounded-lg shadow-md p-8 space-y-6">
         <div className="text-center text-3xl font-bold text-indigo-900">Projectname</div>
         <div className="text-center text-3xl font-bold text-indigo-900 ">Create an Account</div>
         <p className="text-center text-gray-500 text-sm">Enter your information to register</p>
@@ -113,7 +119,7 @@ function Signup() {
               value={formData.username}
               onChange={handleChange}
               required
-              className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-indigo-500"
+              className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-indigo-500"
             />
           </div>
 
@@ -126,7 +132,7 @@ function Signup() {
                 value={formData.email}
                 onChange={handleChange}
                 required
-                className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-indigo-500"
+                className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-indigo-500"
               />
             </div>
             <div>
@@ -136,7 +142,7 @@ function Signup() {
                 name="tel"
                 value={formData.tel}
                 onChange={handleChange}
-                className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-indigo-500"
+                className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-indigo-500"
               />
             </div>
           </div>
@@ -148,7 +154,7 @@ function Signup() {
               name="discord"
               value={formData.discord}
               onChange={handleChange}
-              className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-indigo-500"
+              className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-indigo-500"
             />
           </div>
 
@@ -162,14 +168,14 @@ function Signup() {
                 value={formData.password}
                 onChange={handleChange}
                 required
-                className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 pr-10 focus:ring-2 focus:ring-indigo-500"
+                className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 pr-10 focus:ring-2 focus:ring-indigo-500"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute top-9 right-3 text-sm text-gray-500"
               >
-                {showPassword ? "Hide" : "Show"}
+                {showPassword ? <FontAwesomeIcon icon="fa-regular fa-eye-slash" style={{color: "#6B7280",}} /> : <FontAwesomeIcon icon="fa-regular fa-eye" style={{color: "#6B7280",}} />}
               </button>
             </div>
             <div className="relative">
@@ -180,7 +186,7 @@ function Signup() {
                 value={formData.confirmPassword}
                 onChange={handleChange}
                 required
-                className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 pr-10 focus:ring-2 focus:ring-indigo-500"
+                className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 pr-10 focus:ring-2 focus:ring-indigo-500"
               />
               {formData.confirmPassword && formData.password !== formData.confirmPassword &&(
                 <p className="text-sm mt-1 text-red-600">Passwords do not match</p>
@@ -191,7 +197,7 @@ function Signup() {
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                 className="absolute top-9 right-3 text-sm text-gray-500"
               >
-                {showConfirmPassword ? "Hide" : "Show"}
+                {showPassword ? <FontAwesomeIcon icon="fa-regular fa-eye-slash" style={{color: "#6B7280",}} /> : <FontAwesomeIcon icon="fa-regular fa-eye" style={{color: "#6B7280",}} />}
               </button>
             </div>
           </div>
@@ -206,7 +212,7 @@ function Signup() {
                 placeholder="Plot / House Number, Village"
                 value={formData.address.plot}
                 onChange={handleChange}
-                className="rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-indigo-500"
+                className="rounded-lg border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-indigo-500"
               />
               <input
                 type="text"
@@ -214,7 +220,7 @@ function Signup() {
                 placeholder="Road"
                 value={formData.address.road}
                 onChange={handleChange}
-                className="rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-indigo-500"
+                className="rounded-lg border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-indigo-500"
               />
               <input
                 type="text"
@@ -222,7 +228,7 @@ function Signup() {
                 placeholder="District"
                 value={formData.address.district}
                 onChange={handleChange}
-                className="rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-indigo-500"
+                className="rounded-lg border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-indigo-500"
               />
               <input
                 type="text"
@@ -230,7 +236,7 @@ function Signup() {
                 placeholder="Province"
                 value={formData.address.province}
                 onChange={handleChange}
-                className="rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-indigo-500"
+                className="rounded-lg border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-indigo-500"
               />
               <input
                 type="text"
@@ -238,7 +244,7 @@ function Signup() {
                 placeholder="Postal Code"
                 value={formData.address.postal}
                 onChange={handleChange}
-                className="rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-indigo-500 col-span-1 md:col-span-2"
+                className="rounded-lg border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-indigo-500 col-span-1 md:col-span-2"
               />
             </div>
           </div>
@@ -263,7 +269,7 @@ function Signup() {
           <button
             type="submit"
             disabled={isLoading || !acceptTerms}
-            className="w-full bg-indigo-900 text-white py-2 rounded-md transition cursor-pointer"
+            className="w-full bg-indigo-900 text-white py-2 rounded-lg transition cursor-pointer"
           >
             {isLoading ? "Creating account..." : "Create Account"}
           </button>

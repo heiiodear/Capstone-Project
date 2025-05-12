@@ -28,15 +28,15 @@ function VerifyCode() {
                             type="text"
                             inputMode="numeric"
                             maxLength={6}
-                            className="w-full text-center text-lg tracking-widest border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full text-center text-lg tracking-widest border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                             placeholder="------"
                             required
                         />
                     </div>
 
-                    <button //กดอันนี้แล้วไปหน้า reset password
+                    <button 
                         type="submit"
-                        className="w-full bg-blue-900 text-white py-2 rounded hover:bg-blue-700 transition flex justify-center items-center gap-2">
+                        className="w-full bg-blue-900 text-white py-2 rounded-lg hover:bg-blue-700 transition flex justify-center items-center gap-2">
                         Verify Code
                     </button>
 
