@@ -6,6 +6,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const AlertModel = require("./models/alert");
 const axios = require("axios");
+const FormData = require('form-data');
 
 const app = express();
 app.use(express.json());
@@ -76,40 +77,48 @@ app.post("/login", async (req, res) => {
     }
   });
 
-// Update Alert
 app.post("/alert", async (req, res) => {
     const { user_id, image_url, video_url } = req.body;
-  
+
     if (!user_id || !image_url || !video_url) {
       return res.status(400).json({ error: "Missing required fields." });
     }
-  
+
     try {
-      const user = await UserModel.findOne({ user_id: user_id });
-  
+      const user = await UserModel.findById(user_id);
       if (!user || !user.discord) {
         return res.status(404).json({ error: "User or webhook not found." });
       }
-  
+
       const webhookURL = user.discord;
-  
-      await axios.post(webhookURL, {
-        content: "🚨 **พบเหตุการณ์ล้ม!**",
+      const videoStream = await axios.get(video_url, { responseType: "stream" });
+      const form = new FormData();
+
+      form.append("payload_json", JSON.stringify({
+        content: "🚨 พบเหตุการณ์ล้ม!",
         embeds: [
           {
-            title: "🎥 ดูคลิป",
-            description: `[คลิกที่นี่เพื่อดูวิดีโอ](${video_url})`,
-            image: { url: image_url },
+            title: "โปรดดำเนินการตรวจสอบสถานการณ์โดยด่วน",
+            image: { url: image_url }, 
             color: 15158332
           }
         ]
+      }));
+
+      form.append("file", videoStream.data, {
+        filename: "fall_video.mp4",
+        contentType: "video/mp4"
       });
-  
+
+      await axios.post(webhookURL, form, {
+        headers: form.getHeaders()
+      });
+
       console.log("✅ แจ้งเตือนสำเร็จ:", user.username || user_id);
       res.status(200).json({ message: "แจ้งเตือนสำเร็จ" });
-  
+
     } catch (error) {
-      console.error("❌ แจ้งเตือนล้มเหลว:", error);
+      console.error("❌ แจ้งเตือนล้มเหลว:", error.message);
       res.status(500).json({ error: "แจ้งเตือนล้มเหลว" });
     }
 });
