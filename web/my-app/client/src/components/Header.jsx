@@ -104,7 +104,7 @@ function Header() {
                     <button
                         type="submit"
                         onClick={handleLogout}
-                        className="bg-red-600 hover:bg-red-700 text-white text-sm px-3 font-semibold py-1 rounded-md cursor-pointer">
+                        className="bg-red-600 hover:bg-red-700 text-white text-sm px-3 font-semibold py-1 rounded-lg cursor-pointer">
                         Logout
                     </button>
                 </div>

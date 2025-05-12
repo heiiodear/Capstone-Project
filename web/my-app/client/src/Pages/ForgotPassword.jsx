@@ -45,7 +45,7 @@ function ForgotPassword() {
                             onChange={(e) => setEmail(e.target.value)}
                             placeholder="your.email@example.com"
                             required
-                            className="mt-1 w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            className="mt-1 w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                         />
                     </div>
 
@@ -54,7 +54,7 @@ function ForgotPassword() {
                     <button
                         type="submit"
                         disabled={isLoading}
-                        className="w-full bg-indigo-900 text-white py-2 rounded hover:bg-indigo-700 transition flex justify-center items-center gap-2">
+                        className="w-full bg-indigo-900 text-white py-2 rounded-lg hover:bg-indigo-700 transition flex justify-center items-center gap-2">
                         {isLoading ? "Sending..." : "Send Verification Code"}
                     </button>
                 </form>

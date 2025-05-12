@@ -46,7 +46,7 @@ function Login() {
       `}
     </style>
     <div className="min-h-screen flex justify-center items-center p-4 bg-indigo-100">
-      <div className="w-full max-w-md bg-white rounded-xl shadow-md p-6 space-y-4">
+      <div className="w-full max-w-md bg-white rounded-lg shadow-md p-6 space-y-4">
         <div className="text-center text-2xl font-bold text-indigo-900">Projectname</div>
         <div className="text-center text-2xl font-bold text-indigo-900">Welcome back</div>
         <p className="text-center text-gray-500 text-sm">Please sign in to access your account</p>
@@ -61,7 +61,7 @@ function Login() {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="your.email@example.com"
               required
-              className="mt-1 w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="mt-1 w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
           </div>
 
@@ -74,7 +74,7 @@ function Login() {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
                 required
-                className="mt-1 w-full border border-gray-300 rounded-md px-3 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="mt-1 w-full border border-gray-300 rounded-lg px-3 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-indigo-500"
               />
               <button
                 type="button"
@@ -94,7 +94,7 @@ function Login() {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-indigo-900 text-white py-2 rounded-md transition"
+            className="w-full bg-indigo-900 text-white py-2 rounded-lg transition"
           >
             {isLoading ? "Logging in..." : "Sign in"}
           </button>

@@ -30,7 +30,7 @@ function ResetPassword() {
                                 type={showPassword ? "text" : "password"}
                                 placeholder="••••••••"
                                 required
-                                className="w-full border border-gray-300 rounded-md px-3 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="w-full border border-gray-300 rounded-lg px-3 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500"
                             />
                             <button
                                 type="button"
@@ -49,7 +49,7 @@ function ResetPassword() {
                                 type={showConfirmPassword ? "text" : "password"}
                                 placeholder="••••••••"
                                 required
-                                className="w-full border border-gray-300 rounded-md px-3 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="w-full border border-gray-300 rounded-lg px-3 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500"
                             />
                             <button
                                 type="button"
@@ -62,7 +62,7 @@ function ResetPassword() {
 
                     <button
                         type="submit"
-                        className="w-full bg-blue-900 text-white py-2 rounded hover:bg-blue-700 transition flex items-center justify-center gap-2">
+                        className="w-full bg-blue-900 text-white py-2 rounded-lg hover:bg-blue-700 transition flex items-center justify-center gap-2">
                         Reset Password
                     </button>
                 </form>

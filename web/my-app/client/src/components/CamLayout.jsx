@@ -4,7 +4,7 @@ function CamLayout({ layout, setLayout }) {
     return (
         <div className="flex gap-2">
             <button
-                className={`px-4 py-2 rounded border ${
+                className={`px-4 py-2 rounded-lg border ${
                     layout === "grid"
                     ? "bg-indigo-900 text-white"
                     : "border-indigo-900 text-indigo-900 hover:bg-indigo-100"
@@ -13,7 +13,7 @@ function CamLayout({ layout, setLayout }) {
                 Grid View
             </button>
             <button
-                className={`px-4 py-2 rounded border ${
+                className={`px-4 py-2 rounded-lg border ${
                     layout === "single"
                     ? "bg-indigo-900 text-white"
                     : "border-indigo-900 text-indigo-900 hover:bg-indigo-100"

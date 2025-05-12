@@ -84,7 +84,7 @@ function Alerts() {
             <input
               id="date-filter"
               type="date"
-              className="border border-gray-300 rounded px-2 py-1"
+              className="border border-gray-300 rounded-lg px-2 py-1"
               value={selectedDate}
               onChange={(e) => setSelectedDate(e.target.value)}
             />
@@ -94,7 +94,7 @@ function Alerts() {
             <div className="flex gap-2 flex-wrapm">
               <button
                 onClick={() => setFilter("all")}
-                className={`px-3 py-1 rounded ${
+                className={`px-3 py-1 rounded-lg ${
                   filter === "all" ? "bg-indigo-900 text-white" : "border border-gray-300"
                 }`}
               >
@@ -102,7 +102,7 @@ function Alerts() {
               </button>
               <button
                 onClick={() => setFilter("active")}
-                className={`px-3 py-1 rounded ${
+                className={`px-3 py-1 rounded-lg ${
                   filter === "active" ? "bg-indigo-900 text-white" : "border border-gray-300"
                 }`}
               >
@@ -110,7 +110,7 @@ function Alerts() {
               </button>
               <button
                 onClick={() => setFilter("resolved")}
-                className={`px-3 py-1 rounded ${
+                className={`px-3 py-1 rounded-lg ${
                   filter === "resolved" ? "bg-indigo-900 text-white" : "border border-gray-300"
                 }`}
               >
@@ -127,7 +127,7 @@ function Alerts() {
             <div
               key={idx}
               onClick={() => setSelectedAlert(alert)}
-              className={`cursor-pointer p-4 rounded border-2 shadow-md mb-5 ${
+              className={`cursor-pointer p-4 rounded-lg border-2 shadow-md mb-5 ${
                 alert.resolved
                   ? "bg-indigo-50 border-indigo-200 hover:bg-indigo-100"
                   : "bg-red-50 border-red-200 hover:bg-red-100"
@@ -159,7 +159,7 @@ function Alerts() {
                   <img
                     src={alert.image_url}
                     alt="Snapshot"
-                    className="h-36 w-auto rounded shadow object-cover"
+                    className="h-36 w-auto rounded-lg shadow object-cover"
                   />
                 )}
               </div>

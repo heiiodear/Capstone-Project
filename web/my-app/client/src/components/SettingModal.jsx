@@ -55,13 +55,13 @@ function SettingModal({
             <div className="flex justify-end gap-2 mt-6">
             <button
                 onClick={onClose}
-                className="bg-gray-100 text-gray-800 px-4 py-1 rounded hover:bg-gray-200"
+                className="bg-gray-100 text-gray-800 px-4 py-1 rounded-lg hover:bg-gray-200"
             >
                 Close
             </button>
             <button
                 onClick={handleSave}
-                className="bg-indigo-900 text-white px-4 py-1 rounded hover:bg-indigo-800"
+                className="bg-indigo-900 text-white px-4 py-1 rounded-lg hover:bg-indigo-800"
             >
                 Save
             </button>

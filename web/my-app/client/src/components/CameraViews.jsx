@@ -7,14 +7,14 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 function CameraViews({ name, src, user_id, onEdit, onDelete }) {
   return (
-    <div className="w-full bg-white border-2 border-gray-200 rounded shadow-md p-4 relative">
+    <div className="w-full bg-white border-2 border-gray-200 rounded-lg shadow-md p-4 relative">
       <h2 className="text-lg font-semibold mb-2">{name}</h2>
 
-      <div className="relative w-full pt-[56.25%] bg-black rounded overflow-hidden">
+      <div className="relative w-full pt-[56.25%] bg-black rounded-lg overflow-hidden">
         <div className="absolute inset-0 flex items-center justify-center text-white">
           {src ? (
             <img
-              className="absolute w-full h-full object-cover rounded"
+              className="absolute w-full h-full object-cover rounded-lg"
               src={`http://localhost:3000/video_feed?src=${src}&user_id=${user_id}&name=${name}`}
               alt={`${name} feed`}
             />
@@ -29,7 +29,7 @@ function CameraViews({ name, src, user_id, onEdit, onDelete }) {
           {onEdit && (
             <button
               onClick={onEdit}
-              className="bg-white border-white hover:bg-indigo-200 text-sm px-2 py-1 rounded"
+              className="bg-white border-white hover:bg-indigo-200 text-sm px-2 py-1 rounded-lg"
               title="Edit Camera"
             >
               <FontAwesomeIcon icon="fa-solid fa-pen" style={{color: "#312E81",}} />
@@ -38,7 +38,7 @@ function CameraViews({ name, src, user_id, onEdit, onDelete }) {
           {onDelete && (
             <button
               onClick={onDelete}
-              className="bg-white border-white hover:bg-red-100 text-sm px-2 py-1 rounded"
+              className="bg-white border-white hover:bg-red-100 text-sm px-2 py-1 rounded-lg"
               title="Delete Camera"
             >
               <FontAwesomeIcon icon="fa-solid fa-trash" style={{color: "#e00000",}} />

@@ -100,7 +100,7 @@ function Cameras() {
                 {/* Add Camera */}
                 <div
                     onClick={handleAddCamera}
-                    className="w-full bg-indigo-100 hover:bg-indigo-200 cursor-pointer rounded shadow-md p-4 flex items-center justify-center">
+                    className="w-full bg-indigo-100 hover:bg-indigo-200 cursor-pointer rounded-lg shadow-md p-4 flex items-center justify-center">
                     <span className="text-indigo-900 font-semibold">+ Add Camera</span>
                 </div>
                 </div>
@@ -122,7 +122,7 @@ function Cameras() {
                     {rooms.map((room, idx) => (
                         <button
                             key={room.id}
-                            className={`px-3 py-2 rounded border whitespace-nowrap flex-shrink-0 ${
+                            className={`px-3 py-2 rounded-lg border whitespace-nowrap flex-shrink-0 ${
                                 selectedCamera === idx
                                     ? "bg-indigo-900 text-white"
                                     : "border-indigo-900 text-indigo-900 hover:bg-indigo-100"
@@ -135,7 +135,7 @@ function Cameras() {
                     {/* Add Camera */}
                     <div
                         onClick={handleAddCamera}
-                        className="px-3 py-2 bg-indigo-100 hover:bg-indigo-200 cursor-pointer rounded shadow-md p-4 flex items-center justify-center">
+                        className="px-3 py-2 bg-indigo-100 hover:bg-indigo-200 cursor-pointer rounded-lg shadow-md p-4 flex items-center justify-center">
                         <span className="text-indigo-900 font-semibold">+ Add Camera</span>
                     </div>
                 </div>
