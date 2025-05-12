@@ -31,7 +31,7 @@ const AlertModal = ({ alert, onClose, formatDate, onResolve }) => {
         </button>
         
         <h1 className="text-2xl font-bold mb-2 text-indigo-900">Alert Details</h1>
-        <p className="text-gray-700 text-s mb-2">Detailed information about this alert</p>
+        <p className="text-gray-700 text-s mb-4">Detailed information about this alert</p>
         <div className="flex items-center gap-2">
           <h2 className="text-2xl font-semibold mb-2">{alert.roomName || alert.user_id}</h2>
           <span

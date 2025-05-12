@@ -1,4 +1,9 @@
 import React from "react";
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { fas } from '@fortawesome/free-solid-svg-icons'; 
+import { fab } from '@fortawesome/free-brands-svg-icons'; 
+import { far } from '@fortawesome/free-regular-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 function CameraViews({ name, src, user_id, onEdit, onDelete }) {
   return (
@@ -20,14 +25,14 @@ function CameraViews({ name, src, user_id, onEdit, onDelete }) {
       </div>
 
       {(onEdit || onDelete) && (
-        <div className="absolute top-2 right-2 flex gap-2 z-10">
+        <div className="absolute top-4 right-2 flex z-10">
           {onEdit && (
             <button
               onClick={onEdit}
-              className="bg-white border-white hover:bg-gray-100 text-sm px-2 py-1 rounded"
+              className="bg-white border-white hover:bg-indigo-200 text-sm px-2 py-1 rounded"
               title="Edit Camera"
             >
-              edit
+              <FontAwesomeIcon icon="fa-solid fa-pen" style={{color: "#312E81",}} />
             </button>
           )}
           {onDelete && (
@@ -36,7 +41,7 @@ function CameraViews({ name, src, user_id, onEdit, onDelete }) {
               className="bg-white border-white hover:bg-red-100 text-sm px-2 py-1 rounded"
               title="Delete Camera"
             >
-              delete
+              <FontAwesomeIcon icon="fa-solid fa-trash" style={{color: "#e00000",}} />
             </button>
           )}
         </div>

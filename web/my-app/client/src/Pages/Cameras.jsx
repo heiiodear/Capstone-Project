@@ -3,6 +3,12 @@ import Header from "./../components/Header";
 import CameraView from "./../components/CameraViews";
 import CamLayout from "./../components/CamLayout";
 import EditModal from "./../components/EditModal";
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { fas } from '@fortawesome/free-solid-svg-icons'; 
+import { fab } from '@fortawesome/free-brands-svg-icons'; 
+import { far } from '@fortawesome/free-regular-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+library.add(fas, fab, far);
 
 function Cameras() {
     const [layout, setLayout] = useState("grid");
@@ -100,7 +106,7 @@ function Cameras() {
                 </div>
                 ) : (
                 <div className="space-y-4">
-                <div className="max-w-xxl mx-auto">
+                <div className="max-w-xxl mx-auto text-indigo-900">
                     <CameraView
                         id={rooms[selectedCamera].id}
                         name={rooms[selectedCamera].name}

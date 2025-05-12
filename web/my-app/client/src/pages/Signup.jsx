@@ -1,5 +1,11 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { fas } from '@fortawesome/free-solid-svg-icons'; 
+import { fab } from '@fortawesome/free-brands-svg-icons'; 
+import { far } from '@fortawesome/free-regular-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+library.add(fas, fab, far);
 import axios from "axios";
 
 function Signup() {
@@ -169,7 +175,7 @@ function Signup() {
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute top-9 right-3 text-sm text-gray-500"
               >
-                {showPassword ? "Hide" : "Show"}
+                {showPassword ? <FontAwesomeIcon icon="fa-regular fa-eye-slash" style={{color: "#6B7280",}} /> : <FontAwesomeIcon icon="fa-regular fa-eye" style={{color: "#6B7280",}} />}
               </button>
             </div>
             <div className="relative">
@@ -191,7 +197,7 @@ function Signup() {
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                 className="absolute top-9 right-3 text-sm text-gray-500"
               >
-                {showConfirmPassword ? "Hide" : "Show"}
+                {showPassword ? <FontAwesomeIcon icon="fa-regular fa-eye-slash" style={{color: "#6B7280",}} /> : <FontAwesomeIcon icon="fa-regular fa-eye" style={{color: "#6B7280",}} />}
               </button>
             </div>
           </div>
