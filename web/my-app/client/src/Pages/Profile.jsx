@@ -43,7 +43,7 @@ function Profile() {
             email: userData.email,
             password: userData.password,
             discord: userData.discord,
-            phone: userData.phone,
+            tel: userData.tel,
         });
         setIsEditing(true);
     };
@@ -62,7 +62,7 @@ function Profile() {
                 username: formData.username,
                 email: formData.email,
                 discord: formData.discord,
-                phone: formData.phone,
+                tel: formData.tel,
             };
         } else if (editingField === "address") {
             updatedData = {

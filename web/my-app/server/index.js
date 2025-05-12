@@ -7,9 +7,11 @@ const jwt = require("jsonwebtoken");
 const AlertModel = require("./models/alert");
 const axios = require("axios");
 const FormData = require('form-data');
+const nodemailer = require("nodemailer");
 
 const app = express();
 app.use(express.json());
+require('dotenv').config(); 
 app.use(cors({
     origin: 'http://localhost:5173',
     methods: ['GET', 'POST', 'PUT', 'DELETE','PATCH'], 
@@ -278,6 +280,48 @@ app.get("/dashboard", async (req, res) => {
     console.error("Error generating dashboard:", err);
     res.status(500).json({ error: "Failed to generate dashboard" });
   }
+});
+
+
+app.post("/api/send-verification-code", async (req, res) => {
+    const { email } = req.body;
+
+
+    if (!email) {
+        return res.status(400).send({ message: "Email is required" });
+    }
+
+    
+    const verificationCode = Math.floor(100000 + Math.random() * 900000);
+
+    try {
+        
+        const transporter = nodemailer.createTransport({
+            service: "gmail", 
+            auth: {
+                user: process.env.EMAIL_SENDER,
+                pass: process.env.EMAIL_PASSWORD,
+            },
+        });
+
+        const mailOptions = {
+             from: `"Secura" <${process.env.EMAIL_SENDER}>`, 
+            to: email, 
+            subject: "Your Verification Code",
+            text: `Your verification code is: ${verificationCode}`,
+        };
+
+        await transporter.sendMail(mailOptions);
+
+
+        res.status(200).send({
+            message: "Verification code sent successfully",
+            code: verificationCode, 
+        });
+    } catch (error) {
+        console.error("Error sending email:", error);
+        res.status(500).send({ message: "Failed to send verification code" });
+    }
 });
 
 app.listen(5000, () => {
