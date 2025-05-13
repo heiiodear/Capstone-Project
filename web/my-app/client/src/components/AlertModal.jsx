@@ -47,14 +47,17 @@ const AlertModal = ({ alert, onClose, formatDate, onResolve }) => {
         <p className="text-gray-700 text-sm mb-2"><b className="font-semibold">Time: </b>{formatDate(alert.timestamp)}</p>
         <p className="text-gray-700 text-sm mb-5">{alert.description || alert.note || "No description available."}</p>
         
+
         {alert.video_url && (
+          
           <ReactPlayer
-          url="https://capstone-acs-falldetect.s3.ap-southeast-2.amazonaws.com/user_67ed73ae73e7097a367ed449/fall_67ed73ae73e7097a367ed449_20250430-212051.mp4"
-          controls
-          width="100%"
-          height="400px"
-        />
+            url={alert.video_url}
+            controls
+            width="100%"
+            height="400px"
+          />
         )}
+
 
         {!alert.resolved && (
           <div className="flex justify-end mt-6">
