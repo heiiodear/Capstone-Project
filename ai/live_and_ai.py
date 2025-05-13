@@ -21,6 +21,8 @@ from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from torch.cuda.amp import autocast
 from bson import ObjectId
+import subprocess
+from uuid import uuid4
 
 executor = ThreadPoolExecutor(max_workers=12)
 
@@ -87,10 +89,6 @@ def send_email(to_email, image_url, video_url):
 
     except Exception as e:
         print(f"[ERROR] Failed to send email: {e}")
-
-import os
-import subprocess
-from uuid import uuid4
 
 def handle_fall_event_async(frame, frame_buffer, user_id, name, video_filename, image_filename, timestamp):
     try:
