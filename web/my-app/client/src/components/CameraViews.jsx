@@ -29,7 +29,7 @@ function CameraViews({ name, src, user_id, onEdit, onDelete }) {
           {onEdit && (
             <button
               onClick={onEdit}
-              className="bg-white border-white hover:bg-indigo-200 text-sm px-2 py-1 rounded-lg"
+              className="bg-white border-white hover:bg-indigo-200 text-sm px-2 py-1 rounded-lg cursor-pointer"
               title="Edit Camera"
             >
               <FontAwesomeIcon icon="fa-solid fa-pen" style={{color: "#312E81",}} />
@@ -38,7 +38,7 @@ function CameraViews({ name, src, user_id, onEdit, onDelete }) {
           {onDelete && (
             <button
               onClick={onDelete}
-              className="bg-white border-white hover:bg-red-100 text-sm px-2 py-1 rounded-lg"
+              className="bg-white border-white hover:bg-red-100 text-sm px-2 py-1 rounded-lg cursor-pointer"
               title="Delete Camera"
             >
               <FontAwesomeIcon icon="fa-solid fa-trash" style={{color: "#e00000",}} />

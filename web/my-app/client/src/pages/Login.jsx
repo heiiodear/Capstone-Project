@@ -85,7 +85,7 @@ function Login() {
               </button>
             </div>
             <div className="text-right text-sm mt-1">
-              <Link to="/forgotpassword" className="text-indigo-500 hover:underline">
+              <Link to="/forgotpassword" className="text-indigo-700 hover:underline">
                 Forgot password?
               </Link>
             </div>
@@ -94,7 +94,7 @@ function Login() {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-blue-900 text-white py-2 rounded-lg hover:bg-blue-700 transition flex justify-center items-center gap-2 cursor-pointer"
+            className="w-full bg-indigo-900 text-white font-medium py-2 rounded-lg hover:bg-indigo-800 flex justify-center items-center gap-2 cursor-pointer"
           >
             {isLoading ? "Logging in..." : "Sign in"}
           </button>
@@ -102,7 +102,7 @@ function Login() {
 
         <div className="text-center text-sm cursor-default">
           Don't have an account?{" "}
-          <Link to="/register" className="text-indigo-500 font-medium hover:underline">
+          <Link to="/register" className="text-indigo-700 font-medium hover:underline">
             Sign up
           </Link>
         </div>

@@ -269,7 +269,7 @@ function Signup() {
           <button
             type="submit"
             disabled={isLoading || !acceptTerms}
-            className="w-full bg-indigo-900 text-white py-2 rounded-lg transition cursor-pointer"
+            className="w-full bg-indigo-900 text-white font-medium py-2 rounded-lg cursor-pointer"
           >
             {isLoading ? "Creating account..." : "Create Account"}
           </button>

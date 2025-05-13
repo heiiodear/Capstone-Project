@@ -2,7 +2,14 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import EditModal from "./../components/EditModal";
 import ConfirmationModal from "./../components/ConfirmationModal"
+import ChangePasswordModal from "./../components/ChangePasswordModal";
 import Header from "./../components/Header";
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { fas } from '@fortawesome/free-solid-svg-icons'; 
+import { fab } from '@fortawesome/free-brands-svg-icons'; 
+import { far } from '@fortawesome/free-regular-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+library.add(fas, fab, far);
 import axios from "axios";
 
 function Profile() {
@@ -13,6 +20,7 @@ function Profile() {
     const [newImageUrl, setNewImageUrl] = useState("");
     const [formData, setFormData] = useState({});
     const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
+    const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -38,13 +46,21 @@ function Profile() {
 
     const openModal = (type) => {
         setEditingField(type);
-        setFormData(type === "address" ? userData.address : {
-            username: userData.username,
-            email: userData.email,
-            password: userData.password,
-            discord: userData.discord,
-            tel: userData.tel,
-        });
+        if (type === "address") {
+            setFormData(userData.address);
+        } else if (type === "personal") {
+            setFormData({
+                username: userData.username,
+                email: userData.email,
+                discord: userData.discord,
+                tel: userData.tel,
+            });
+        } else if (type === "change-password") {
+            setFormData({ 
+                password: "",
+                newpassword: "",
+             }); 
+        } 
         setIsEditing(true);
     };
 
@@ -53,46 +69,45 @@ function Profile() {
     };
 
     const saveChanges = async () => {
-    try {
-        const token = localStorage.getItem("authToken");
+        try {
+            const token = localStorage.getItem("authToken");
 
-        let updatedData = {};
-        if (editingField === "personal") {
-            updatedData = {
-                username: formData.username,
-                email: formData.email,
-                discord: formData.discord,
-                tel: formData.tel,
-            };
-        } else if (editingField === "address") {
-            updatedData = {
-                address: {
-                    plot: formData.plot,
-                    road: formData.road,
-                    district: formData.district,
-                    province: formData.province,
-                    postal: formData.postal,
-                },
-            };
+            let updatedData = {};
+            if (editingField === "personal") {
+                updatedData = {
+                    username: formData.username,
+                    email: formData.email,
+                    discord: formData.discord,
+                    tel: formData.tel,
+                };
+            } else if (editingField === "address") {
+                updatedData = {
+                    address: {
+                        plot: formData.plot,
+                        road: formData.road,
+                        district: formData.district,
+                        province: formData.province,
+                        postal: formData.postal,
+                    },
+                };
+            } 
+
+            const response = await axios.put(
+                "http://localhost:5000/profile",
+                updatedData,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+
+            setUserData(response.data);
+            setIsEditing(false);
+        } catch (error) {
+            console.error("Error updating profile:", error);
         }
-
-        const response = await axios.put(
-            "http://localhost:5000/profile",
-            updatedData,
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            }
-        );
-
-        setUserData(response.data);
-        setIsEditing(false);
-    } catch (error) {
-        console.error("Error updating profile:", error);
-    }
-};
-
+    };
 
     // const handleSubmit = async (e) => {
     //     e.preventDefault();
@@ -124,6 +139,36 @@ function Profile() {
 
     const handleDeleteCancel = () => {
         setIsDeleteConfirmOpen(false);  
+    };
+
+    const handleChangePassword = async (passwordData) => {
+        try {
+            const token = localStorage.getItem("authToken");
+    
+            const response = await axios.put(
+                "http://localhost:5000/profile/password",
+                {
+                    currentPassword: passwordData.currentPassword,
+                    newPassword: passwordData.newPassword,
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+    
+            console.log("Password changed successfully:", response.data);
+            alert("Password changed successfully");
+            setIsChangePasswordOpen(false); // ปิด modal
+        } catch (error) {
+            console.error("Error changing password:", error);
+            if (error.response && error.response.data && error.response.data.message) {
+                alert("Error: " + error.response.data.message);
+            } else {
+                alert("An unexpected error occurred.");
+            }
+        }
     };
 
     if (!userData) {
@@ -164,15 +209,15 @@ function Profile() {
                 <h2 className="text-lg text-indigo-900 font-semibold text-left cursor-default">Personal Information</h2>
                 <button
                     onClick={() => openModal("personal")}
-                    className="text-sm text-indigo-600 hover:underline font-semibold cursor-pointer">
-                    Edit
+                    className="bg-white border-white hover:bg-indigo-200 text-sm px-2 py-1 rounded-lg cursor-pointer">
+                    <FontAwesomeIcon icon="fa-solid fa-pen" style={{color: "#312E81",}} />
                 </button>
                 </div>
                 {[
                     { label: "Username", value: userData.username },
                     { label: "Email", value: userData.email },
                     // { label: "Password", value: userData.password },
-                    { label: "Discord Account", value: userData.discord },
+                    { label: "Discord Webhook URL", value: userData.discord },
                     { label: "Phone number", value: userData.tel },
                 ].map((field) => (
                 <div key={field.label} className="flex justify-between items-center border-b pb-2">
@@ -190,8 +235,8 @@ function Profile() {
                 <h2 className="text-lg text-indigo-900 font-semibold text-left cursor-default">Address</h2>
                 <button
                     onClick={() => openModal("address")}
-                    className="text-sm text-indigo-600 hover:underline font-semibold cursor-pointer">
-                    Edit
+                    className="bg-white border-white hover:bg-indigo-200 text-sm px-2 py-1 rounded-lg cursor-pointer">
+                    <FontAwesomeIcon icon="fa-solid fa-pen" style={{color: "#312E81",}} />
                 </button>
                 </div>
                 {[
@@ -210,7 +255,6 @@ function Profile() {
                 ))}
             </div>
 
-            {/* Edit Modal */}
             {isEditing && (
                 <EditModal
                 type={editingField}
@@ -301,15 +345,30 @@ function Profile() {
                 />
             )}
 
-            {/* Delete Account Button */}
-            <div className="max-w-xl mx-auto mt-10 mb-10">
-                <button
-                    type="button"
-                    onClick={handleDeleteClick}
-                    className="w-full bg-red-600 hover:bg-red-700 text-white text-md py-2 font-semibold rounded-lg cursor-pointer">
-                    Delete Account
-                </button>
+            <div className="max-w-xl mx-auto m-6 space-y-4">
+                <div className="flex justify-end space-x-3">
+                    <button
+                        type="button"
+                        onClick={() => setIsChangePasswordOpen(true)}
+                        className="text-sm font-medium text-white bg-indigo-900 hover:bg-indigo-800 py-2.5 px-4 rounded-lg cursor-pointer"
+                    >
+                        Change Password
+                    </button>
+                    <button
+                        type="button"
+                        onClick={handleDeleteClick}
+                        className="text-sm font-medium text-white bg-red-600 hover:bg-red-700 py-2.5 px-4 rounded-lg cursor-pointer"
+                    >
+                        Delete Account
+                    </button>
+                </div>
             </div>
+
+            <ChangePasswordModal
+                isOpen={isChangePasswordOpen}
+                onClose={() => setIsChangePasswordOpen(false)}
+                onSave={handleChangePassword}
+            />
         </div>
     );
 }
