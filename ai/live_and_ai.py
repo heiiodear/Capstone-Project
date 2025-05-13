@@ -88,25 +88,37 @@ def send_email(to_email, image_url, video_url):
     except Exception as e:
         print(f"[ERROR] Failed to send email: {e}")
 
+import os
+import subprocess
+from uuid import uuid4
+
 def handle_fall_event_async(frame, frame_buffer, user_id, name, video_filename, image_filename, timestamp):
     try:
+        raw_video_filename = f"temp_{uuid4()}.mp4"
         h, w = frame.shape[:2]
-        video_writer = cv2.VideoWriter(video_filename, cv2.VideoWriter_fourcc(*'mp4v'), 10, (w, h))
+        video_writer = cv2.VideoWriter(raw_video_filename, cv2.VideoWriter_fourcc(*'mp4v'), 10, (w, h))
         for buffered_frame in frame_buffer:
             video_writer.write(buffered_frame)
         video_writer.write(frame)
         video_writer.release()
 
+        converted_video_filename = f"converted_{uuid4()}.mp4"
+        subprocess.run([
+            "ffmpeg", "-i", raw_video_filename,
+            "-c:v", "libx264", "-preset", "fast", "-crf", "23",
+            converted_video_filename
+        ], check=True)
+
         _, img_encoded = cv2.imencode('.jpg', frame)
         img_bytes = img_encoded.tobytes()
-
         s3.upload_fileobj(BytesIO(img_bytes), bucket_name, f"user_{user_id}/{image_filename}")
-        with open(video_filename, 'rb') as video_file:
+
+        with open(converted_video_filename, 'rb') as video_file:
             s3.upload_fileobj(video_file, bucket_name, f"user_{user_id}/{video_filename}")
 
         image_url = f"https://{bucket_name}.s3.{s3.meta.region_name}.amazonaws.com/user_{user_id}/{image_filename}"
         video_url = f"https://{bucket_name}.s3.{s3.meta.region_name}.amazonaws.com/user_{user_id}/{video_filename}"
-        
+
         collection.insert_one({
             "user_id": user_id,
             "name": name,
@@ -119,28 +131,30 @@ def handle_fall_event_async(frame, frame_buffer, user_id, name, video_filename, 
 
         user = user_collection.find_one({"_id": ObjectId(user_id)})
         to_email = user["email"]
-
         send_email(to_email=to_email, image_url=image_url, video_url=video_url)
 
         try:
-            alert_api_url = "http://localhost:5000/alert" 
+            alert_api_url = "http://localhost:5000/alert"
             payload = {
                 "image_url": image_url,
                 "video_url": video_url,
                 "user_id": user_id
             }
-
             alert_response = requests.post(alert_api_url, json=payload)
             if alert_response.status_code == 200:
-                print("[INFO] แจ้งเตือน dicord สำเร็จ")
+                print("[INFO] แจ้งเตือน discord สำเร็จ")
             else:
-                print(f"[WARN] แจ้งเตือน dicord ล้มเหลว: {alert_response.status_code} - {alert_response.text}")
-
+                print(f"[WARN] แจ้งเตือน discord ล้มเหลว: {alert_response.status_code} - {alert_response.text}")
         except Exception as e:
-            print(f"[ERROR] แจ้งเตือน dicord ล้มเหลว: {e}")
+            print(f"[ERROR] แจ้งเตือน discord ล้มเหลว: {e}")
+
+        os.remove(raw_video_filename)
+        os.remove(converted_video_filename)
 
     except NoCredentialsError:
         print("[ERROR] AWS credentials not found.")
+    except subprocess.CalledProcessError as e:
+        print(f"[ERROR] ffmpeg failed: {e}")
     except Exception as e:
         print(f"[ERROR] Exception in background task: {e}")
 
