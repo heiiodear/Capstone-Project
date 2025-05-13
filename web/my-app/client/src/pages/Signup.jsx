@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import TermsModal from "./../components/TermsModal";
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { fas } from '@fortawesome/free-solid-svg-icons'; 
 import { fab } from '@fortawesome/free-brands-svg-icons'; 
@@ -29,6 +30,8 @@ function Signup() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [acceptTerms, setAcceptTerms] = useState(false);
+  const [isTermsOpen, setIsTermsOpen] = useState(false);
+  const [showError, setShowError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -50,10 +53,11 @@ function Signup() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!acceptTerms) {
-      setMessage("Please accept the terms and conditions.");
+    if (!acceptTerms) { //ยังใช้ไม่ได้
+      setShowError(true);
       return;
     }
+    setShowError(false);
 
     if (formData.password !== formData.confirmPassword) {
       setMessage("Passwords do not match.");
@@ -142,13 +146,14 @@ function Signup() {
                 name="tel"
                 value={formData.tel}
                 onChange={handleChange}
+                required
                 className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-indigo-500"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">User Discord URL</label>
+            <label className="block text-sm font-medium text-gray-700">User Discord URL (Optional)</label>
             <input
               type="text"
               name="discord"
@@ -212,6 +217,7 @@ function Signup() {
                 placeholder="Plot / House Number, Village"
                 value={formData.address.plot}
                 onChange={handleChange}
+                required
                 className="rounded-lg border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-indigo-500"
               />
               <input
@@ -220,6 +226,7 @@ function Signup() {
                 placeholder="Road"
                 value={formData.address.road}
                 onChange={handleChange}
+                required
                 className="rounded-lg border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-indigo-500"
               />
               <input
@@ -228,6 +235,7 @@ function Signup() {
                 placeholder="District"
                 value={formData.address.district}
                 onChange={handleChange}
+                required
                 className="rounded-lg border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-indigo-500"
               />
               <input
@@ -236,6 +244,7 @@ function Signup() {
                 placeholder="Province"
                 value={formData.address.province}
                 onChange={handleChange}
+                required
                 className="rounded-lg border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-indigo-500"
               />
               <input
@@ -244,6 +253,7 @@ function Signup() {
                 placeholder="Postal Code"
                 value={formData.address.postal}
                 onChange={handleChange}
+                required
                 className="rounded-lg border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-indigo-500 col-span-1 md:col-span-2"
               />
             </div>
@@ -255,15 +265,31 @@ function Signup() {
               type="checkbox"
               id="terms"
               checked={acceptTerms}
-              onChange={(e) => setAcceptTerms(e.target.checked)}
+              onChange={(e) => {
+                setAcceptTerms(e.target.checked);
+                if (e.target.checked) setShowError(false);
+              }}
             />
             <label htmlFor="terms" className="text-sm">
               I accept the{" "}
-              <Link to="/terms" className="text-indigo-600 hover:underline">
+              <button
+                type="button"
+                onClick={() => setIsTermsOpen(true)}
+                className="text-indigo-700 hover:underline"
+              >
                 terms and conditions
-              </Link>
+              </button>
             </label>
           </div>
+          
+          {showError && (
+            <p className="text-red-500 text-sm">Please accept the terms and conditions.</p>
+          )}
+
+          <TermsModal 
+          isOpen={isTermsOpen} 
+          onClose={() => setIsTermsOpen(false)} 
+          />
 
           {/* Submit */}
           <button

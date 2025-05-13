@@ -29,7 +29,7 @@ mongoose.connect("mongodb+srv://amytr1234:ueV0LjDO8mK9NQR5@capstoneproject.tekjt
   });
 
 app.post("/register", async (req, res) => {
-  const { username, tel, discord, email, password, address } = req.body;
+  const { username, tel, discord= "", email, password, address } = req.body;
 
   try {
     const existingUsername = await UserModel.findOne({ username });

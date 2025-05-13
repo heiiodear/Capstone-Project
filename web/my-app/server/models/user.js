@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const userSchema = new mongoose.Schema({
   username: { type: String, required: true },
   tel: { type: String, required: true },
-  discord: { type: String, required: true },
+  discord: { type: String, required: false, default: "" },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   address: {
