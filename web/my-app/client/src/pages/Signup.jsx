@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import WebhookModal from "./../components/WebhookModal";
 import TermsModal from "./../components/TermsModal";
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { fas } from '@fortawesome/free-solid-svg-icons'; 
 import { fab } from '@fortawesome/free-brands-svg-icons'; 
 import { far } from '@fortawesome/free-regular-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCircleInfo } from '@fortawesome/free-solid-svg-icons';
 library.add(fas, fab, far);
 import axios from "axios";
 
@@ -31,6 +33,7 @@ function Signup() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [isTermsOpen, setIsTermsOpen] = useState(false);
+  const [isWebhookOpen, setIsWebhookOpen] = useState(false);
   const [showError, setShowError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
@@ -152,7 +155,7 @@ function Signup() {
             </div>
           </div>
 
-          <div>
+          <div className="relative">
             <label className="block text-sm font-medium text-gray-700">User Discord URL (Optional)</label>
             <input
               type="text"
@@ -161,7 +164,19 @@ function Signup() {
               onChange={handleChange}
               className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-indigo-500"
             />
+            <button
+                type="button"
+                onClick={() => setIsWebhookOpen(true)}
+                className="absolute top-8.5 right-3 text-md text-gray-500 cursor-pointer"
+              >
+                <FontAwesomeIcon icon={faCircleInfo} style={{ color: "#6B7280" }} />
+              </button>
           </div>
+
+          <WebhookModal 
+          isOpen={isWebhookOpen} 
+          onClose={() => setIsWebhookOpen(false)} 
+          />
 
           {/* Password */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -178,7 +193,7 @@ function Signup() {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute top-9 right-3 text-sm text-gray-500"
+                className="absolute top-9 right-3 text-sm text-gray-500 cursor-pointer"
               >
                 {showPassword ? <FontAwesomeIcon icon="fa-regular fa-eye-slash" style={{color: "#6B7280",}} /> : <FontAwesomeIcon icon="fa-regular fa-eye" style={{color: "#6B7280",}} />}
               </button>
@@ -200,7 +215,7 @@ function Signup() {
               <button
                 type="button"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="absolute top-9 right-3 text-sm text-gray-500"
+                className="absolute top-9 right-3 text-sm text-gray-500 cursor-pointer"
               >
                 {showPassword ? <FontAwesomeIcon icon="fa-regular fa-eye-slash" style={{color: "#6B7280",}} /> : <FontAwesomeIcon icon="fa-regular fa-eye" style={{color: "#6B7280",}} />}
               </button>

@@ -3,12 +3,14 @@ import { Link, useNavigate } from "react-router-dom";
 import EditModal from "./../components/EditModal";
 import ConfirmationModal from "./../components/ConfirmationModal"
 import ChangePasswordModal from "./../components/ChangePasswordModal";
+import WebhookModal from "./../components/WebhookModal";
 import Header from "./../components/Header";
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { fas } from '@fortawesome/free-solid-svg-icons'; 
 import { fab } from '@fortawesome/free-brands-svg-icons'; 
 import { far } from '@fortawesome/free-regular-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCircleInfo } from '@fortawesome/free-solid-svg-icons';
 library.add(fas, fab, far);
 import axios from "axios";
 
@@ -21,6 +23,7 @@ function Profile() {
     const [formData, setFormData] = useState({});
     const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
     const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
+    const [isWebhookOpen, setIsWebhookOpen] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -217,7 +220,20 @@ function Profile() {
                     { label: "Username", value: userData.username },
                     { label: "Email", value: userData.email },
                     // { label: "Password", value: userData.password },
-                    { label: "Discord Webhook URL", value: userData.discord },
+                    {
+                        label: "Discord Webhook URL",
+                        value: (
+                          <div className="relative w-full">
+                            <span className="block pr-6">{userData.discord}</span>
+                            <button
+                              onClick={() => setIsWebhookOpen(true)}
+                              className="absolute -right-100 top-0 cursor-pointer"
+                            >
+                              <FontAwesomeIcon icon={faCircleInfo} style={{ color: "#6B7280" }} />
+                            </button>
+                          </div>
+                        )
+                      },
                     { label: "Phone number", value: userData.tel },
                 ].map((field) => (
                 <div key={field.label} className="flex justify-between items-center border-b pb-2">
@@ -228,6 +244,11 @@ function Profile() {
                 </div>
                 ))}
             </div>
+
+            <WebhookModal 
+            isOpen={isWebhookOpen} 
+            onClose={() => setIsWebhookOpen(false)} 
+            />
 
             {/* Address Info */}
             <div className="max-w-xl mx-auto mt-6 bg-white rounded-lg shadow-lg border border-gray-200 p-6 space-y-4">
