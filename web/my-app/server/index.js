@@ -8,6 +8,7 @@ const AlertModel = require("./models/alert");
 const axios = require("axios");
 const FormData = require('form-data');
 const nodemailer = require("nodemailer");
+const Camera = require('./models/camera');
 
 const app = express();
 app.use(express.json());
@@ -71,7 +72,7 @@ app.post("/login", async (req, res) => {
         expiresIn: "1h",
       });
   
-      res.status(200).json({ message: "Login successful", token });
+      res.status(200).json({ message: "Login successful", token, user: { _id: user._id } });
   
     } catch (error) {
       console.error(error);
@@ -79,7 +80,7 @@ app.post("/login", async (req, res) => {
     }
   });
 
-app.post("/alert", async (req, res) => {
+/* app.post("/alert", async (req, res) => {
     const { user_id, image_url, video_url } = req.body;
 
     if (!user_id || !image_url || !video_url) {
@@ -123,6 +124,116 @@ app.post("/alert", async (req, res) => {
       console.error("❌ แจ้งเตือนล้มเหลว:", error.message);
       res.status(500).json({ error: "แจ้งเตือนล้มเหลว" });
     }
+}); */
+
+app.post("/alert", async (req, res) => {
+  const { user_id, image_url, video_url } = req.body;
+
+  if (!user_id || !image_url || !video_url) {
+    return res.status(400).json({ error: "Missing required fields." });
+  }
+
+  try {
+    const user = await UserModel.findById(user_id);
+    if (!user) {
+      return res.status(404).json({ error: "User not found." });
+    }
+
+    const { email, discord, username, notificationSettings } = user;
+
+    if (notificationSettings?.discord && discord) {
+      try {
+        const webhookURL = discord;
+        const videoStream = await axios.get(video_url, { responseType: "stream" });
+        const form = new FormData();
+
+        form.append("payload_json", JSON.stringify({
+          content: "🚨 Fall incident detected!",
+          embeds: [
+            {
+              title: "Alert Message: Immediate Attention is required. Please investigate the situation immediately!",
+              image: { url: image_url },
+              color: 15158332
+            }
+          ]
+        }));
+
+        form.append("file", videoStream.data, {
+          filename: "fall_video.mp4",
+          contentType: "video/mp4"
+        });
+
+        await axios.post(webhookURL, form, {
+          headers: form.getHeaders()
+        });
+
+        console.log("Discord alert sent successfully:", username);
+      } catch (err) {
+        console.error("Discord alert failed to send:", err.message);
+      }
+    }
+
+    if (notificationSettings?.email && email) {
+      try {
+        const transporter = nodemailer.createTransport({
+          service: "gmail",
+          auth: {
+            user: process.env.EMAIL_SENDER,
+            pass: process.env.EMAIL_PASSWORD,
+          },
+        });
+
+        const mailOptions = {
+          from: `"Secura" <${process.env.EMAIL_SENDER}>`,
+          to: email,
+          subject: "🚨 Fall incident detected!",
+          text: "Alert Message: Immediate Attention is required. Please investigate the situation immediately!",
+          html: `<p><strong>🚨 Fall incident detected!</strong></p><img src="${image_url}" width="400" />`
+        };
+
+        await transporter.sendMail(mailOptions);
+        console.log("Email alert sent successfully:", username);
+      } catch (err) {
+        console.error("Email alert failed to send:", err.message);
+      }
+    }
+
+    res.status(200).json({ message: "Alert sent successfully." });
+
+  } catch (error) {
+    console.error("Alert failed to send:", error.message);
+    res.status(500).json({ error: "Alert failed to send." });
+  }
+});
+
+app.put("/notification-settings", async (req, res) => {
+  try {
+    const token = req.headers.authorization?.split(" ")[1];
+    if (!token) return res.status(401).json({ error: "Unauthorized" });
+
+    const decoded = jwt.verify(token, "your-secret-key");
+    const userId = decoded.id;
+
+    const { emailEnabled, discordEnabled } = req.body;
+
+    const updatedUser = await UserModel.findByIdAndUpdate(
+      userId,
+      {
+        notificationSettings: {
+          email: emailEnabled,
+          discord: discordEnabled,
+        },
+      },
+      { new: true }
+    );
+
+    if (!updatedUser) return res.status(404).json({ error: "User not found" });
+
+    res.status(200).json({ message: "Notification settings updated." });
+  } catch (error) {
+    console.error("Error updating notification settings:", error);
+    res.status(500).json({ error: "Failed to update notification settings" });
+  }
 });
 
 app.get("/alerts", async (req, res) => {
@@ -368,6 +479,58 @@ app.post("/api/reset-password", async (req, res) => {
         res.status(500).send({ message: "Error updating password" });
     }
 });
+
+app.get('/cameras', async (req, res) => {
+    const userId = req.query.userId;  
+    if (!userId) {
+        return res.status(400).json({ error: "Missing userId in query parameters." });
+    }
+
+    const cameras = await Camera.find({ userId });
+    res.json(cameras);
+});
+
+
+
+app.post('/cameras', async (req, res) => {
+    const { userId, name, src, isActive } = req.body;
+    console.log(req.body); 
+    if (!userId) {
+        return res.status(400).json({ error: "Missing userId in request body." });
+    }
+
+    const camera = new Camera({ userId, name, src, isActive });
+    try {
+        await camera.save();
+        res.status(201).json(camera);  
+    } catch (error) {
+        console.error('Error saving camera:', error);
+        res.status(500).json({ error: "Error saving camera" });
+    }
+});
+
+
+app.put('/cameras/:id', async (req, res) => {
+    try {
+        const camera = await Camera.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        if (!camera) return res.status(404).json({ error: "Camera not found." });
+        res.json(camera);
+    } catch (error) {
+        res.status(500).json({ error: "Error updating camera." });
+    }
+});
+
+
+app.delete('/cameras/:id', async (req, res) => {
+    try {
+        const deleted = await Camera.findByIdAndDelete(req.params.id);
+        if (!deleted) return res.status(404).json({ error: "Camera not found." });
+        res.status(204).send();
+    } catch (error) {
+        res.status(500).json({ error: "Error deleting camera." });
+    }
+});
+
 
 
 app.listen(5000, () => {

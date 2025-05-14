@@ -19,7 +19,7 @@ const EditModal = ({ type, formData, onChange, onCancel, onSave }) => {
       ]
     : [
         { name: "name", label: "Name" },
-        { name: "camera address", label: "Camera Address (src)" },
+        { name: "src", label: "Camera Address (src)" },
       ];
 
 
