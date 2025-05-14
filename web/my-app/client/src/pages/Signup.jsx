@@ -156,7 +156,7 @@ function Signup() {
           </div>
 
           <div className="relative">
-            <label className="block text-sm font-medium text-gray-700">User Discord URL (Optional)</label>
+            <label className="block text-sm font-medium text-gray-700">Discord Webhook URL (Optional)</label>
             <input
               type="text"
               name="discord"
