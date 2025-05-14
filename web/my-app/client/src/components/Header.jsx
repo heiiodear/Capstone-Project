@@ -109,11 +109,11 @@ function Header() {
                     </button>
                 </div>
             </div>
-            
+
                 {/* Sidebar Menu */}
                 <div className={`fixed top-0 left-0 w-64 h-full bg-white shadow-md transform transition-transform duration-300 ease-in-out z-50 ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}`}>
                 <div className="flex justify-between items-center px-5 py-4 border-b">
-                    <h2 className="text-indigo-900 font-bold text-lg">Menu</h2>
+                    <h2 className="text-indigo-900 font-bold text-lg">Secura</h2>
                     <button onClick={closeSidebar}>
                     <FaTimes className="text-indigo-900 text-xl" />
                     </button>
