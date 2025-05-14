@@ -79,10 +79,10 @@ function Header() {
 
                 {/* Center: Nav Links (Desktop only) */}
                 <nav className="hidden md:flex gap-6 text-md font-medium">
-                    <Link to="/dashboard" className="hover:underline">Dashboard</Link>
-                    <Link to="/alerts" className="hover:underline">Alerts</Link>
-                    <Link to="/cameras" className="hover:underline">Cameras</Link>
-                    <Link to="/contactus" className="hover:underline">Contact Us</Link>
+                    <Link to="/dashboard" className="hover:underline cursor-pointer">Dashboard</Link>
+                    <Link to="/alerts" className="hover:underline cursor-pointer">Alerts</Link>
+                    <Link to="/cameras" className="hover:underline cursor-pointer">Cameras</Link>
+                    <Link to="/contactus" className="hover:underline cursor-pointer">Contact Us</Link>
                 </nav>
 
                 {/* Right: Notification + Profile + Logout */}
@@ -109,6 +109,7 @@ function Header() {
                     </button>
                 </div>
             </div>
+            
                 {/* Sidebar Menu */}
                 <div className={`fixed top-0 left-0 w-64 h-full bg-white shadow-md transform transition-transform duration-300 ease-in-out z-50 ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}`}>
                 <div className="flex justify-between items-center px-5 py-4 border-b">

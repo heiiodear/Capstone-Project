@@ -62,7 +62,7 @@ function ChangePasswordModal({ isOpen, onClose, onSave }) {
                         <button
                             type="button"
                             onClick={() => toggleVisibility("currentpass")}
-                            className="absolute top-1/2 right-2 transform -translate-y-1/2 text-gray-500"
+                            className="absolute top-1/2 right-2 transform -translate-y-1/2 text-gray-500 cursor-pointer"
                         >
                             {showPassword.currentpass ? <FontAwesomeIcon icon="fa-regular fa-eye-slash" style={{color: "#6B7280",}} /> : <FontAwesomeIcon icon="fa-regular fa-eye" style={{color: "#6B7280"}} />}
                         </button>
@@ -82,7 +82,7 @@ function ChangePasswordModal({ isOpen, onClose, onSave }) {
                         <button
                             type="button"
                             onClick={() => toggleVisibility("newpass")}
-                            className="absolute top-1/2 right-2 transform -translate-y-1/2 text-gray-500"
+                            className="absolute top-1/2 right-2 transform -translate-y-1/2 text-gray-500 cursor-pointer"
                         >
                             {showPassword.newpass ? <FontAwesomeIcon icon="fa-regular fa-eye-slash" style={{color: "#6B7280",}} /> : <FontAwesomeIcon icon="fa-regular fa-eye" style={{color: "#6B7280",}} />}
                         </button>
@@ -102,7 +102,7 @@ function ChangePasswordModal({ isOpen, onClose, onSave }) {
                         <button
                             type="button"
                             onClick={() => toggleVisibility("confirmpass")}
-                            className="absolute top-1/2 right-2 transform -translate-y-1/2 text-gray-500"
+                            className="absolute top-1/2 right-2 transform -translate-y-1/2 text-gray-500 cursor-pointer"
                         >
                             {showPassword.confirmpass ? <FontAwesomeIcon icon="fa-regular fa-eye-slash" style={{color: "#6B7280",}} /> : <FontAwesomeIcon icon="fa-regular fa-eye" style={{color: "#6B7280",}} />}
                         </button>
@@ -112,13 +112,13 @@ function ChangePasswordModal({ isOpen, onClose, onSave }) {
                 <div className="flex justify-end gap-2 pt-4">
                     <button
                         onClick={onClose}
-                        className="bg-gray-100 text-gray-800 text-sm px-4 py-2 rounded-lg hover:bg-gray-200"
+                        className="bg-gray-100 text-gray-800 text-sm px-4 py-2 rounded-lg hover:bg-gray-200 cursor-pointer"
                     >
                         Cancel
                     </button>
                     <button
                         onClick={handleSave}
-                        className="bg-indigo-900 text-white text-sm px-4 py-2 rounded-lg hover:bg-indigo-800"
+                        className="bg-indigo-900 text-white text-sm px-4 py-2 rounded-lg hover:bg-indigo-800 cursor-pointer"
                     >
                         Save
                     </button>

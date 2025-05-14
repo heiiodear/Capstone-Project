@@ -17,7 +17,6 @@ function SettingModal({
         setLocalDiscord(discordEnabled);
     }, [emailEnabled, discordEnabled]);
     
-    // เพิ่ม
     const handleSave = async () => {
         setEmailEnabled(localEmail);
         setDiscordEnabled(localDiscord);
@@ -75,13 +74,13 @@ function SettingModal({
             <div className="flex justify-end gap-2 mt-6">
             <button
                 onClick={onClose}
-                className="bg-gray-100 text-gray-800 px-4 py-1 rounded-lg hover:bg-gray-200"
+                className="bg-gray-100 text-gray-800 px-4 py-1 rounded-lg hover:bg-gray-200 cursor-pointer"
             >
                 Close
             </button>
             <button
                 onClick={handleSave}
-                className="bg-indigo-900 text-white px-4 py-1 rounded-lg hover:bg-indigo-800"
+                className="bg-indigo-900 text-white px-4 py-1 rounded-lg hover:bg-indigo-800 cursor-pointer"
             >
                 Save
             </button>
