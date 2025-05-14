@@ -8,6 +8,7 @@ const AlertModel = require("./models/alert");
 const axios = require("axios");
 const FormData = require('form-data');
 const nodemailer = require("nodemailer");
+const Camera = require('./models/camera');
 
 const app = express();
 app.use(express.json());
@@ -71,7 +72,7 @@ app.post("/login", async (req, res) => {
         expiresIn: "1h",
       });
   
-      res.status(200).json({ message: "Login successful", token });
+      res.status(200).json({ message: "Login successful", token, user: { _id: user._id } });
   
     } catch (error) {
       console.error(error);
@@ -344,6 +345,58 @@ app.post("/api/reset-password", async (req, res) => {
         res.status(500).send({ message: "Error updating password" });
     }
 });
+
+app.get('/cameras', async (req, res) => {
+    const userId = req.query.userId;  
+    if (!userId) {
+        return res.status(400).json({ error: "Missing userId in query parameters." });
+    }
+
+    const cameras = await Camera.find({ userId });
+    res.json(cameras);
+});
+
+
+
+app.post('/cameras', async (req, res) => {
+    const { userId, name, src, isActive } = req.body;
+    console.log(req.body); 
+    if (!userId) {
+        return res.status(400).json({ error: "Missing userId in request body." });
+    }
+
+    const camera = new Camera({ userId, name, src, isActive });
+    try {
+        await camera.save();
+        res.status(201).json(camera);  
+    } catch (error) {
+        console.error('Error saving camera:', error);
+        res.status(500).json({ error: "Error saving camera" });
+    }
+});
+
+
+app.put('/cameras/:id', async (req, res) => {
+    try {
+        const camera = await Camera.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        if (!camera) return res.status(404).json({ error: "Camera not found." });
+        res.json(camera);
+    } catch (error) {
+        res.status(500).json({ error: "Error updating camera." });
+    }
+});
+
+
+app.delete('/cameras/:id', async (req, res) => {
+    try {
+        const deleted = await Camera.findByIdAndDelete(req.params.id);
+        if (!deleted) return res.status(404).json({ error: "Camera not found." });
+        res.status(204).send();
+    } catch (error) {
+        res.status(500).json({ error: "Error deleting camera." });
+    }
+});
+
 
 
 app.listen(5000, () => {
