@@ -51,8 +51,10 @@ function Alerts() {
 
   useEffect(() => {
     const today = new Date();
-    const formatted = today.toISOString().split("T")[0];
-    setSelectedDate(formatted);
+    const localDate = new Date(today.getTime() - today.getTimezoneOffset() * 60000)
+      .toISOString()
+      .split("T")[0];
+    setSelectedDate(localDate);
   }, []);
 
   useEffect(() => {
@@ -157,8 +159,8 @@ function Alerts() {
                       {alert.resolved ? "Resolved" : "Active"}
                     </span>
                   </div>
-                  <p className="text-gray-700 text-s mt-1">{formatDate(alert.timestamp)}</p>
-                  <p className="text-gray-700 text-sm mt-1">
+                  <p className="text-gray-700 mt-1">{formatDate(alert.timestamp)}</p>
+                  <p className="text-gray-700 mt-1">
                     { alert.note || (
                       alert.resolved
                       ? "Fall incident resolved. No further action required."
