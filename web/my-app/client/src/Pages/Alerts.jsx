@@ -51,18 +51,15 @@ function Alerts() {
   };
 
   useEffect(() => {
-<<<<<<< Updated upstream
+    const userId = localStorage.getItem("userId");
+    console.log("User ID from localStorage:", userId); 
     const today = new Date();
     const localDate = new Date(today.getTime() - today.getTimezoneOffset() * 60000)
       .toISOString()
       .split("T")[0];
     setSelectedDate(localDate);
-  }, []);
-=======
-  const userId = localStorage.getItem("userId");
-  console.log("User ID from localStorage:", userId); 
 
-  if (!userId) {
+    if (!userId) {
     console.error("User ID not found in localStorage");
     return;
   }
@@ -77,13 +74,13 @@ function Alerts() {
       console.log("Example alert:", res.data[0]);
     }
   });
+  }, []);
 
 
-}, []);
+  
 
 
 
->>>>>>> Stashed changes
 
   useEffect(() => {
   const userId = localStorage.getItem("userId");
