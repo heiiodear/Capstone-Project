@@ -161,26 +161,27 @@ function Cameras() {
                         onDelete={() => handleDeleteCamera(rooms[selectedCamera].id)}
                     />
                 </div>
-                <div className="flex gap-2 overflow-x-auto pb-2 max-w-xxl mx-auto">
+                <div className="flex items-center gap-2 overflow-x-auto pb-2 max-w-6xl mx-auto px-2">
                     {rooms.map((room, idx) => (
-                        <button
-                            key={room._id}
-                            className={`px-3 py-2 rounded-lg border whitespace-nowrap flex-shrink-0 cursor-pointer${
-                                selectedCamera === idx
-                                    ? "bg-indigo-900 text-white"
-                                    : "border-indigo-900 text-indigo-900 hover:bg-indigo-100"
-                            }`}
-                            onClick={() => setSelectedCamera(idx)}
-                        >
-                            {room.name}
-                        </button>
-                    ))}
-                    {/* Add Camera */}
-                    <div
-                        onClick={handleAddCamera}
-                        className="px-3 py-2 bg-indigo-100 hover:bg-indigo-200 cursor-pointer rounded-lg shadow-md p-4 flex items-center justify-center">
-                        <span className="text-indigo-900 font-semibold">+ Add Camera</span>
-                    </div>
+                    <button
+                    key={room._id}
+                    className={`inline-flex items-center px-4 py-2 rounded-lg border whitespace-nowrap flex-shrink-0 transition ${
+                        selectedCamera === idx
+                        ? "bg-indigo-900 text-white"
+                        : "border-indigo-900 text-indigo-900 hover:bg-indigo-100"
+                    }`}
+                    onClick={() => setSelectedCamera(idx)}
+                    >
+                    {room.name}
+                    </button>
+                ))}
+                {/* Add Camera */}
+                <button
+                    onClick={handleAddCamera}
+                    className="inline-flex items-center px-4 py-2 rounded-lg font-semibold text-indigo-900 bg-indigo-100 hover:bg-indigo-200 flex-shrink-0 transition"
+                >
+                    + Add Camera
+                </button>
                 </div>
                 </div>
                 )}

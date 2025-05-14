@@ -81,7 +81,7 @@ const AlertModal = ({ alert, onClose, formatDate, onResolve }) => {
         <div className="flex items-center mb-5">
           {!isEditingNote ? (
             <>
-              <p className="text-gray-700 text-sm">
+              <p className="text-gray-700">
                 {noteInput || (
                   alert.resolved
                     ? "Fall incident resolved. No further action required."
