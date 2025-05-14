@@ -249,6 +249,7 @@ app.get("/alerts", async (req, res) => {
 });
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 app.patch("/alerts/:id", async (req, res) => {
   try {
     const { id } = req.params;
@@ -272,6 +273,8 @@ app.patch("/alerts/:id", async (req, res) => {
     res.status(500).json({ error: "Failed to update alert" });
   }
 });
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
 
