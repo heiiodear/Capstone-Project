@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FaBars } from "react-icons/fa";
+import { FaBars, FaTimes } from "react-icons/fa";
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { fas } from '@fortawesome/free-solid-svg-icons'; 
 import { fab } from '@fortawesome/free-brands-svg-icons'; 
@@ -10,10 +10,16 @@ library.add(fas, fab, far);
 import axios from "axios";
 
 function Header() {
+    // เพิ่ม
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    // ลบไหม คุยกับตัวเอง
     const navigate = useNavigate();
     const [profileImage, setProfileImage] = useState("https://www.engineering.columbia.edu/sites/default/files/styles/full_size_1_1/public/2024-07/Columbia_Engineering_Headshot_1_B.png?itok=n6_TL_JQ");
     const [isLoading, setIsLoading] = useState(true); 
     const [error, setError] = useState(null);
+
+    const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
+    const closeSidebar = () => setIsSidebarOpen(false);
 
     useEffect(() => {
         const fetchUserProfile = async () => {
@@ -33,25 +39,17 @@ function Header() {
                         Authorization: `Bearer ${token}`
                     }
                 });
-                if (response.data.profileImage) {
-                    console.log("User profile image fetched:", response.data.profileImage);
-                    setProfileImage(response.data.profileImage);
-                } else {
-                    console.log("No profile image found, using default");
-                    setProfileImage(
-                        "https://www.engineering.columbia.edu/sites/default/files/styles/full_size_1_1/public/2024-07/Columbia_Engineering_Headshot_1_B.png?itok=n6_TL_JQ"
-                    );
-                }
+                setProfileImage(response.data.profileImage || profileImage);
             } catch (error) {
                 console.error("Failed to fetch user profile", error);
                 setError("Failed to fetch profile image");
             } finally {
                 setIsLoading(false);
-            }
-        };
+      }
+    };
 
-        fetchUserProfile();
-    }, []);
+    fetchUserProfile();
+  }, []);
 
     const handleLogout = () => {
         localStorage.removeItem("token");
@@ -64,18 +62,22 @@ function Header() {
     // };
 
     return (
-        <div className="bg-indigo-900 text-white shadow-md py-3 px-5">
+        <header className="bg-indigo-900 text-white shadow-md py-3 px-5 relative z-50">
             <div className="max-w-9xl mx-auto flex justify-between items-center">
+                {/* Left: Brand + Mobile Menu Button */}
                 <div className="flex items-center gap-4">
                     <button
-                        className="md:hidden">
+                        className="md:hidden text-white"
+                        onClick={toggleSidebar}
+                    >
                         <FaBars className="w-5 h-5" />
                     </button>
-                    <Link to="/dashboard" className="text-xl font-bold flex items-center gap-2">
-                        <span className="hidden sm:inline">Projectname</span>
+                    <Link to="/dashboard" className="text-xl font-bold">
+                        <span className="hidden sm:inline">Secura</span>
                     </Link>
                 </div>
 
+                {/* Center: Nav Links (Desktop only) */}
                 <nav className="hidden md:flex gap-6 text-md font-medium">
                     <Link to="/dashboard" className="hover:underline">Dashboard</Link>
                     <Link to="/alerts" className="hover:underline">Alerts</Link>
@@ -83,23 +85,21 @@ function Header() {
                     <Link to="/contactus" className="hover:underline">Contact Us</Link>
                 </nav>
 
-                <div className="flex items-center gap-4 relative">
-                    <Link to="/alerts" className="relative text-xl">
-                        <FontAwesomeIcon icon="fa-solid fa-bell" style={{ color: "#ffffff" }} />
+                {/* Right: Notification + Profile + Logout */}
+                <div className="flex items-center gap-4">
+                    <Link to="/alerts">
+                        <FontAwesomeIcon icon="bell" className="text-white text-lg" />
                     </Link>
                     <Link to="/profile">
-                        <div className="relative w-8 h-8 rounded-full overflow-hidden">
                             <img
                                 src={profileImage}
                                 alt="Profile"
-                                className="object-cover w-full h-full"
+                                className="w-8 h-8 rounded-full object-cover"
                                 onError={(e) => {
                                     e.target.onerror = null;
                                     e.target.src = "https://www.engineering.columbia.edu/sites/default/files/styles/full_size_1_1/public/2024-07/Columbia_Engineering_Headshot_1_B.png?itok=n6_TL_JQ";
                                 }}
                                 />
-
-                        </div>
                     </Link>
                     <button
                         type="submit"
@@ -109,7 +109,30 @@ function Header() {
                     </button>
                 </div>
             </div>
-        </div>
+                {/* Sidebar Menu */}
+                <div className={`fixed top-0 left-0 w-64 h-full bg-white shadow-md transform transition-transform duration-300 ease-in-out z-50 ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}`}>
+                <div className="flex justify-between items-center px-5 py-4 border-b">
+                    <h2 className="text-indigo-900 font-bold text-lg">Menu</h2>
+                    <button onClick={closeSidebar}>
+                    <FaTimes className="text-indigo-900 text-xl" />
+                    </button>
+                </div>
+                <nav className="flex flex-col gap-4 px-5 py-4 text-indigo-900 font-medium">
+                    <Link to="/dashboard" onClick={closeSidebar}>Dashboard</Link>
+                    <Link to="/alerts" onClick={closeSidebar}>Alerts</Link>
+                    <Link to="/cameras" onClick={closeSidebar}>Cameras</Link>
+                    <Link to="/contactus" onClick={closeSidebar}>Contact Us</Link>
+                </nav>
+                </div>
+
+                {/* Backdrop */}
+                {isSidebarOpen && (
+                <div
+                    className="fixed inset-0 bg-black/50 z-40"
+                    onClick={closeSidebar}
+        ></div>
+        )}
+     </header>
     );
 };
 
