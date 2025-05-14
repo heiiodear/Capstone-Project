@@ -123,7 +123,7 @@ const Contact = () => {
                         </p>
                         <button
                             onClick={() => setSubmitted(false)}
-                            className="bg-indigo-900 text-white px-4 py-2 rounded-lg hover:bg-indigo-800"
+                            className="bg-indigo-900 text-white px-4 py-2 rounded-lg hover:bg-indigo-800 cursor-pointer"
                         >
                             Send Another Message
                         </button>
@@ -173,7 +173,7 @@ const Contact = () => {
                         </div>
                         <button
                         type="submit"
-                        className="flex w-full justify-center bg-indigo-900 text-white font-medium px-4 py-2 rounded-lg hover:bg-indigo-800"
+                        className="flex w-full justify-center bg-indigo-900 text-white font-medium px-4 py-2 rounded-lg hover:bg-indigo-800 cursor-pointer"
                         >
                             Send us a message
                         </button>

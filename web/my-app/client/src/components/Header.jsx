@@ -68,27 +68,27 @@ function Header() {
             <div className="max-w-9xl mx-auto flex justify-between items-center">
                 <div className="flex items-center gap-4">
                     <button
-                        className="md:hidden">
+                        className="md:hidden ">
                         <FaBars className="w-5 h-5" />
                     </button>
-                    <Link to="/dashboard" className="text-xl font-bold flex items-center gap-2">
+                    <Link to="/dashboard" className="text-xl font-bold flex items-center gap-2 cursor-pointer">
                         <span className="hidden sm:inline">Projectname</span>
                     </Link>
                 </div>
 
                 <nav className="hidden md:flex gap-6 text-md font-medium">
-                    <Link to="/dashboard" className="hover:underline">Dashboard</Link>
-                    <Link to="/alerts" className="hover:underline">Alerts</Link>
-                    <Link to="/cameras" className="hover:underline">Cameras</Link>
-                    <Link to="/contactus" className="hover:underline">Contact Us</Link>
+                    <Link to="/dashboard" className="hover:underline cursor-pointer">Dashboard</Link>
+                    <Link to="/alerts" className="hover:underline cursor-pointer">Alerts</Link>
+                    <Link to="/cameras" className="hover:underline cursor-pointer">Cameras</Link>
+                    <Link to="/contactus" className="hover:underline cursor-pointer">Contact Us</Link>
                 </nav>
 
                 <div className="flex items-center gap-4 relative">
-                    <Link to="/alerts" className="relative text-xl">
+                    <Link to="/alerts" className="relative text-xl cursor-pointer">
                         <FontAwesomeIcon icon="fa-solid fa-bell" style={{ color: "#ffffff" }} />
                     </Link>
                     <Link to="/profile">
-                        <div className="relative w-8 h-8 rounded-full overflow-hidden">
+                        <div className="relative w-8 h-8 rounded-full overflow-hidden cursor-pointer">
                             <img
                                 src={profileImage}
                                 alt="Profile"

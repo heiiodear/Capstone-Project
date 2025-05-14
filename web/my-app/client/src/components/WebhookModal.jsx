@@ -8,7 +8,7 @@ function WebhookModal({ isOpen, onClose }) {
             <div className="relative bg-white p-6 rounded-lg shadow-lg w-full max-w-lg max-h-[90vh] overflow-y-auto space-y-4">
                 <button
                     onClick={onClose}
-                    className="absolute top-2 right-2 text-gray-500 hover:text-gray-900 text-xl font-bold m-4">
+                    className="absolute top-2 right-2 text-gray-500 hover:text-gray-900 text-xl font-bold m-4 cursor-pointer">
                     ✕
                 </button>
                 <h2 className="text-lg font-semibold text-indigo-900">

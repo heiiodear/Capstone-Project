@@ -69,7 +69,7 @@ function Alerts() {
         <div className="flex justify-between items-center mb-6 mt-0.75">
           <h1 className="text-3xl font-bold text-indigo-900">Alert Center</h1>
           <button
-            className="flex flex-col items-center text-indigo-900 hover:text-indigo-800"
+            className="flex flex-col items-center text-indigo-900 hover:text-indigo-800 cursor-pointer" 
             title="Settings"
             onClick={() => setShowSettings(true)}
           >
@@ -102,7 +102,7 @@ function Alerts() {
             <div className="flex gap-2 flex-wrapm">
               <button
                 onClick={() => setFilter("all")}
-                className={`px-3 py-1 rounded-lg ${
+                className={`px-3 py-1 rounded-lg cursor-pointer ${
                   filter === "all" ? "bg-indigo-900 text-white" : "border border-gray-300"
                 }`}
               >
@@ -110,7 +110,7 @@ function Alerts() {
               </button>
               <button
                 onClick={() => setFilter("active")}
-                className={`px-3 py-1 rounded-lg ${
+                className={`px-3 py-1 rounded-lg cursor-pointer ${
                   filter === "active" ? "bg-indigo-900 text-white" : "border border-gray-300"
                 }`}
               >
@@ -118,7 +118,7 @@ function Alerts() {
               </button>
               <button
                 onClick={() => setFilter("resolved")}
-                className={`px-3 py-1 rounded-lg ${
+                className={`px-3 py-1 rounded-lg cursor-pointer ${
                   filter === "resolved" ? "bg-indigo-900 text-white" : "border border-gray-300"
                 }`}
               >

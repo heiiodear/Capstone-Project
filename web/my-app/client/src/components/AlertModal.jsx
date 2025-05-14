@@ -58,7 +58,7 @@ const AlertModal = ({ alert, onClose, formatDate, onResolve }) => {
           onClick={() => {
             onClose();
           }}
-          className="absolute top-2 right-2 text-gray-500 hover:text-gray-900 text-xl font-bold m-4"
+          className="absolute top-2 right-2 text-gray-500 hover:text-gray-900 text-xl font-bold m-4 cursor-pointer"
         >
           ✕
         </button>
@@ -120,7 +120,7 @@ const AlertModal = ({ alert, onClose, formatDate, onResolve }) => {
           <div className="flex justify-end mt-6">
             <button
               onClick={handleResolve}
-              className="bg-indigo-900 text-white text-sm px-4 py-2 rounded-lg hover:bg-indigo-800"
+              className="bg-indigo-900 text-white text-sm px-4 py-2 rounded-lg hover:bg-indigo-800 cursor-pointer"
             >
               Resolved
             </button>

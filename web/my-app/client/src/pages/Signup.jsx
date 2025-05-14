@@ -290,7 +290,7 @@ function Signup() {
               <button
                 type="button"
                 onClick={() => setIsTermsOpen(true)}
-                className="text-indigo-700 hover:underline"
+                className="text-indigo-700 hover:underline cursor-pointer"
               >
                 terms and conditions
               </button>

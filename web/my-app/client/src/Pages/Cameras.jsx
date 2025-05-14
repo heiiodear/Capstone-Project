@@ -152,7 +152,7 @@ function Cameras() {
                     {rooms.map((room, idx) => (
                         <button
                             key={room._id}
-                            className={`px-3 py-2 rounded-lg border whitespace-nowrap flex-shrink-0 ${
+                            className={`px-3 py-2 rounded-lg border whitespace-nowrap flex-shrink-0 cursor-pointer${
                                 selectedCamera === idx
                                     ? "bg-indigo-900 text-white"
                                     : "border-indigo-900 text-indigo-900 hover:bg-indigo-100"
