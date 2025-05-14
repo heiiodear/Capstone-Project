@@ -35,17 +35,25 @@ function Alerts() {
     return matchFilter && matchDate;
   });
 
-  const handleResolve = async (id, newStatus) => {
+  const handleResolve = async (id, newStatus, note) => {
     try {
-      await axios.patch(`http://localhost:5000/alerts/${id}`, { resolved: newStatus });
+      await axios.patch(`http://localhost:5000/alerts/${id}`, { 
+        resolved: newStatus, 
+        note: note 
+      });
       setAlerts((prev) =>
-        prev.map((a) => (a._id === id ? { ...a, resolved: newStatus } : a))
+        prev.map((a) => (a._id === id ? { ...a, resolved: newStatus, note: note } : a))
       );
     } catch (err) {
       console.error("Failed to update alert status:", err);
     }
   };
-  
+
+  useEffect(() => {
+    const today = new Date();
+    const formatted = today.toISOString().split("T")[0];
+    setSelectedDate(formatted);
+  }, []);
 
   useEffect(() => {
     axios.get("http://localhost:5000/alerts")
@@ -136,8 +144,8 @@ function Alerts() {
               <div className="flex justify-between items-start gap-4">
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
-                    <h2 className="font-semibold text-xl text-indigo-900">
-                      {alert.roomName || alert.user_id}
+                    <h2 className="font-semibold text-xl text-black">
+                      {alert.name || alert.user_id}
                     </h2>
                     <span
                       className={`text-xs px-2 py-1 rounded-full ${
@@ -150,8 +158,12 @@ function Alerts() {
                     </span>
                   </div>
                   <p className="text-gray-700 text-s mt-1">{formatDate(alert.timestamp)}</p>
-                  <p className="text-gray-700 text-s mt-1">
-                    {alert.description || alert.note || "No description"}
+                  <p className="text-gray-700 text-sm mt-1">
+                    { alert.note || (
+                      alert.resolved
+                      ? "Fall incident resolved. No further action required."
+                      : "Immediate assistance required."
+                    )}
                   </p>
                 </div>
         

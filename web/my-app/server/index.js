@@ -135,6 +135,30 @@ app.get("/alerts", async (req, res) => {
     }
 });
 
+app.patch("/alerts/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { resolved, note } = req.body;
+
+    const updateFields = {};
+    if (resolved !== undefined) updateFields.resolved = resolved;
+    if (note !== undefined) updateFields.note = note;
+
+    const updatedAlert = await AlertModel.findByIdAndUpdate(
+      id,
+      { $set: updateFields },
+      { new: true }
+    );
+
+    if (!updatedAlert) return res.status(404).json({ error: "Alert not found" });
+
+    res.json(updatedAlert);
+  } catch (err) {
+    console.error("Error updating alert:", err);
+    res.status(500).json({ error: "Failed to update alert" });
+  }
+});
+
 app.get("/profile", async (req, res) => {
     try {
         const token = req.headers.authorization.split(" ")[1]; 

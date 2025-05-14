@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 
 const alertSchema = new mongoose.Schema({
   user_id: String,
+  name: String,
   image_url: String,
   video_url: String,
   note: String,
@@ -9,6 +10,9 @@ const alertSchema = new mongoose.Schema({
   resolved: {
     type: Boolean,
     default: false,
+  },
+  note: { type: String, 
+    default: "" 
   },
 });
 

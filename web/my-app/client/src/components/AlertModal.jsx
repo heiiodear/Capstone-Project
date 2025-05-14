@@ -1,19 +1,53 @@
-import React from "react";
+import React, { useState } from "react";
 import ReactPlayer from 'react-player';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import axios from "axios";
 
 const AlertModal = ({ alert, onClose, formatDate, onResolve }) => {
   if (!alert) return null;
+
+  const [noteInput, setNoteInput] = useState(alert.note || "");
+  const [isEditingNote, setIsEditingNote] = useState(false);
   
-  console.log("Rendering AlertModal with alert:", alert);
-  
-  const handleResolve = () => {
+  const handleResolve = async () => {
     const newStatus = !alert.resolved;
-    console.log(`Toggling alert ID ${alert._id} to resolved: ${newStatus}`);
+    const updatedNote = noteInput.trim() ? noteInput.trim() : alert.note;
+
     try {
-      onResolve(alert._id, newStatus);
+      onResolve(alert._id, newStatus, updatedNote);
+      await axios.patch(`http://localhost:5000/alerts/${alert._id}`, {
+        resolved: newStatus,
+        note: updatedNote,
+      });
       onClose();
     } catch (error) {
       console.error("Error in handleResolve:", error);
+    }
+  };
+
+  const handleNoteUpdate = async () => {
+    const trimmedNote = noteInput.trim();
+    if (trimmedNote === alert.note) {
+      setIsEditingNote(false);
+      return;
+    }
+
+    try {
+      await axios.patch(`http://localhost:5000/alerts/${alert._id}`, {
+        note: trimmedNote,
+      });
+      onResolve(alert._id, alert.resolved, trimmedNote); 
+      setIsEditingNote(false);
+    } catch (error) {
+      console.error("Error updating note:", error);
+    }
+  };
+
+  const handleKeyPress = (e) => {
+    console.log("Key pressed:", e.key);
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleNoteUpdate();
     }
   };
 
@@ -22,7 +56,6 @@ const AlertModal = ({ alert, onClose, formatDate, onResolve }) => {
       <div className="bg-white rounded-lg shadow-lg max-w-2xl w-full p-6 relative">
         <button
           onClick={() => {
-            console.log("Close button clicked");
             onClose();
           }}
           className="absolute top-2 right-2 text-gray-500 hover:text-gray-900 text-xl font-bold m-4"
@@ -33,7 +66,7 @@ const AlertModal = ({ alert, onClose, formatDate, onResolve }) => {
         <h1 className="text-2xl font-bold mb-2 text-indigo-900">Alert Details</h1>
         <p className="text-gray-700 text-s mb-4">Detailed information about this alert</p>
         <div className="flex items-center gap-2">
-          <h2 className="text-2xl font-semibold mb-2">{alert.roomName || alert.user_id}</h2>
+          <h2 className="text-2xl font-semibold mb-2">{alert.name || alert.user_id}</h2>
           <span
             className={`text-xs px-2 py-1 rounded-full ${
               alert.resolved
@@ -45,11 +78,36 @@ const AlertModal = ({ alert, onClose, formatDate, onResolve }) => {
           </span>
         </div>
         <p className="text-gray-700 text-sm mb-2"><b className="font-semibold">Time: </b>{formatDate(alert.timestamp)}</p>
-        <p className="text-gray-700 text-sm mb-5">{alert.description || alert.note || "No description available."}</p>
-        
-
+        <div className="flex items-center mb-5">
+          {!isEditingNote ? (
+            <>
+              <p className="text-gray-700 text-sm">
+                {noteInput || (
+                  alert.resolved
+                    ? "Fall incident resolved. No further action required."
+                    : "Immediate assistance required."
+                )}
+              </p>
+              <button
+                onClick={() => setIsEditingNote(true)}
+                className="bg-white border-white hover:bg-indigo-200 text-sm px-2 py-1 ml-2 rounded-lg cursor-pointer">
+                  <FontAwesomeIcon icon="fa-solid fa-pen" style={{color: "#312E81",}} />
+              </button>
+            </>
+          ) : (
+            <textarea
+              rows={3}
+              value={noteInput}
+              onChange={(e) => setNoteInput(e.target.value)}
+              onKeyDown={handleKeyPress}
+              placeholder="Edit note and press Enter to save"
+              className="w-full border border-gray-500 rounded-lg p-2 text-sm mt-3"
+              autoFocus
+            />
+          )}
+        </div>
+      
         {alert.video_url && (
-          
           <ReactPlayer
             url={alert.video_url}
             controls
@@ -58,12 +116,11 @@ const AlertModal = ({ alert, onClose, formatDate, onResolve }) => {
           />
         )}
 
-
         {!alert.resolved && (
           <div className="flex justify-end mt-6">
             <button
               onClick={handleResolve}
-              className="bg-indigo-900 text-white px-4 py-2 rounded-lg hover:bg-indigo-800"
+              className="bg-indigo-900 text-white text-sm px-4 py-2 rounded-lg hover:bg-indigo-800"
             >
               Resolved
             </button>
