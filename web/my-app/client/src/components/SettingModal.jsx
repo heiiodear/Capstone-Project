@@ -17,11 +17,31 @@ function SettingModal({
         setLocalDiscord(discordEnabled);
     }, [emailEnabled, discordEnabled]);
     
-    const handleSave = () => {
+    // เพิ่ม
+    const handleSave = async () => {
         setEmailEnabled(localEmail);
         setDiscordEnabled(localDiscord);
-        onClose();
-    };
+
+        try {
+    const token = localStorage.getItem("token"); // Adjust this line if you store token differently
+    await fetch("http://localhost:5000/notification-settings", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        emailEnabled: localEmail,
+        discordEnabled: localDiscord,
+      }),
+    });
+  } catch (error) {
+    console.error("Failed to update settings", error);
+  }
+
+  onClose();
+};
+//
 
     if (!isOpen) return null;
 

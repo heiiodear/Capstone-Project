@@ -80,7 +80,7 @@ app.post("/login", async (req, res) => {
     }
   });
 
-app.post("/alert", async (req, res) => {
+/* app.post("/alert", async (req, res) => {
     const { user_id, image_url, video_url } = req.body;
 
     if (!user_id || !image_url || !video_url) {
@@ -124,6 +124,116 @@ app.post("/alert", async (req, res) => {
       console.error("❌ แจ้งเตือนล้มเหลว:", error.message);
       res.status(500).json({ error: "แจ้งเตือนล้มเหลว" });
     }
+}); */
+
+app.post("/alert", async (req, res) => {
+  const { user_id, image_url, video_url } = req.body;
+
+  if (!user_id || !image_url || !video_url) {
+    return res.status(400).json({ error: "Missing required fields." });
+  }
+
+  try {
+    const user = await UserModel.findById(user_id);
+    if (!user) {
+      return res.status(404).json({ error: "User not found." });
+    }
+
+    const { email, discord, username, notificationSettings } = user;
+
+    if (notificationSettings?.discord && discord) {
+      try {
+        const webhookURL = discord;
+        const videoStream = await axios.get(video_url, { responseType: "stream" });
+        const form = new FormData();
+
+        form.append("payload_json", JSON.stringify({
+          content: "🚨 พบเหตุการณ์ล้ม!",
+          embeds: [
+            {
+              title: "โปรดดำเนินการตรวจสอบสถานการณ์โดยด่วน",
+              image: { url: image_url },
+              color: 15158332
+            }
+          ]
+        }));
+
+        form.append("file", videoStream.data, {
+          filename: "fall_video.mp4",
+          contentType: "video/mp4"
+        });
+
+        await axios.post(webhookURL, form, {
+          headers: form.getHeaders()
+        });
+
+        console.log("✅ แจ้งเตือนผ่าน Discord สำเร็จ:", username);
+      } catch (err) {
+        console.error("❌ ส่ง Discord ล้มเหลว:", err.message);
+      }
+    }
+
+    if (notificationSettings?.email && email) {
+      try {
+        const transporter = nodemailer.createTransport({
+          service: "gmail",
+          auth: {
+            user: process.env.EMAIL_SENDER,
+            pass: process.env.EMAIL_PASSWORD,
+          },
+        });
+
+        const mailOptions = {
+          from: `"Secura" <${process.env.EMAIL_SENDER}>`,
+          to: email,
+          subject: "🚨 แจ้งเตือน: พบเหตุการณ์ล้ม",
+          text: "โปรดตรวจสอบเหตุการณ์โดยด่วน",
+          html: `<p><strong>🚨 พบเหตุการณ์ล้ม</strong></p><img src="${image_url}" width="400" />`
+        };
+
+        await transporter.sendMail(mailOptions);
+        console.log("✅ แจ้งเตือนผ่าน Email สำเร็จ:", username);
+      } catch (err) {
+        console.error("❌ ส่ง Email ล้มเหลว:", err.message);
+      }
+    }
+
+    res.status(200).json({ message: "แจ้งเตือนสำเร็จ" });
+
+  } catch (error) {
+    console.error("❌ แจ้งเตือนล้มเหลว:", error.message);
+    res.status(500).json({ error: "แจ้งเตือนล้มเหลว" });
+  }
+});
+
+app.put("/notification-settings", async (req, res) => {
+  try {
+    const token = req.headers.authorization?.split(" ")[1];
+    if (!token) return res.status(401).json({ error: "Unauthorized" });
+
+    const decoded = jwt.verify(token, "your-secret-key");
+    const userId = decoded.id;
+
+    const { emailEnabled, discordEnabled } = req.body;
+
+    const updatedUser = await UserModel.findByIdAndUpdate(
+      userId,
+      {
+        notificationSettings: {
+          email: emailEnabled,
+          discord: discordEnabled,
+        },
+      },
+      { new: true }
+    );
+
+    if (!updatedUser) return res.status(404).json({ error: "User not found" });
+
+    res.status(200).json({ message: "Notification settings updated." });
+  } catch (error) {
+    console.error("Error updating notification settings:", error);
+    res.status(500).json({ error: "Failed to update notification settings" });
+  }
 });
 
 app.get("/alerts", async (req, res) => {
