@@ -63,31 +63,44 @@ function Cameras() {
         setModalData({ ...modalData, [e.target.name]: e.target.value });
     };
 
-   const handleSave = () => {
-    const user_id = localStorage.getItem("userId");
-    if (!user_id) {
-        console.error("User ID is not found in localStorage");
-        return;
-    }
-
-    const newCamera = {
-        ...modalData,
-        userId: user_id,
+    const handleSave = () => {
+        const user_id = localStorage.getItem("userId");
+        if (!user_id) {
+            console.error("User ID is not found in localStorage");
+            return;
+        }
+    
+        const updatedCamera = {
+            ...modalData,
+            userId: user_id,
+        };
+    
+        if (modalMode === "add") {
+            axios.post('http://localhost:5000/cameras', updatedCamera, {
+                headers: { 'Content-Type': 'application/json' },
+            })
+            .then((response) => {
+                setRooms(prev => [...prev, response.data]);
+                setModalOpen(false);
+            })
+            .catch((error) => {
+                console.error('Error adding camera:', error);
+            });
+        } else if (modalMode === "edit") {
+            axios.put(`http://localhost:5000/cameras/${modalData._id}`, updatedCamera, {
+                headers: { 'Content-Type': 'application/json' },
+            })
+            .then((response) => {
+                setRooms(prev => prev.map((room, i) => 
+                    i === editIndex ? response.data : room
+                ));
+                setModalOpen(false);
+            })
+            .catch((error) => {
+                console.error('Error updating camera:', error);
+            });
+        }
     };
-
-    axios.post('http://localhost:5000/cameras', newCamera, {
-        headers: {
-            'Content-Type': 'application/json',
-        },
-    })
-    .then((response) => {
-        setRooms(prev => [...prev, response.data]);
-        setModalOpen(false); 
-    })
-    .catch((error) => {
-        console.error('Error saving camera:', error);
-    });
-};
 
 
     const handleDeleteCamera = (id) => {
