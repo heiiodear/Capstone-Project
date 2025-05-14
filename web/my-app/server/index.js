@@ -147,10 +147,10 @@ app.post("/alert", async (req, res) => {
         const form = new FormData();
 
         form.append("payload_json", JSON.stringify({
-          content: "🚨 พบเหตุการณ์ล้ม!",
+          content: "🚨 Fall incident detected!",
           embeds: [
             {
-              title: "โปรดดำเนินการตรวจสอบสถานการณ์โดยด่วน",
+              title: "Alert Message: Immediate Attention is required. Please investigate the situation immediately!",
               image: { url: image_url },
               color: 15158332
             }
@@ -166,9 +166,9 @@ app.post("/alert", async (req, res) => {
           headers: form.getHeaders()
         });
 
-        console.log("✅ แจ้งเตือนผ่าน Discord สำเร็จ:", username);
+        console.log("Discord alert sent successfully:", username);
       } catch (err) {
-        console.error("❌ ส่ง Discord ล้มเหลว:", err.message);
+        console.error("Discord alert failed to send:", err.message);
       }
     }
 
@@ -185,23 +185,23 @@ app.post("/alert", async (req, res) => {
         const mailOptions = {
           from: `"Secura" <${process.env.EMAIL_SENDER}>`,
           to: email,
-          subject: "🚨 แจ้งเตือน: พบเหตุการณ์ล้ม",
-          text: "โปรดตรวจสอบเหตุการณ์โดยด่วน",
-          html: `<p><strong>🚨 พบเหตุการณ์ล้ม</strong></p><img src="${image_url}" width="400" />`
+          subject: "🚨 Fall incident detected!",
+          text: "Alert Message: Immediate Attention is required. Please investigate the situation immediately!",
+          html: `<p><strong>🚨 Fall incident detected!</strong></p><img src="${image_url}" width="400" />`
         };
 
         await transporter.sendMail(mailOptions);
-        console.log("✅ แจ้งเตือนผ่าน Email สำเร็จ:", username);
+        console.log("Email alert sent successfully:", username);
       } catch (err) {
-        console.error("❌ ส่ง Email ล้มเหลว:", err.message);
+        console.error("Email alert failed to send:", err.message);
       }
     }
 
-    res.status(200).json({ message: "แจ้งเตือนสำเร็จ" });
+    res.status(200).json({ message: "Alert sent successfully." });
 
   } catch (error) {
-    console.error("❌ แจ้งเตือนล้มเหลว:", error.message);
-    res.status(500).json({ error: "แจ้งเตือนล้มเหลว" });
+    console.error("Alert failed to send:", error.message);
+    res.status(500).json({ error: "Alert failed to send." });
   }
 });
 
