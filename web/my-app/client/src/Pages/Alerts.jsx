@@ -22,6 +22,7 @@ function Alerts() {
   const [emailEnabled, setEmailEnabled] = useState(true);
   const [discordEnabled, setDiscordEnabled] = useState(false);
 
+
   const filteredAlerts = alerts.filter((alert) => {
     const matchFilter =
       filter === "all"
@@ -56,10 +57,30 @@ function Alerts() {
   }, []);
 
   useEffect(() => {
-    axios.get("http://localhost:5000/alerts")
-      .then((res) => setAlerts(res.data))
-      .catch((err) => console.error("Failed to fetch alerts:", err));
-  }, []);
+  const userId = localStorage.getItem("userId");
+  console.log("User ID from localStorage:", userId); 
+
+  if (!userId) {
+    console.error("User ID not found in localStorage");
+    return;
+  }
+
+  // axios.get(`http://localhost:5000/alerts?userId=${userId}`)
+  axios.get(`http://localhost:5000/alerts`)
+  .then((res) => {
+    console.log("Fetched alerts:", res.data);
+    setAlerts(res.data);
+
+    if (res.data.length > 0) {
+      console.log("Example alert:", res.data[0]);
+    }
+  });
+
+
+}, []);
+
+
+
 
   return (
     <div className="min-h-screen bg-white">

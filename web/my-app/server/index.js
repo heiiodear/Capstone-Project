@@ -237,15 +237,18 @@ app.put("/notification-settings", async (req, res) => {
 });
 
 app.get("/alerts", async (req, res) => {
-    try {
-      const alerts = await AlertModel.find({}).sort({ timestamp: -1 });
-      res.json(alerts);
-    } catch (err) {
-      console.error("Error fetching alerts:", err);
-      res.status(500).json({ error: "Failed to fetch alerts" });
-    }
+  const { userId } = req.query;
+  const query = userId ? { user_id: userId } : {};
+
+  try {
+    const alerts = await AlertModel.find(query).sort({ timestamp: -1 });
+    res.json(alerts);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch alerts" });
+  }
 });
 
+<<<<<<< Updated upstream
 app.patch("/alerts/:id", async (req, res) => {
   try {
     const { id } = req.params;
@@ -269,6 +272,8 @@ app.patch("/alerts/:id", async (req, res) => {
     res.status(500).json({ error: "Failed to update alert" });
   }
 });
+=======
+>>>>>>> Stashed changes
 
 app.get("/profile", async (req, res) => {
     try {
