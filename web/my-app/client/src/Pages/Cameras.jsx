@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Header from "./../components/Header";
 import CameraView from "./../components/CameraViews";
 import CamLayout from "./../components/CamLayout";
@@ -9,23 +9,35 @@ import { fab } from '@fortawesome/free-brands-svg-icons';
 import { far } from '@fortawesome/free-regular-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 library.add(fas, fab, far);
+import axios from 'axios';
 
 function Cameras() {
     const [layout, setLayout] = useState("grid");
     const [selectedCamera, setSelectedCamera] = useState(0);
-    const user_id = "681df7bffa6d23f0cc888ec0"
+    const user_id = localStorage.getItem("userId");
 
-    const [rooms, setRooms] = useState([
-        { id: 1, name: "Bedroom", src: "0", isActive: true },
-        { id: 2, name: "Kitchen", src: "1", isActive: true },
-        { id: 3, name: "Living Room", src: "rtsp://localhost:8554/live", isActive: true },
-        { id: 4, name: "Bathroom", src: "2", isActive: true }, 
-        { id: 5, name: "Laundry Room", src: "3", isActive: true },
-    ]);   
+    const [rooms, setRooms] = useState([]);   
+
+    useEffect(() => {
+    const user_id = localStorage.getItem("userId");
+    if (!user_id) {
+        console.error("User ID is not found in localStorage");
+        return;
+    }
+
+    axios.get(`http://localhost:5000/cameras?userId=${user_id}`)  
+        .then((response) => {
+            setRooms(response.data); 
+        })
+        .catch((error) => {
+            console.error('Error fetching cameras:', error);
+        });
+}, []);
+
     
     const toggleActive = (id) => {
         setRooms(prev => prev.map(room =>
-            room.id === id ? { ...room, isActive: !room.isActive } : room
+            room._id === id ? { ...room, isActive: !room.isActive } : room
         ));
     };
 
@@ -51,25 +63,43 @@ function Cameras() {
         setModalData({ ...modalData, [e.target.name]: e.target.value });
     };
 
-    const handleSave = () => {
-        if (modalMode === "add") {
-            const newCamera = {
-                ...modalData,
-                id: Date.now(),
-                isActive: true,
-            };
-            setRooms(prev => [...prev, newCamera]);
-        } else if (modalMode === "edit") {
-            const updated = [...rooms];
-            updated[editIndex] = modalData;
-            setRooms(updated);
-        }
-        setModalOpen(false);
+   const handleSave = () => {
+    const user_id = localStorage.getItem("userId");
+    if (!user_id) {
+        console.error("User ID is not found in localStorage");
+        return;
+    }
+
+    const newCamera = {
+        ...modalData,
+        userId: user_id,
     };
 
+    axios.post('http://localhost:5000/cameras', newCamera, {
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    })
+    .then((response) => {
+        setRooms(prev => [...prev, response.data]);
+        setModalOpen(false); 
+    })
+    .catch((error) => {
+        console.error('Error saving camera:', error);
+    });
+};
+
+
     const handleDeleteCamera = (id) => {
-        setRooms(prev => prev.filter(room => room.id !== id));
-    };
+    axios.delete(`http://localhost:5000/cameras/${id}`)
+        .then(() => {
+            setRooms(prev => prev.filter(room => room._id !== id)); 
+        })
+        .catch((error) => {
+            console.error('Error deleting camera:', error);
+        });
+};
+
 
     return (
         <div className="min-h-screen bg-white">
@@ -85,22 +115,22 @@ function Cameras() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-indigo-900">
                 {rooms.map((room, index) => (
                     <CameraView
-                        key={room.id}
-                        id={room.id}
+                        key={room._id}
+                        id={room._id}
                         name={room.name}
                         src={room.src}
                         user_id={user_id}
                         isActive={room.isActive}
-                        toggleActive={() => toggleActive(room.id)}
+                        toggleActive={() => toggleActive(room._id)}
                         onEdit={() => handleEditCamera(index)}
-                        onDelete={() => handleDeleteCamera(room.id)}
+                        onDelete={() => handleDeleteCamera(room._id)}
                     />
                 ))}
 
                 {/* Add Camera */}
                 <div
                     onClick={handleAddCamera}
-                    className="w-full bg-indigo-100 hover:bg-indigo-200 cursor-pointer rounded-lg shadow-md p-4 flex items-center justify-center">
+                    className="min-h-[300px] bg-indigo-100 hover:bg-indigo-200 cursor-pointer rounded-lg shadow-md p-4 flex items-center justify-center">
                     <span className="text-indigo-900 font-semibold">+ Add Camera</span>
                 </div>
                 </div>
@@ -121,7 +151,7 @@ function Cameras() {
                 <div className="flex gap-2 overflow-x-auto pb-2 max-w-xxl mx-auto">
                     {rooms.map((room, idx) => (
                         <button
-                            key={room.id}
+                            key={room._id}
                             className={`px-3 py-2 rounded-lg border whitespace-nowrap flex-shrink-0 ${
                                 selectedCamera === idx
                                     ? "bg-indigo-900 text-white"

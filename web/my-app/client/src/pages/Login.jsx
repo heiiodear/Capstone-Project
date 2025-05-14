@@ -22,6 +22,7 @@ function Login() {
     try {
       const res = await axios.post("http://localhost:5000/login", { email, password });
       localStorage.setItem("authToken", res.data.token);
+      localStorage.setItem("userId", res.data.user._id);
       setMessage(res.data.message);
       navigate("/dashboard");
     } catch (error) {
