@@ -28,6 +28,14 @@ function Cameras() {
             newEmail !== prevEmailEnabled.current ||
             newDiscord !== prevDiscordEnabled.current
         ) {
+            const user_id = localStorage.getItem("userId");
+            const response = axios.get(`http://localhost:5000/cameras?userId=${user_id}`);
+            const rooms = response.data;
+    
+            for (const room of rooms) {
+                const src = room.src || "None";
+                axios.get(`http://localhost:3000/clear_camera?src=${src}&user_id=${user_id}`);
+            }
             window.location.reload();
         }
         }, 1000); 

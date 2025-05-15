@@ -89,14 +89,12 @@ app.post("/alert", async (req, res) => {
 
   try {
     // 🔄 Save updated preferences to the database
-    if (typeof emailEnabled === "boolean" || typeof discordEnabled === "boolean") {
-      await UserModel.findByIdAndUpdate(user_id, {
-        $set: {
-          "notificationSettings.email": emailEnabled,
-          "notificationSettings.discord": discordEnabled
-        }
-      });
-    }
+    await UserModel.findByIdAndUpdate(user_id, {
+      $set: {
+        "notificationSettings.email": emailEnabled,
+        "notificationSettings.discord": discordEnabled
+      }
+    });
 
     const user = await UserModel.findById(user_id);
     if (!user) {
@@ -116,7 +114,6 @@ Please check on the user's condition urgently to prevent any serious consequence
 Thank you for trusting our automated safety alert system.
 
 — The Secura.com Team —`;
-
     if (notificationSettings?.discord && discord) {
       try {
         const webhookURL = discord;

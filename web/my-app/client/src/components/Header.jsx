@@ -52,14 +52,14 @@ function Header() {
   }, []);
 
     const handleLogout = async () => {
-        const user_id = localStorage.getItem("userId");
-        const response = await axios.get(`http://localhost:5000/cameras?userId=${user_id}`);
-        const rooms = response.data;
+        // const user_id = localStorage.getItem("userId");
+        // const response = await axios.get(`http://localhost:5000/cameras?userId=${user_id}`);
+        // const rooms = response.data;
 
-        for (const room of rooms) {
-            const src = room.src || "None";
-            await axios.get(`http://localhost:3000/clear_camera?src=${src}&user_id=${user_id}`);
-        }
+        // for (const room of rooms) {
+        //     const src = room.src || "None";
+        //     await axios.get(`http://localhost:3000/clear_camera?src=${src}&user_id=${user_id}`);
+        // }
 
         localStorage.removeItem("token");
         navigate("/");

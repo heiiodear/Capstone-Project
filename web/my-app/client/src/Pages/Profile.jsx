@@ -124,6 +124,14 @@ function Profile() {
     const handleDeleteConfirm = async () => {
         try {
             const token = localStorage.getItem("authToken");
+            const user_id = localStorage.getItem("userId");
+            const response_camera = await axios.get(`http://localhost:5000/cameras?userId=${user_id}`);
+            const rooms = response_camera.data;
+
+            for (const room of rooms) {
+                const src = room.src || "None";
+                await axios.get(`http://localhost:3000/clear_camera?src=${src}&user_id=${user_id}`);
+            }
             const response = await axios.delete("http://localhost:5000/profile", {
                 headers: {
                     Authorization: `Bearer ${token}`,
