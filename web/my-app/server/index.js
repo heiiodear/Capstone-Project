@@ -104,6 +104,18 @@ app.post("/alert", async (req, res) => {
     }
 
     const { email, discord, username, notificationSettings } = user;
+    
+    const alertMessage = `🚨 Urgent Alert from Secura.com: Fall Detected!
+
+Secura.com's surveillance system has detected a fall incident involving a user.
+
+An image and video of the event have been recorded to help you assess the situation and take immediate action.
+
+Please check on the user's condition urgently to prevent any serious consequences.
+
+Thank you for trusting our automated safety alert system.
+
+— The Secura.com Team —`;
 
     if (notificationSettings?.discord && discord) {
       try {
@@ -112,10 +124,9 @@ app.post("/alert", async (req, res) => {
         const form = new FormData();
 
         form.append("payload_json", JSON.stringify({
-          content: "🚨 Fall incident detected!",
+          content: alertMessage,
           embeds: [
             {
-              title: "Alert Message: Immediate Attention is required. Please investigate the situation immediately!",
               image: { url: image_url },
               color: 15158332
             }
@@ -154,10 +165,18 @@ app.post("/alert", async (req, res) => {
         const mailOptions = {
           from: `\"Secura\" <${process.env.EMAIL_SENDER}>`,
           to: email,
-          subject: "🚨 Fall incident detected!",
-          text: "Alert Message: Immediate Attention is required. Please investigate the situation immediately!",
-          html: `<p><strong>🚨 Fall incident detected!</strong></p><img src="${image_url}" width="400" />`
-        };
+          subject: "🚨 Urgent Alert from Secura.com: Fall Detected!",
+          text: alertMessage,
+          html: `<p><strong>🚨 Urgent Alert from Secura.com: Fall Detected!</strong></p>
+                 <p>Secura.com's surveillance system has detected a fall incident involving a user.</p>
+                 <p>An image and video of the event have been recorded to help you assess the situation and take immediate action.</p>
+                 <p>Please check on the user's condition urgently to prevent any serious consequences.</p>
+                 <a href="${video_url}" target="_blank" style="display:inline-block;text-decoration:none;">
+                  <img src="${image_url}" width="400" style="display:block;border:0;" alt="Fall snapshot" />
+                  <p style="color:blue; font-weight:bold;">▶ Click to view full video</p>
+                </a>
+                <p>Thank you for trusting our automated safety alert system.</p>
+                <p><em>— The Secura.com Team —</em></p>
         
         console.log("📧 Sending email...");
 
