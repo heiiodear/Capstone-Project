@@ -80,60 +80,24 @@ app.post("/login", async (req, res) => {
     }
   });
 
-/* app.post("/alert", async (req, res) => {
-    const { user_id, image_url, video_url } = req.body;
-
-    if (!user_id || !image_url || !video_url) {
-      return res.status(400).json({ error: "Missing required fields." });
-    }
-
-    try {
-      const user = await UserModel.findById(user_id);
-      if (!user || !user.discord) {
-        return res.status(404).json({ error: "User or webhook not found." });
-      }
-
-      const webhookURL = user.discord;
-      const videoStream = await axios.get(video_url, { responseType: "stream" });
-      const form = new FormData();
-
-      form.append("payload_json", JSON.stringify({
-        content: "🚨 พบเหตุการณ์ล้ม!",
-        embeds: [
-          {
-            title: "โปรดดำเนินการตรวจสอบสถานการณ์โดยด่วน",
-            image: { url: image_url }, 
-            color: 15158332
-          }
-        ]
-      }));
-
-      form.append("file", videoStream.data, {
-        filename: "fall_video.mp4",
-        contentType: "video/mp4"
-      });
-
-      await axios.post(webhookURL, form, {
-        headers: form.getHeaders()
-      });
-
-      console.log("✅ แจ้งเตือนสำเร็จ:", user.username || user_id);
-      res.status(200).json({ message: "แจ้งเตือนสำเร็จ" });
-
-    } catch (error) {
-      console.error("❌ แจ้งเตือนล้มเหลว:", error.message);
-      res.status(500).json({ error: "แจ้งเตือนล้มเหลว" });
-    }
-}); */
-
 app.post("/alert", async (req, res) => {
-  const { user_id, image_url, video_url } = req.body;
+  const { user_id, image_url, video_url, emailEnabled, discordEnabled } = req.body;
 
   if (!user_id || !image_url || !video_url) {
     return res.status(400).json({ error: "Missing required fields." });
   }
 
   try {
+    // 🔄 Save updated preferences to the database
+    if (typeof emailEnabled === "boolean" || typeof discordEnabled === "boolean") {
+      await UserModel.findByIdAndUpdate(user_id, {
+        $set: {
+          "notificationSettings.email": emailEnabled,
+          "notificationSettings.discord": discordEnabled
+        }
+      });
+    }
+
     const user = await UserModel.findById(user_id);
     if (!user) {
       return res.status(404).json({ error: "User not found." });
@@ -167,9 +131,9 @@ app.post("/alert", async (req, res) => {
           headers: form.getHeaders()
         });
 
-        console.log("Discord alert sent successfully:", username);
+        console.log("✅ Discord alert sent successfully:", username);
       } catch (err) {
-        console.error("Discord alert failed to send:", err.message);
+        console.error("❌ Discord alert failed to send:", err.message);
       }
     }
 
@@ -184,7 +148,7 @@ app.post("/alert", async (req, res) => {
         });
 
         const mailOptions = {
-          from: `"Secura" <${process.env.EMAIL_SENDER}>`,
+          from: `\"Secura\" <${process.env.EMAIL_SENDER}>`,
           to: email,
           subject: "🚨 Fall incident detected!",
           text: "Alert Message: Immediate Attention is required. Please investigate the situation immediately!",
@@ -192,13 +156,13 @@ app.post("/alert", async (req, res) => {
         };
 
         await transporter.sendMail(mailOptions);
-        console.log("Email alert sent successfully:", username);
+        console.log("✅ Email alert sent successfully:", username);
       } catch (err) {
-        console.error("Email alert failed to send:", err.message);
+        console.error("❌ Email alert failed to send:", err.message);
       }
     }
 
-    res.status(200).json({ message: "Alert sent successfully." });
+    res.status(200).json({ message: "Alert sent successfully and preferences saved." });
 
   } catch (error) {
     console.error("Alert failed to send:", error.message);
