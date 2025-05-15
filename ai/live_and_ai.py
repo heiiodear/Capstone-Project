@@ -57,40 +57,6 @@ db = client["Capstone"]
 collection = db["fall"]
 user_collection = db["users"]
 
-# Email sender
-EMAIL_SENDER = os.getenv("EMAIL_SENDER")
-EMAIL_PASSWORD = os.getenv("EMAIL_PASSWORD")
-
-def send_email(to_email, image_url, video_url):
-    try:
-        msg = EmailMessage()
-        msg['Subject'] = '🚨 แจ้งเตือนด่วนจาก Secura.com: ตรวจพบการล้ม!'
-        msg['From'] = EMAIL_SENDER
-        msg['To'] = to_email
-        msg.set_content(
-            "ระบบเฝ้าระวังจาก Secura.com ได้ตรวจพบเหตุการณ์ **การล้ม** ของผู้ใช้งาน!\n\n"
-            "ระบบได้บันทึกภาพนิ่งและวิดีโอของเหตุการณ์ไว้เรียบร้อย เพื่อให้คุณสามารถ ประเมินสถานการณ์ และ ดำเนินการช่วยเหลือได้ทันที\n\n"
-            "โปรดดำเนินการตรวจสอบสถานการณ์ของผู้ใช้งานโดยด่วน เพื่อป้องกันเหตุการณ์ร้ายแรง\n\n"
-            "ขอขอบคุณที่ไว้วางใจใช้ระบบแจ้งเตือนความปลอดภัยอัตโนมัติของเรา\n\n"
-            "-- ทีมงาน Secura.com --"
-        )
-
-        image_response = requests.get(image_url)
-        if image_response.status_code == 200:
-            msg.add_attachment(image_response.content, maintype='image', subtype='jpeg', filename='fall.jpg')
-
-        video_response = requests.get(video_url)
-        if video_response.status_code == 200:
-            msg.add_attachment(video_response.content, maintype='video', subtype='mp4', filename='fall.mp4')
-
-        with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
-            smtp.login(EMAIL_SENDER, EMAIL_PASSWORD)
-            smtp.send_message(msg)
-            print(f"[INFO] Email sent to {to_email}")
-
-    except Exception as e:
-        print(f"[ERROR] Failed to send email: {e}")
-
 def handle_fall_event_async(frame, frame_buffer, user_id, name, video_filename, image_filename, timestamp):
     try:
         raw_video_filename = f"temp_{uuid4()}.mp4"
@@ -128,10 +94,6 @@ def handle_fall_event_async(frame, frame_buffer, user_id, name, video_filename, 
             "timestamp": timestamp,
             "resolved": False
         })
-
-        user = user_collection.find_one({"_id": ObjectId(user_id)})
-        to_email = user["email"]
-        send_email(to_email=to_email, image_url=image_url, video_url=video_url)
 
         try:
             alert_api_url = "http://localhost:5000/alert"

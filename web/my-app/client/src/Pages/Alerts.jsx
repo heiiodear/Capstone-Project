@@ -51,38 +51,6 @@ function Alerts() {
   };
 
   useEffect(() => {
-    const userId = localStorage.getItem("userId");
-    console.log("User ID from localStorage:", userId); 
-    const today = new Date();
-    const localDate = new Date(today.getTime() - today.getTimezoneOffset() * 60000)
-      .toISOString()
-      .split("T")[0];
-    setSelectedDate(localDate);
-
-    if (!userId) {
-    console.error("User ID not found in localStorage");
-    return;
-  }
-
-  axios.get(`http://localhost:5000/alerts?userId=${userId}`)
-  // axios.get(`http://localhost:5000/alerts`)
-  .then((res) => {
-    console.log("Fetched alerts:", res.data);
-    setAlerts(res.data);
-
-    if (res.data.length > 0) {
-      console.log("Example alert:", res.data[0]);
-    }
-  });
-  }, []);
-
-
-  
-
-
-
-
-  useEffect(() => {
   const userId = localStorage.getItem("userId");
   console.log("User ID from localStorage:", userId); 
 
@@ -91,8 +59,7 @@ function Alerts() {
     return;
   }
 
-  // axios.get(`http://localhost:5000/alerts?userId=${userId}`)
-  axios.get(`http://localhost:5000/alerts`)
+  axios.get(`http://localhost:5000/alerts?userId=${userId}`)
   .then((res) => {
     console.log("Fetched alerts:", res.data);
     setAlerts(res.data);
@@ -101,12 +68,7 @@ function Alerts() {
       console.log("Example alert:", res.data[0]);
     }
   });
-
-
 }, []);
-
-
-
 
   return (
     <div className="min-h-screen bg-white">
