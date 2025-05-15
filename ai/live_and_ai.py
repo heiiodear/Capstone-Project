@@ -23,6 +23,7 @@ from torch.cuda.amp import autocast
 from bson import ObjectId
 import subprocess
 from uuid import uuid4
+import ffmpeg 
 
 executor = ThreadPoolExecutor(max_workers=12)
 
@@ -101,11 +102,12 @@ def handle_fall_event_async(frame, frame_buffer, user_id, name, video_filename, 
         video_writer.release()
 
         converted_video_filename = f"converted_{uuid4()}.mp4"
-        subprocess.run([
-            "ffmpeg", "-i", raw_video_filename,
-            "-c:v", "libx264", "-preset", "fast", "-crf", "23",
-            converted_video_filename
-        ], check=True)
+        ffmpeg.input(raw_video_filename).output(
+            converted_video_filename,
+            vcodec='libx264',
+            preset='fast',
+            crf=23
+        ).run()
 
         _, img_encoded = cv2.imencode('.jpg', frame)
         img_bytes = img_encoded.tobytes()
@@ -243,7 +245,7 @@ def generate_frames(source, user_id, name):
             break
 
         frame = cv2.resize(frame, (540, 360))
-        frame = auto_brightness(frame)
+        # frame = auto_brightness(frame)
         frame_buffer.append(frame.copy())
         frame_count += 1
 
@@ -351,6 +353,8 @@ def clear_camera():
     src = request.args.get('src')
     user_id = request.args.get('user_id')
     key = (user_id, str(src))
+    if src == "None":
+        return {"status": "not camera"}, 200
 
     if key in stream_threads:
         if key in stop_events:

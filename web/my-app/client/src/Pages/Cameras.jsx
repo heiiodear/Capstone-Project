@@ -86,7 +86,9 @@ function Cameras() {
             .catch((error) => {
                 console.error('Error adding camera:', error);
             });
+            window.location.reload();
         } else if (modalMode === "edit") {
+            axios.get(`http://localhost:3000/clear_camera?src=${modalData.src}&user_id=${user_id}`);
             axios.put(`http://localhost:5000/cameras/${modalData._id}`, updatedCamera, {
                 headers: { 'Content-Type': 'application/json' },
             })
@@ -99,18 +101,25 @@ function Cameras() {
             .catch((error) => {
                 console.error('Error updating camera:', error);
             });
+            window.location.reload();
         }
     };
 
 
     const handleDeleteCamera = (id) => {
-    axios.delete(`http://localhost:5000/cameras/${id}`)
+        axios.delete(`http://localhost:5000/cameras/${id}`)
         .then(() => {
             setRooms(prev => prev.filter(room => room._id !== id)); 
         })
         .catch((error) => {
             console.error('Error deleting camera:', error);
         });
+
+        for (const room of rooms) {
+            const src = room.src || "None";
+            axios.get(`http://localhost:3000/clear_camera?src=${src}&user_id=${user_id}`);
+        }
+        window.location.reload();
 };
 
 

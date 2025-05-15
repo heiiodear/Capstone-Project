@@ -64,8 +64,8 @@ function Alerts() {
     return;
   }
 
-  // axios.get(`http://localhost:5000/alerts?userId=${userId}`)
-  axios.get(`http://localhost:5000/alerts`)
+  axios.get(`http://localhost:5000/alerts?userId=${userId}`)
+  // axios.get(`http://localhost:5000/alerts`)
   .then((res) => {
     console.log("Fetched alerts:", res.data);
     setAlerts(res.data);
