@@ -80,6 +80,7 @@ app.post("/login", async (req, res) => {
     }
   });
 
+// เก่าแรก
 /* app.post("/alert", async (req, res) => {
     const { user_id, image_url, video_url } = req.body;
 
@@ -126,7 +127,8 @@ app.post("/login", async (req, res) => {
     }
 }); */
 
-app.post("/alert", async (req, res) => {
+// เก่าสอง
+/* app.post("/alert", async (req, res) => {
   const { user_id, image_url, video_url } = req.body;
 
   if (!user_id || !image_url || !video_url) {
@@ -199,6 +201,96 @@ app.post("/alert", async (req, res) => {
     }
 
     res.status(200).json({ message: "Alert sent successfully." });
+
+  } catch (error) {
+    console.error("Alert failed to send:", error.message);
+    res.status(500).json({ error: "Alert failed to send." });
+  }
+}); */
+
+app.post("/alert", async (req, res) => {
+  const { user_id, image_url, video_url, emailEnabled, discordEnabled } = req.body;
+
+  if (!user_id || !image_url || !video_url) {
+    return res.status(400).json({ error: "Missing required fields." });
+  }
+
+  try {
+    const user = await UserModel.findById(user_id);
+    if (!user) {
+      return res.status(404).json({ error: "User not found." });
+    }
+
+    const { email, discord, username } = user;
+
+    // ✨ Update user's notificationSettings in DB
+    await UserModel.findByIdAndUpdate(user_id, {
+      $set: {
+        "notificationSettings.email": emailEnabled,
+        "notificationSettings.discord": discordEnabled,
+      }
+    });
+
+    // ✅ If Discord is enabled
+    if (discordEnabled && discord) {
+      try {
+        const webhookURL = discord;
+        const videoStream = await axios.get(video_url, { responseType: "stream" });
+        const form = new FormData();
+
+        form.append("payload_json", JSON.stringify({
+          content: "🚨 Fall incident detected!",
+          embeds: [
+            {
+              title: "Alert Message: Immediate Attention is required. Please investigate the situation immediately!",
+              image: { url: image_url },
+              color: 15158332
+            }
+          ]
+        }));
+
+        form.append("file", videoStream.data, {
+          filename: "fall_video.mp4",
+          contentType: "video/mp4"
+        });
+
+        await axios.post(webhookURL, form, {
+          headers: form.getHeaders()
+        });
+
+        console.log("✅ Discord alert sent successfully:", username);
+      } catch (err) {
+        console.error("❌ Discord alert failed to send:", err.message);
+      }
+    }
+
+    // ✅ If Email is enabled
+    if (emailEnabled && email) {
+      try {
+        const transporter = nodemailer.createTransport({
+          service: "gmail",
+          auth: {
+            user: process.env.EMAIL_SENDER,
+            pass: process.env.EMAIL_PASSWORD,
+          },
+        });
+
+        const mailOptions = {
+          from: `"Secura" <${process.env.EMAIL_SENDER}>`,
+          to: email,
+          subject: "🚨 Fall incident detected!",
+          text: "Alert Message: Immediate Attention is required. Please investigate the situation immediately!",
+          html: `<p><strong>🚨 Fall incident detected!</strong></p><img src="${image_url}" width="400" />`
+        };
+
+        await transporter.sendMail(mailOptions);
+        console.log("✅ Email alert sent successfully:", username);
+      } catch (err) {
+        console.error("❌ Email alert failed to send:", err.message);
+      }
+    }
+
+    res.status(200).json({ message: "Alert sent successfully and preferences saved." });
 
   } catch (error) {
     console.error("Alert failed to send:", error.message);

@@ -77,11 +77,6 @@ function Alerts() {
   }, []);
 
 
-  
-
-
-
-
   useEffect(() => {
   const userId = localStorage.getItem("userId");
   console.log("User ID from localStorage:", userId); 
