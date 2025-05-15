@@ -176,8 +176,9 @@ Thank you for trusting our automated safety alert system.
                   <p style="color:blue; font-weight:bold;">▶ Click to view full video</p>
                 </a>
                 <p>Thank you for trusting our automated safety alert system.</p>
-                <p><em>— The Secura.com Team —</em></p>
-        
+                <p><em>— The Secura.com Team —</em></p>`
+        };
+
         console.log("📧 Sending email...");
 
         await transporter.sendMail(mailOptions)
