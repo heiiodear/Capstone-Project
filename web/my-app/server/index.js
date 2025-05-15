@@ -139,6 +139,10 @@ app.post("/alert", async (req, res) => {
 
     if (notificationSettings?.email && email) {
       try {
+        console.log("📨 Preparing to send email...");
+        console.log("📤 To:", email);
+        console.log("📤 Enabled:", notificationSettings.email);
+
         const transporter = nodemailer.createTransport({
           service: "gmail",
           auth: {
@@ -154,11 +158,15 @@ app.post("/alert", async (req, res) => {
           text: "Alert Message: Immediate Attention is required. Please investigate the situation immediately!",
           html: `<p><strong>🚨 Fall incident detected!</strong></p><img src="${image_url}" width="400" />`
         };
+        
+        console.log("📧 Sending email...");
 
-        await transporter.sendMail(mailOptions);
-        console.log("✅ Email alert sent successfully:", username);
+        await transporter.sendMail(mailOptions)
+          .then(info => console.log("✅ Email alert sent:", info.response))
+          .catch(err => console.error("❌ Email alert failed:", err));
+
       } catch (err) {
-        console.error("❌ Email alert failed to send:", err.message);
+        console.error("❌ Email alert outer error:", err.message);
       }
     }
 
