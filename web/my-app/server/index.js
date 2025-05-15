@@ -139,6 +139,10 @@ app.post("/alert", async (req, res) => {
 
     if (notificationSettings?.email && email) {
       try {
+        console.log("📨 Preparing to send email...");
+        console.log("📤 To:", email);
+        console.log("📤 Enabled:", notificationSettings.email);
+
         const transporter = nodemailer.createTransport({
           service: "gmail",
           auth: {
