@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import EditModal from "./../components/EditModal";
 import ConfirmationModal from "./../components/ConfirmationModal"
 import ChangePasswordModal from "./../components/ChangePasswordModal";
@@ -369,6 +369,10 @@ function Profile() {
             {/* Delete Confirmation Modal */}
             {isDeleteConfirmOpen && (
                 <ConfirmationModal
+                    title="Delete Account"
+                    message="Are you sure you want to delete your account? This action cannot be undone."
+                    confirmText="Delete"
+                    confirmColor="bg-red-600 hover:bg-red-700"
                     onConfirm={handleDeleteConfirm}
                     onCancel={handleDeleteCancel}
                 />
