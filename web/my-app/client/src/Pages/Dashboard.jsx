@@ -7,7 +7,7 @@ import { useLocation } from "react-router-dom";
 function Dashboard() {
     const [dashboardData, setDashboardData] = useState({
         activeAlerts: 0,
-        safeRooms: 0,
+        resolvedAlerts: 0,
         roomStatuses: {},
     });
 
@@ -28,7 +28,7 @@ function Dashboard() {
 }, []);
 
 
-    const { activeAlerts, safeRooms, roomStatuses } = dashboardData;
+    const { activeAlerts, resolvedAlerts, roomStatuses } = dashboardData;
 
     return (
         <div className="min-h-screen bg-white">
@@ -46,10 +46,10 @@ function Dashboard() {
                         </div>
                     </div>
                     <div className="border-2 border-gray-200 rounded-lg p-4 shadow-md">
-                        <p className="text-sm text-gray-500">Safe Rooms</p>
+                        <p className="text-sm text-gray-500">Resolved</p>
                         <div className="flex items-center mt-2">
                             <div className="w-3 h-3 bg-green-500 rounded-full mr-2" />
-                            <p className="text-2xl font-bold text-indigo-900">{safeRooms}</p>
+                            <p className="text-2xl font-bold text-indigo-900">{resolvedAlerts}</p>
                         </div>
                     </div>
                 </div>
