@@ -235,7 +235,7 @@ function Profile() {
                             <span className="block pr-6">{userData.discord}</span>
                             <button
                               onClick={() => setIsWebhookOpen(true)}
-                              className="absolute -right-100 top-0 cursor-pointer"
+                              className="absolute right-0 top-0 cursor-pointer"
                             >
                               <FontAwesomeIcon icon={faCircleInfo} style={{ color: "#6B7280" }} />
                             </button>
@@ -247,7 +247,7 @@ function Profile() {
                 <div key={field.label} className="flex justify-between items-center border-b pb-2">
                     <div>
                     <div className="text-xs text-gray-500 pb-1.5">{field.label}</div>
-                    <div className="text-sm font-medium">{field.value}</div>
+                    <div className="text-sm font-medium break-all">{field.value}</div>
                     </div>
                 </div>
                 ))}
