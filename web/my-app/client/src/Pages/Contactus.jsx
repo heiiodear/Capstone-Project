@@ -4,15 +4,91 @@ import { Mail, MapPin, Phone, Clock, Facebook, Instagram, Youtube, Twitter, Link
 
 const Contact = () => {
     const [submitted, setSubmitted] = useState(false);
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
+    const [showConfirmPopup, setShowConfirmPopup] = useState(false);
+  
+    const [formData, setFormData] = useState({
+      name: "",
+      email: "",
+      phone: "",
+      subject: "",
+      message: "",
+    });
+  
+    const handleChange = (e) => {
+      setFormData((prev) => ({
+        ...prev,
+        [e.target.name]: e.target.value,
+      }));
+    };
+  
+    const sendFormData = async () => {
+    try {
+        const response = await fetch("http://localhost:5000/send-contect", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+        });
+    
+        if (response.ok) {
         setSubmitted(true);
+        setFormData({
+            name: "",
+            email: "",
+            phone: "",
+            subject: "",
+            message: "",
+        });
+        } else {
+        const data = await response.json();
+        alert("Error: " + (data.message || "Failed to send message"));
+        }
+    } catch (error) {
+        alert("Error sending message: " + error.message);
+    }
+    };
+    
+    const confirmSubmit = (e) => {
+        e.preventDefault();
+        setShowConfirmPopup(true);
+    };
+    
+    const cancelSubmit = () => {
+        setShowConfirmPopup(false);
+    };
+    
+    const proceedSubmit = async () => {
+        setShowConfirmPopup(false);
+        await sendFormData();
     };
 
     return (
         <div className="min-h-screen bg-white">
         <Header />
+
+        {showConfirmPopup && (
+        <div className="fixed inset-0 flex justify-center items-center z-50" style={{ backgroundColor: 'transparent' }}>
+            <div className="bg-white p-6 rounded-xl shadow-lg max-w-sm w-full">
+            <h3 className="text-lg font-semibold mb-4 text-indigo-900">Confirm Submission</h3>
+            <p className="text-gray-700 mb-6">Are you sure you want to send this message?</p>
+            <div className="flex justify-end gap-3">
+                <button
+                onClick={cancelSubmit}
+                className="px-4 py-2 rounded bg-gray-300 text-gray-800 hover:bg-gray-400"
+                >
+                Cancel
+                </button>
+                <button
+                onClick={proceedSubmit}
+                className="px-4 py-2 rounded bg-indigo-900 text-white hover:bg-indigo-800"
+                >
+                Yes, Send
+                </button>
+            </div>
+            </div>
+        </div>
+        )}
 
         <div className="container mx-auto py-6 px-4">
             <div className="max-w-7xl mx-auto">
@@ -131,12 +207,15 @@ const Contact = () => {
                 ) : (
                     <div className="bg-white shadow-lg rounded-lg border-2 border-gray-200 p-6">
                     <h3 className="text-xl text-indigo-900 font-semibold text-navy mb-6">Send Us a Message</h3>
-                    <form onSubmit={handleSubmit} className="space-y-4">
+                    <form onSubmit={confirmSubmit} className="space-y-4">
                         <div>
                         <label className="block font-medium">Name</label>
                             <input
                                 type="text"
+                                name="name"
                                 required
+                                value={formData.name}
+                                onChange={handleChange}
                                 className="mt-1 w-full p-2 border rounded-lg border-gray-300"
                             />
                         </div>
@@ -144,30 +223,42 @@ const Contact = () => {
                             <label className="block font-medium">Email</label>
                             <input
                                 type="email"
+                                name="email"
                                 required
+                                value={formData.email}
+                                onChange={handleChange}
                                 className="mt-1 w-full p-2 border rounded-lg border-gray-300"
                             />
                         </div>
                         <div>
                             <label className="block font-medium">Phone</label>
                             <input
-                                type="phone"
+                                type="text"
+                                name="phone"
                                 required
+                                value={formData.phone}
+                                onChange={handleChange}
                                 className="mt-1 w-full p-2 border rounded-lg border-gray-300"
                             />
                         </div>
                         <div>
                             <label className="block font-medium">Subject</label>
                             <input
-                                type="subject"
+                                type="text"
+                                name="subject"
                                 required
+                                value={formData.subject}
+                                onChange={handleChange}
                                 className="mt-1 w-full p-2 border rounded-lg border-gray-300"
                             />
                         </div>
                         <div>
                             <label className="block font-medium">Message</label>
                             <textarea
+                                name="message"
                                 required
+                                value={formData.message}
+                                onChange={handleChange}
                                 className="mt-1 w-full p-2 border rounded-lg border-gray-300 h-66"
                             ></textarea>
                         </div>
