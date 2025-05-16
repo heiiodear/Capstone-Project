@@ -20,7 +20,7 @@ ffmpeg_command = [
     '-s', f'{width}x{height}',
     '-r', str(fps),
     '-i', '-',
-    '-c:v', 'h264_qsv', 
+    '-c:v', 'h264_qsv',
     '-preset', 'veryfast',
     '-tune', 'zerolatency', 
     '-profile:v', 'high',   
