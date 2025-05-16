@@ -15,7 +15,7 @@ function CameraViews({ name, src, user_id, onEdit, onDelete }) {
           {src ? (
             <img
               className="absolute w-full h-full object-cover rounded-lg"
-              src={`http://localhost:3000/video_feed?src=${src}&user_id=${user_id}&name=${name}`}
+              src={`http://localhost:3000/video_feed?src=${encodeURIComponent(src)}&user_id=${encodeURIComponent(user_id)}&name=${encodeURIComponent(name)}`}
               alt={`${name} feed`}
             />
           ) : (

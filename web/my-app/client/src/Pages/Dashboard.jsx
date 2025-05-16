@@ -11,12 +11,22 @@ function Dashboard() {
         roomStatuses: {},
     });
 
-    // ดึงข้อมูลจาก API /dashboard
     useEffect(() => {
-        axios.get("http://localhost:5000/dashboard")
-            .then((res) => setDashboardData(res.data))
-            .catch((err) => console.error("Failed to fetch dashboard:", err));
-    }, []);
+    const userId = localStorage.getItem("userId");
+    
+    if (!userId) {
+        console.error("User ID not found in localStorage.");
+        return;
+    }
+
+    axios.get("http://localhost:5000/dashboard", {
+        params: { user_id: userId }
+    })
+    .then((res) => setDashboardData(res.data))
+    .catch((err) => console.error("Failed to fetch dashboard:", err));
+    
+}, []);
+
 
     const { activeAlerts, safeRooms, roomStatuses } = dashboardData;
 

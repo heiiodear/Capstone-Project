@@ -358,28 +358,45 @@ app.patch("/alerts/:id", async (req, res) => {
 });
 
 app.get("/dashboard", async (req, res) => {
+  const { user_id } = req.query;
+
+  if (!user_id) {
+    return res.status(400).json({ error: "user_id is required" });
+  }
+
   try {
-    const alerts = await AlertModel.find({});
+    // Fetch all cameras for the user
+    const cameras = await Camera.find({ user_id });
 
-    const activeAlerts = alerts.filter(alert => !alert.resolved).length;
-    const safeRooms = alerts.filter(alert => alert.resolved).length;
+    // Fetch unresolved alerts for the user
+    const unresolvedAlerts = await AlertModel.find({ user_id, resolved: false });
 
+       // Add these logs here
+    console.log("Cameras:", cameras);
+    console.log("Unresolved Alerts:", unresolvedAlerts);
+
+    // Build room statuses
     const roomStatuses = {};
 
-    alerts.forEach((alert) => {
-      const room = alert.room || "Unknown";
-      const status = alert.resolved ? "safe" : "alert";
-      roomStatuses[room] = status; //รอกล้อง
+    cameras.forEach(camera => {
+      const roomName = camera.name;
+      const hasAlert = unresolvedAlerts.some(alert => alert.name === roomName);
+      roomStatuses[roomName] = hasAlert ? "alert" : "safe";
     });
+
+    // Count safe and unsafe rooms
+    const activeAlerts = Object.values(roomStatuses).filter(status => status === "alert").length;
+    const safeRooms = Object.values(roomStatuses).filter(status => status === "safe").length;
 
     res.json({
       activeAlerts,
       safeRooms,
-      roomStatuses,
+      roomStatuses
     });
+
   } catch (err) {
-    console.error("Error generating dashboard:", err);
-    res.status(500).json({ error: "Failed to generate dashboard" });
+    console.error("Dashboard error:", err);
+    res.status(500).json({ error: "Server error while fetching dashboard" });
   }
 });
 
