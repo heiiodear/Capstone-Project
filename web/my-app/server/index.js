@@ -390,30 +390,21 @@ app.get("/dashboard", async (req, res) => {
   }
 
   try {
-    const cameras = await Camera.find({ user_id });
+    // user_id is used as a string
+    const cameras = await Camera.find({ userId: user_id }); // user_id as string
     const unresolvedAlerts = await AlertModel.find({ user_id, resolved: false });
 
-       
-    console.log("Cameras:", cameras);
-    console.log("Unresolved Alerts:", unresolvedAlerts);
-
     const roomStatuses = {};
-
     cameras.forEach(camera => {
       const roomName = camera.name;
       const hasAlert = unresolvedAlerts.some(alert => alert.name === roomName);
       roomStatuses[roomName] = hasAlert ? "alert" : "safe";
     });
 
-    // Count safe and unsafe rooms
     const activeAlerts = Object.values(roomStatuses).filter(status => status === "alert").length;
     const safeRooms = Object.values(roomStatuses).filter(status => status === "safe").length;
 
-    res.json({
-      activeAlerts,
-      safeRooms,
-      roomStatuses
-    });
+    res.json({ activeAlerts, safeRooms, roomStatuses });
 
   } catch (err) {
     console.error("Dashboard error:", err);
