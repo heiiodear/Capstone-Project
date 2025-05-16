@@ -73,7 +73,6 @@ function Header() {
     return (
         <header className="bg-indigo-900 text-white shadow-md py-3 px-5 relative z-50">
             <div className="max-w-9xl mx-auto flex justify-between items-center">
-                {/* Left: Brand + Mobile Menu Button */}
                 <div className="flex items-center gap-4">
                     <button
                         className="md:hidden text-white"
@@ -100,15 +99,15 @@ function Header() {
                         <FontAwesomeIcon icon="bell" className="text-white text-lg" />
                     </Link>
                     <Link to="/profile">
-                            <img
-                                src={profileImage}
-                                alt="Profile"
-                                className="w-8 h-8 rounded-full object-cover"
-                                onError={(e) => {
-                                    e.target.onerror = null;
-                                    e.target.src = "https://www.engineering.columbia.edu/sites/default/files/styles/full_size_1_1/public/2024-07/Columbia_Engineering_Headshot_1_B.png?itok=n6_TL_JQ";
-                                }}
-                                />
+                        <img
+                            src={profileImage}
+                            alt="Profile"
+                            className="w-8 h-8 rounded-full object-cover"
+                            onError={(e) => {
+                                e.target.onerror = null;
+                                e.target.src = "https://www.engineering.columbia.edu/sites/default/files/styles/full_size_1_1/public/2024-07/Columbia_Engineering_Headshot_1_B.png?itok=n6_TL_JQ";
+                            }}
+                            />
                     </Link>
                     <button
                         type="submit"

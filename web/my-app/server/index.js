@@ -390,16 +390,21 @@ app.patch("/alerts/:id", async (req, res) => {
 });
 
 app.get("/dashboard", async (req, res) => {
-  const { user_id } = req.query;
+  const { user_id, date } = req.query;
 
   if (!user_id) {
     return res.status(400).json({ error: "user_id is required" });
   }
-
   try {
     const cameras = await Camera.find({ userId: user_id }); 
-    const resolvedAlerts = await AlertModel.find({ user_id, resolved: true });
-    const unresolvedAlerts = await AlertModel.find({ user_id, resolved: false });
+
+    const dateFilter = {};
+    if (date){
+      const rawDate = date.replace(/-/g, ""); //ปรับ date ให้เหมือนใน db
+      dateFilter.timestamp = { $regex: `^${rawDate}` };
+    }
+    const resolvedAlerts = await AlertModel.find({ user_id, resolved: true , ...dateFilter});
+    const unresolvedAlerts = await AlertModel.find({ user_id, resolved: false, ...dateFilter });
 
     const roomStatuses = {};
     cameras.forEach(camera => {
@@ -408,8 +413,8 @@ app.get("/dashboard", async (req, res) => {
       roomStatuses[roomName] = hasAlert ? "alert" : "safe";
     });
 
-    const activeAlerts = Object.values(roomStatuses).filter(status => status === "alert").length;
-    const safeRooms = Object.values(roomStatuses).filter(status => status === "safe").length;
+    // const activeAlerts = Object.values(roomStatuses).filter(status => status === "alert").length;
+    // const safeRooms = Object.values(roomStatuses).filter(status => status === "safe").length;
 
     res.json({
       activeAlerts: unresolvedAlerts.length,
@@ -422,7 +427,6 @@ app.get("/dashboard", async (req, res) => {
     res.status(500).json({ error: "Server error while fetching dashboard" });
   }
 });
-
 
 app.post("/api/send-verification-code", async (req, res) => {
     const { email } = req.body;
@@ -496,8 +500,6 @@ app.get('/cameras', async (req, res) => {
     res.json(cameras);
 });
 
-
-
 app.post('/cameras', async (req, res) => {
     const { userId, name, src, isActive } = req.body;
     console.log(req.body); 
@@ -515,7 +517,6 @@ app.post('/cameras', async (req, res) => {
     }
 });
 
-
 app.put('/cameras/:id', async (req, res) => {
     try {
         const camera = await Camera.findByIdAndUpdate(req.params.id, req.body, { new: true });
@@ -526,7 +527,6 @@ app.put('/cameras/:id', async (req, res) => {
     }
 });
 
-
 app.delete('/cameras/:id', async (req, res) => {
     try {
         const deleted = await Camera.findByIdAndDelete(req.params.id);
@@ -536,8 +536,6 @@ app.delete('/cameras/:id', async (req, res) => {
         res.status(500).json({ error: "Error deleting camera." });
     }
 });
-
-
 
 app.listen(5000, () => {
   console.log("server is running");

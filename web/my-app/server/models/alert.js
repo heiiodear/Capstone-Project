@@ -11,8 +11,9 @@ const alertSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
-  note: { type: String, 
-    default: "" 
+  note: { 
+    type: String, 
+    default: "",
   },
 });
 
