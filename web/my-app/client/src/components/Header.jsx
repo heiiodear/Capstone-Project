@@ -10,46 +10,50 @@ library.add(fas, fab, far);
 import axios from "axios";
 
 function Header() {
-    // เพิ่ม
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-    // ลบไหม คุยกับตัวเอง
     const navigate = useNavigate();
     const [profileImage, setProfileImage] = useState("https://www.engineering.columbia.edu/sites/default/files/styles/full_size_1_1/public/2024-07/Columbia_Engineering_Headshot_1_B.png?itok=n6_TL_JQ");
     const [isLoading, setIsLoading] = useState(true); 
     const [error, setError] = useState(null);
+    const [activeAlerts, setActiveAlerts] = useState(0);
 
     const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
     const closeSidebar = () => setIsSidebarOpen(false);
 
     useEffect(() => {
-        const fetchUserProfile = async () => {
+        const fetchUserProfileAndAlerts = async () => {
             const token = localStorage.getItem("token");
-             if (!token) {
+            const user_id = localStorage.getItem("userId");
+            if (!token) {
                 console.error("No token found");
                 setError("No token found");
                 setIsLoading(false);
                 return;
             }
 
-            console.log("Fetching user profile with token:", token);
-
             try {
-                const response = await axios.get("http://localhost:5000/profile", {
+                const profileRes = await axios.get("http://localhost:5000/profile", {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
                 });
-                setProfileImage(response.data.profileImage || profileImage);
+                setProfileImage(profileRes.data.profileImage || profileImage);
+
+                if (user_id) {
+                const alertRes = await axios.get(`http://localhost:5000/dashboard?user_id=${user_id}`);
+                console.log("Fetched activeAlerts:", alertRes.data.activeAlerts); 
+                setActiveAlerts(alertRes.data.activeAlerts || 0);
+                }
             } catch (error) {
-                console.error("Failed to fetch user profile", error);
-                setError("Failed to fetch profile image");
+                console.error("Failed to fetch data", error);
+                setError("Failed to fetch profile or alerts");
             } finally {
                 setIsLoading(false);
-      }
-    };
+            }
+        };
 
-    fetchUserProfile();
-  }, []);
+        fetchUserProfileAndAlerts();
+    }, []);
 
     const handleLogout = async () => {
         // const user_id = localStorage.getItem("userId");
@@ -85,7 +89,6 @@ function Header() {
                     </Link>
                 </div>
 
-                {/* Center: Nav Links (Desktop only) */}
                 <nav className="hidden md:flex gap-6 text-md font-medium">
                     <Link to="/dashboard" className="hover:underline cursor-pointer">Dashboard</Link>
                     <Link to="/alerts" className="hover:underline cursor-pointer">Alerts</Link>
@@ -93,10 +96,14 @@ function Header() {
                     <Link to="/contactus" className="hover:underline cursor-pointer">Contact Us</Link>
                 </nav>
 
-                {/* Right: Notification + Profile + Logout */}
                 <div className="flex items-center gap-4">
-                    <Link to="/alerts">
-                        <FontAwesomeIcon icon="bell" className="text-white text-lg" />
+                    <Link to="/alerts" className="relative">
+                        <FontAwesomeIcon icon="bell" className="absolute -top-2.5 right-0.25 text-white text-xl" />
+                        {activeAlerts > 0 && (
+                            <span className="absolute -top-4 -right-3.5 bg-red-600 text-white text-[12px] font-semibold rounded-full px-2 flex items-center justify-center z-50">
+                                {activeAlerts}
+                            </span>
+                        )}
                     </Link>
                     <Link to="/profile">
                         <img
