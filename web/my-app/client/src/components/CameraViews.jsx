@@ -6,6 +6,9 @@ import { far } from '@fortawesome/free-regular-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 function CameraViews({ name, src, user_id, onEdit, onDelete }) {
+  const emailEnabled = JSON.parse(localStorage.getItem('emailEnabled'));
+  const discordEnabled = JSON.parse(localStorage.getItem('discordEnabled'));
+
   return (
     <div className="min-h-[300px] bg-white border-2 border-gray-200 rounded-lg shadow-md p-4 relative">
       <h2 className="text-lg font-semibold mb-2">{name}</h2>
@@ -15,7 +18,7 @@ function CameraViews({ name, src, user_id, onEdit, onDelete }) {
           {src ? (
             <img
               className="absolute w-full h-full object-cover rounded-lg"
-              src={`http://localhost:3000/video_feed?src=${encodeURIComponent(src)}&user_id=${encodeURIComponent(user_id)}&name=${encodeURIComponent(name)}`}
+              src={`http://localhost:3000/video_feed?src=${src}&user_id=${user_id}&name=${name}&emailEnabled=${emailEnabled}&discordEnabled=${discordEnabled}`}
               alt={`${name} feed`}
             />
           ) : (

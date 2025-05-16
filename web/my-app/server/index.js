@@ -89,14 +89,12 @@ app.post("/alert", async (req, res) => {
 
   try {
     // 🔄 Save updated preferences to the database
-    if (typeof emailEnabled === "boolean" || typeof discordEnabled === "boolean") {
-      await UserModel.findByIdAndUpdate(user_id, {
-        $set: {
-          "notificationSettings.email": emailEnabled,
-          "notificationSettings.discord": discordEnabled
-        }
-      });
-    }
+    await UserModel.findByIdAndUpdate(user_id, {
+      $set: {
+        "notificationSettings.email": emailEnabled,
+        "notificationSettings.discord": discordEnabled
+      }
+    });
 
     const user = await UserModel.findById(user_id);
     if (!user) {
@@ -104,7 +102,18 @@ app.post("/alert", async (req, res) => {
     }
 
     const { email, discord, username, notificationSettings } = user;
+    
+    const alertMessage = `🚨 Urgent Alert from Secura.com: Fall Detected!
 
+Secura.com's surveillance system has detected a fall incident involving a user.
+
+An image and video of the event have been recorded to help you assess the situation and take immediate action.
+
+Please check on the user's condition urgently to prevent any serious consequences.
+
+Thank you for trusting our automated safety alert system.
+
+— The Secura.com Team —`;
     if (notificationSettings?.discord && discord) {
       try {
         const webhookURL = discord;
@@ -112,10 +121,9 @@ app.post("/alert", async (req, res) => {
         const form = new FormData();
 
         form.append("payload_json", JSON.stringify({
-          content: "🚨 Fall incident detected!",
+          content: alertMessage,
           embeds: [
             {
-              title: "Alert Message: Immediate Attention is required. Please investigate the situation immediately!",
               image: { url: image_url },
               color: 15158332
             }
@@ -139,6 +147,10 @@ app.post("/alert", async (req, res) => {
 
     if (notificationSettings?.email && email) {
       try {
+        console.log("📨 Preparing to send email...");
+        console.log("📤 To:", email);
+        console.log("📤 Enabled:", notificationSettings.email);
+
         const transporter = nodemailer.createTransport({
           service: "gmail",
           auth: {
@@ -150,15 +162,28 @@ app.post("/alert", async (req, res) => {
         const mailOptions = {
           from: `\"Secura\" <${process.env.EMAIL_SENDER}>`,
           to: email,
-          subject: "🚨 Fall incident detected!",
-          text: "Alert Message: Immediate Attention is required. Please investigate the situation immediately!",
-          html: `<p><strong>🚨 Fall incident detected!</strong></p><img src="${image_url}" width="400" />`
+          subject: "🚨 Urgent Alert from Secura.com: Fall Detected!",
+          text: alertMessage,
+          html: `<p><strong>🚨 Urgent Alert from Secura.com: Fall Detected!</strong></p>
+                 <p>Secura.com's surveillance system has detected a fall incident involving a user.</p>
+                 <p>An image and video of the event have been recorded to help you assess the situation and take immediate action.</p>
+                 <p>Please check on the user's condition urgently to prevent any serious consequences.</p>
+                 <a href="${video_url}" target="_blank" style="display:inline-block;text-decoration:none;">
+                  <img src="${image_url}" width="400" style="display:block;border:0;" alt="Fall snapshot" />
+                  <p style="color:blue; font-weight:bold;">▶ Click to view full video</p>
+                </a>
+                <p>Thank you for trusting our automated safety alert system.</p>
+                <p><em>— The Secura.com Team —</em></p>`
         };
 
-        await transporter.sendMail(mailOptions);
-        console.log("✅ Email alert sent successfully:", username);
+        console.log("📧 Sending email...");
+
+        await transporter.sendMail(mailOptions)
+          .then(info => console.log("✅ Email alert sent:", info.response))
+          .catch(err => console.error("❌ Email alert failed:", err));
+
       } catch (err) {
-        console.error("❌ Email alert failed to send:", err.message);
+        console.error("❌ Email alert outer error:", err.message);
       }
     }
 
@@ -365,17 +390,13 @@ app.get("/dashboard", async (req, res) => {
   }
 
   try {
-    // Fetch all cameras for the user
     const cameras = await Camera.find({ user_id });
-
-    // Fetch unresolved alerts for the user
     const unresolvedAlerts = await AlertModel.find({ user_id, resolved: false });
 
-       // Add these logs here
+       
     console.log("Cameras:", cameras);
     console.log("Unresolved Alerts:", unresolvedAlerts);
 
-    // Build room statuses
     const roomStatuses = {};
 
     cameras.forEach(camera => {

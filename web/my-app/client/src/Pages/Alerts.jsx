@@ -19,9 +19,23 @@ function Alerts() {
   const [selectedAlert, setSelectedAlert] = useState(null);
   const [selectedDate, setSelectedDate] = useState("");
   const [showSettings, setShowSettings] = useState(false);
-  const [emailEnabled, setEmailEnabled] = useState(true);
-  const [discordEnabled, setDiscordEnabled] = useState(false);
+  const [emailEnabled, setEmailEnabled] = useState(() => {
+    const stored = localStorage.getItem('emailEnabled');
+    return stored ? JSON.parse(stored) : true;
+  });
 
+  const [discordEnabled, setDiscordEnabled] = useState(() => {
+    const stored = localStorage.getItem('discordEnabled');
+    return stored ? JSON.parse(stored) : false;
+  });
+
+  useEffect(() => {
+    localStorage.setItem('emailEnabled', JSON.stringify(emailEnabled));
+  }, [emailEnabled]);
+
+  useEffect(() => {
+    localStorage.setItem('discordEnabled', JSON.stringify(discordEnabled));
+  }, [discordEnabled]);
 
   const filteredAlerts = alerts.filter((alert) => {
     const matchFilter =

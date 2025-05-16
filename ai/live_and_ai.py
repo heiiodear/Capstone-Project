@@ -57,7 +57,10 @@ db = client["Capstone"]
 collection = db["fall"]
 user_collection = db["users"]
 
-def handle_fall_event_async(frame, frame_buffer, user_id, name, video_filename, image_filename, timestamp):
+def handle_fall_event_async(frame, frame_buffer, user_id, name, video_filename, image_filename, timestamp, emailEnabled, discordEnabled):
+    print(emailEnabled)
+    print(discordEnabled)
+    
     try:
         raw_video_filename = f"temp_{uuid4()}.mp4"
         h, w = frame.shape[:2]
@@ -100,15 +103,17 @@ def handle_fall_event_async(frame, frame_buffer, user_id, name, video_filename, 
             payload = {
                 "image_url": image_url,
                 "video_url": video_url,
-                "user_id": user_id
+                "user_id": user_id,
+                "emailEnabled": emailEnabled, 
+                "discordEnabled": discordEnabled
             }
             alert_response = requests.post(alert_api_url, json=payload)
             if alert_response.status_code == 200:
-                print("[INFO] แจ้งเตือน discord สำเร็จ")
+                print("[INFO] แจ้งเตือนสำเร็จ")
             else:
-                print(f"[WARN] แจ้งเตือน discord ล้มเหลว: {alert_response.status_code} - {alert_response.text}")
+                print(f"[WARN] แจ้งเตือนล้มเหลว: {alert_response.status_code} - {alert_response.text}")
         except Exception as e:
-            print(f"[ERROR] แจ้งเตือน discord ล้มเหลว: {e}")
+            print(f"[ERROR] แจ้งเตือนล้มเหลว: {e}")
 
         os.remove(raw_video_filename)
         os.remove(converted_video_filename)
@@ -174,7 +179,7 @@ def draw_keypoints(frame, keypoints_list, color=(255, 0, 255), radius=3):
                 if conf > 0.5: 
                     cv2.circle(frame, (int(x), int(y)), radius, color, -1)
 
-def generate_frames(source, user_id, name):
+def generate_frames(source, user_id, name, emailEnabled, discordEnabled):
     if isinstance(source, str) and source.isdigit():
         source = int(source)
 
@@ -207,7 +212,7 @@ def generate_frames(source, user_id, name):
             break
 
         frame = cv2.resize(frame, (540, 360))
-        # frame = auto_brightness(frame)
+        frame = auto_brightness(frame)
         frame_buffer.append(frame.copy())
         frame_count += 1
 
@@ -252,7 +257,7 @@ def generate_frames(source, user_id, name):
                     video_filename = f"fall_{user_id}_{timestamp}.mp4"
                     image_filename = f"fall_{user_id}_{timestamp}.jpg"
                     executor.submit(handle_fall_event_async, frame.copy(), list(frame_buffer),
-                                    user_id, name, video_filename, image_filename, timestamp)
+                                    user_id, name, video_filename, image_filename, timestamp, emailEnabled, discordEnabled)
             else:
                 fall_tracking_start = None
                 fall_confirmed = False
@@ -267,7 +272,7 @@ def generate_frames(source, user_id, name):
 
     cap.release()
 
-def generate_stream(source, user_id, name):
+def generate_stream(source, user_id, name, emailEnabled, discordEnabled):
     key = (user_id, str(source))
     q = Queue(maxsize=32)
     stream_queues[key] = q  
@@ -275,7 +280,7 @@ def generate_stream(source, user_id, name):
     stop_events[key] = stop_event
 
     def worker():
-        for frame in generate_frames(source, user_id, name):
+        for frame in generate_frames(source, user_id, name, emailEnabled, discordEnabled):
             if stop_event.is_set():
                 break  
             if q.full():
@@ -296,10 +301,12 @@ def video_feed():
     source = request.args.get('src', "0")
     user_id = request.args.get('user_id', "anonymous")
     name = request.args.get('name')
+    emailEnabled = request.args.get('emailEnabled', True)
+    discordEnabled = request.args.get('discordEnabled', True)
     key = (user_id, str(source))  
 
     if key not in stream_queues:
-        generate_stream(source, user_id, name)
+        generate_stream(source, user_id, name, emailEnabled, discordEnabled)
 
     def stream():
         while True:

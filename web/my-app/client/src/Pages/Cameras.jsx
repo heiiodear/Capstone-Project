@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Header from "./../components/Header";
 import CameraView from "./../components/CameraViews";
 import CamLayout from "./../components/CamLayout";
@@ -16,6 +16,32 @@ function Cameras() {
     const [selectedCamera, setSelectedCamera] = useState(0);
     const user_id = localStorage.getItem("userId");
     const [rooms, setRooms] = useState([]);   
+    const prevEmailEnabled = useRef(localStorage.getItem('emailEnabled'));
+    const prevDiscordEnabled = useRef(localStorage.getItem('discordEnabled'));
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+        const newEmail = localStorage.getItem('emailEnabled');
+        const newDiscord = localStorage.getItem('discordEnabled');
+
+        if (
+            newEmail !== prevEmailEnabled.current ||
+            newDiscord !== prevDiscordEnabled.current
+        ) {
+            const user_id = localStorage.getItem("userId");
+            const response = axios.get(`http://localhost:5000/cameras?userId=${user_id}`);
+            const rooms = response.data;
+    
+            for (const room of rooms) {
+                const src = room.src || "None";
+                axios.get(`http://localhost:3000/clear_camera?src=${src}&user_id=${user_id}`);
+            }
+            window.location.reload();
+        }
+        }, 1000); 
+
+        return () => clearInterval(interval);
+    }, []);
 
     useEffect(() => {
         const user_id = localStorage.getItem("userId");
