@@ -29,7 +29,7 @@ function Profile() {
     useEffect(() => {
         const fetchUserData = async () => {
             try {
-                const token = localStorage.getItem("authToken"); 
+                const token = localStorage.getItem("token"); 
                 if (token) {
                     const response = await axios.get("http://localhost:5000/profile", {
                         headers: {
@@ -73,7 +73,7 @@ function Profile() {
 
     const saveChanges = async () => {
         try {
-            const token = localStorage.getItem("authToken");
+            const token = localStorage.getItem("token");
 
             let updatedData = {};
             if (editingField === "personal") {
@@ -123,7 +123,7 @@ function Profile() {
 
     const handleDeleteConfirm = async () => {
         try {
-            const token = localStorage.getItem("authToken");
+            const token = localStorage.getItem("token");
             const user_id = localStorage.getItem("userId");
             const response_camera = await axios.get(`http://localhost:5000/cameras?userId=${user_id}`);
             const rooms = response_camera.data;
@@ -139,7 +139,7 @@ function Profile() {
             });
 
             console.log("Account deleted:", response.data);
-            localStorage.removeItem("authToken"); 
+            localStorage.removeItem("token"); 
             navigate("/");  
         } catch (error) {
             console.error("Error deleting account:", error);
@@ -154,7 +154,7 @@ function Profile() {
 
     const handleChangePassword = async (passwordData) => {
         try {
-            const token = localStorage.getItem("authToken");
+            const token = localStorage.getItem("token");
     
             const response = await axios.put(
                 "http://localhost:5000/profile/password",
@@ -342,7 +342,7 @@ function Profile() {
         className="px-4 py-2 text-sm bg-indigo-700 text-white rounded-lg hover:bg-indigo-900 cursor-pointer"
         onClick={async () => {
             try {
-            const token = localStorage.getItem("authToken");
+            const token = localStorage.getItem("token");
             await axios.put(
                 "http://localhost:5000/profile/image",
                 { profileImage: newImageUrl },
