@@ -537,6 +537,47 @@ app.delete('/cameras/:id', async (req, res) => {
     }
 });
 
+app.post('/send-contect', async (req, res) => {
+  const { name, email, phone, subject, message } = req.body;
+  console.log('CONTACT:', process.env.CONTACT);
+
+  try {
+    let transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.EMAIL_SENDER,
+        pass: process.env.EMAIL_PASSWORD,
+      },
+    });
+
+    await transporter.sendMail({
+      from: process.env.EMAIL_SENDER,
+      to: 'ACSteam2025@outlook.com',
+      subject: subject,
+      html: `
+        <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.6;">
+          <h2 style="color: #4F46E5;">📬 New Contact Message Form Secura.com</h2>
+          <p><strong>Name:</strong> ${name}</p>
+          <p><strong>Email:</strong> <a href="mailto:${email}">${email}</a></p>
+          <p><strong>Phone:</strong> <a href="tel:${phone}">${phone}</a></p>
+          <p><strong>Subject:</strong> ${subject}</p>
+          <p><strong>Message:</strong></p>
+          <div style="background-color: #f9f9f9; padding: 10px; border-left: 4px solid #4F46E5;">
+            ${message.replace(/\n/g, "<br>")}
+          </div>
+          <hr style="margin-top: 20px;"/>
+          <p style="font-size: 12px; color: #888;">This message was sent from your website's contact form.</p>
+        </div>
+      `,
+    });    
+
+    res.status(200).json({ message: 'Email sent successfully.' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Error sending email.' });
+  }
+});
+
 app.listen(5000, () => {
   console.log("server is running");
 });

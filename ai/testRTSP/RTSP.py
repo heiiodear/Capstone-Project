@@ -2,7 +2,7 @@ import time
 import cv2
 import subprocess
 
-camera_index = 0
+camera_index = 1
 cap = cv2.VideoCapture(camera_index)
 
 if not cap.isOpened():
