@@ -5,5 +5,5 @@ webrtc: yes
 srt: yes
 
 paths:
-  live:
+  all:
     source: publisher
