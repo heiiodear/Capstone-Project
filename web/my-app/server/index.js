@@ -173,8 +173,15 @@ Thank you for trusting our automated safety alert system.
                   <p style="color:blue; font-weight:bold;">▶ Click to view full video</p>
                 </a>
                 <p>Thank you for trusting our automated safety alert system.</p>
-                <p><em>— The Secura.com Team —</em></p>`
-        };
+                <p><em>— The Secura.com Team —</em></p>`,
+                attachments: [
+                  {
+                    filename: "fall_video.mp4",
+                    path: video_url,
+                    contentType: "video/mp4"
+                  }
+                ]
+              };
 
         console.log("📧 Sending email...");
 
