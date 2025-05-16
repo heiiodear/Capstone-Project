@@ -86,6 +86,7 @@ app.post("/alert", async (req, res) => {
   if (!user_id || !image_url || !video_url) {
     return res.status(400).json({ error: "Missing required fields." });
   }
+  console.log( emailEnabled, discordEnabled )
 
   try {
     // 🔄 Save updated preferences to the database
