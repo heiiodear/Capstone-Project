@@ -16,33 +16,40 @@ function Cameras() {
     const [selectedCamera, setSelectedCamera] = useState(0);
     const user_id = localStorage.getItem("userId");
     const [rooms, setRooms] = useState([]);   
-    const prevEmailEnabled = useRef(localStorage.getItem('emailEnabled'));
-    const prevDiscordEnabled = useRef(localStorage.getItem('discordEnabled'));
 
     useEffect(() => {
-        const interval = setInterval(() => {
-        const newEmail = localStorage.getItem('emailEnabled');
-        const newDiscord = localStorage.getItem('discordEnabled');
+        const interval = setInterval(async () => {
+        const currentEmail = localStorage.getItem('emailEnabled');
+        const currentDiscord = localStorage.getItem('discordEnabled');
 
-        if (
-            newEmail !== prevEmailEnabled.current ||
-            newDiscord !== prevDiscordEnabled.current
-        ) {
+        const prevEmail = localStorage.getItem('prevEmailEnabled');
+        const prevDiscord = localStorage.getItem('prevDiscordEnabled');
+
+        if (currentEmail !== prevEmail || currentDiscord !== prevDiscord) {
+            localStorage.setItem('prevEmailEnabled', currentEmail);
+            localStorage.setItem('prevDiscordEnabled', currentDiscord);
+
             const user_id = localStorage.getItem("userId");
-            const response = axios.get(`http://localhost:5000/cameras?userId=${user_id}`);
-            const rooms = response.data;
-    
-            for (const room of rooms) {
-                const src = room.src || "None";
-                axios.get(`http://localhost:3000/clear_camera?src=${src}&user_id=${user_id}`);
-            }
-            window.location.reload();
-        }
-        }, 1000); 
 
+            try {
+                const response = await axios.get(`http://localhost:5000/cameras?userId=${user_id}`);
+                const rooms = response.data;
+
+                for (const room of rooms) {
+                    const src = room.src || "None";
+                    await axios.get(`http://localhost:3000/clear_camera?src=${src}&user_id=${user_id}`);
+                }
+
+                window.location.reload();
+            } catch (err) {
+                console.error(err);
+            }
+        }
+        }, 1000);
+    
         return () => clearInterval(interval);
     }, []);
-
+    
     useEffect(() => {
         const user_id = localStorage.getItem("userId");
         if (!user_id) {

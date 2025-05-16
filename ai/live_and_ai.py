@@ -57,17 +57,14 @@ db = client["Capstone"]
 collection = db["fall"]
 user_collection = db["users"]
 
-def handle_fall_event_async(frame, frame_buffer, user_id, name, video_filename, image_filename, timestamp, emailEnabled, discordEnabled):
-    print(emailEnabled)
-    print(discordEnabled)
-    
+def handle_fall_event_async(frame, selected_frames, user_id, name, video_filename, image_filename, timestamp, emailEnabled, discordEnabled):
     try:
         raw_video_filename = f"temp_{uuid4()}.mp4"
         h, w = frame.shape[:2]
         video_writer = cv2.VideoWriter(raw_video_filename, cv2.VideoWriter_fourcc(*'mp4v'), 10, (w, h))
-        for buffered_frame in frame_buffer:
-            video_writer.write(buffered_frame)
-        video_writer.write(frame)
+
+        for f in selected_frames:
+            video_writer.write(f)
         video_writer.release()
 
         converted_video_filename = f"converted_{uuid4()}.mp4"
@@ -187,26 +184,30 @@ def generate_frames(source, user_id, name, emailEnabled, discordEnabled):
     if not cap.isOpened():
         return
 
-    buffer_seconds = 3
-    fps = 10
-    buffer_size = buffer_seconds * fps
-    frame_buffer = deque(maxlen=buffer_size)
+    fps = cap.get(cv2.CAP_PROP_FPS)
+    fps = 60
+    fps_buffer = 10
+    frame_interval = 1.0 / fps
 
-    fall_tracking_start = None
-    fall_confirmed = False
+    buffer_seconds = 5
+    frame_buffer = deque(maxlen=int(buffer_seconds * fps_buffer))
+
+    fall_detection_time = 0.0
+    last_fall_detected_time = None
+    fall_confirmed = False 
+    collecting_post_fall = False
+    post_fall_buffer = []
+    post_fall_start_time = None
+
+    POST_FALL_SECONDS = 0
+    POST_FALL_FRAMES = int(fps_buffer * POST_FALL_SECONDS)
 
     frame_count = 0
     process_every_n = 2
-
     future_result = None
 
-    actual_fps = cap.get(cv2.CAP_PROP_FPS)
-    target_fps = actual_fps if actual_fps > 0 else 30
-    frame_interval = 1.0 / target_fps
-
     while True:
-        loop_start_time = time.time()
-
+        loop_start = time.time()
         ret, frame = cap.read()
         if not ret:
             break
@@ -219,9 +220,10 @@ def generate_frames(source, user_id, name, emailEnabled, discordEnabled):
         if frame_count % process_every_n == 0:
             future_result = executor.submit(process_frame, frame.copy())
 
+        fall_detected_now = False
+
         if future_result and future_result.done():
             frame, results = future_result.result()
-            fall_detected_now = False
 
             for result in results:
                 boxes = result.boxes
@@ -248,27 +250,60 @@ def generate_frames(source, user_id, name, emailEnabled, discordEnabled):
                         if label_name == "fall":
                             fall_detected_now = True
 
+            now = time.time()
+
             if fall_detected_now:
-                if fall_tracking_start is None:
-                    fall_tracking_start = time.time()
-                elif time.time() - fall_tracking_start >= 3.0 and not fall_confirmed:
-                    fall_confirmed = True
-                    timestamp = time.strftime("%Y%m%d-%H%M%S")
-                    video_filename = f"fall_{user_id}_{timestamp}.mp4"
-                    image_filename = f"fall_{user_id}_{timestamp}.jpg"
-                    executor.submit(handle_fall_event_async, frame.copy(), list(frame_buffer),
-                                    user_id, name, video_filename, image_filename, timestamp, emailEnabled, discordEnabled)
+                if last_fall_detected_time is None or now - last_fall_detected_time <= 0.3:
+                    fall_detection_time += now - last_fall_detected_time if last_fall_detected_time else 0
+                    last_fall_detected_time = now
+                else:
+                    fall_detection_time = 0
+                    last_fall_detected_time = now
             else:
-                fall_tracking_start = None
+                if last_fall_detected_time and now - last_fall_detected_time <= 0.3:
+                    pass
+                else:
+                    fall_detection_time = 0
+                    last_fall_detected_time = None
+
+            if fall_detection_time >= 2.0 and not fall_confirmed:
+                fall_confirmed = True
+                collecting_post_fall = True
+                post_fall_start_time = time.time()
+                post_fall_buffer = []
+
+        if collecting_post_fall:
+            post_fall_buffer.append(frame.copy())
+            if len(post_fall_buffer) >= POST_FALL_FRAMES:
+                collecting_post_fall = False
+
+                timestamp = time.strftime("%Y%m%d-%H%M%S")
+                video_filename = f"fall_{user_id}_{timestamp}.mp4"
+                image_filename = f"fall_{user_id}_{timestamp}.jpg"
+
+                pre_fall_frames = list(frame_buffer)[-int(fps_buffer * buffer_seconds):] 
+                all_frames = pre_fall_frames + post_fall_buffer
+
+                executor.submit(
+                    handle_fall_event_async,
+                    post_fall_buffer[-1],
+                    all_frames,
+                    user_id, name,
+                    video_filename, image_filename,
+                    timestamp, emailEnabled, discordEnabled
+                )
+
                 fall_confirmed = False
+                fall_detection_time = 0
+                last_fall_detected_time = None
+                post_fall_buffer.clear()
 
         _, buffer = cv2.imencode('.jpg', frame)
         frame_bytes = buffer.tobytes()
         yield (b'--frame\r\nContent-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n')
 
-        elapsed = time.time() - loop_start_time
-        sleep_time = max(0, frame_interval - elapsed)
-        time.sleep(sleep_time)
+        elapsed = time.time() - loop_start
+        time.sleep(max(0, frame_interval - elapsed))
 
     cap.release()
 
