@@ -37,41 +37,43 @@ const EditModal = ({ type, formData, onChange, onCancel, onSave }) => {
     };
 
     return (
-        <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
-        <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md space-y-4">
-            <h2 className="text-lg font-semibold text-indigo-900 cursor-default">{getTitle()}</h2>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 overflow-y-auto">
+            <div className="bg-white w-full max-w-md mx-4 sm:mx-auto p-4 sm:p-6 rounded-lg shadow-lg space-y-4 mt-10 mb-10">
+                <h2 className="text-lg font-semibold text-indigo-900 cursor-default">
+                {getTitle()}
+                </h2>
 
-            {fields.map((field) => (
+                {fields.map((field) => (
                 <div key={field.name}>
-                <label className="text-sm block mb-1">{field.label}</label>
-                <input
-                type="text"
-                name={field.name}
-                value={formData[field.name] || ""}
-                onChange={onChange}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
-                />
-            </div>
-            ))}
+                    <label className="text-sm block mb-1">{field.label}</label>
+                    <input
+                    type="text"
+                    name={field.name}
+                    value={formData[field.name] || ""}
+                    onChange={onChange}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                    />
+                </div>
+                ))}
 
-
-            <div className="flex justify-end space-x-2 pt-2">
-            <button
-                onClick={onCancel}
-                className="px-4 py-2 text-sm rounded-lg bg-gray-100 hover:bg-gray-200 cursor-pointer"
-            >
-                Cancel
-            </button>
-            <button
-                onClick={onSave}
-                className="px-4 py-2 text-sm rounded-lg bg-indigo-900 text-white hover:bg-indigo-800 cursor-pointer"
-            >
-                Save
-            </button>
+                <div className="flex justify-end space-x-2 pt-2">
+                <button
+                    onClick={onCancel}
+                    className="px-4 py-2 text-sm rounded-lg bg-gray-100 hover:bg-gray-200"
+                >
+                    Cancel
+                </button>
+                <button
+                    onClick={onSave}
+                    className="px-4 py-2 text-sm rounded-lg bg-indigo-900 text-white hover:bg-indigo-800"
+                >
+                    Save
+                </button>
+                </div>
             </div>
-        </div>
         </div>
     );
+    
 };
 
 export default EditModal;

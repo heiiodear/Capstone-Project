@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Header from "./../components/Header";
 import ConfirmationModal from "./../components/ConfirmationModal"; 
-import { Mail, MapPin, Phone, Clock, Facebook, Instagram, Twitter } from "lucide-react";
+import { Mail, MapPin, Phone, Clock, Facebook, Instagram } from "lucide-react";
 
 const Contact = () => {
   const [submitted, setSubmitted] = useState(false);
@@ -152,16 +152,15 @@ const Contact = () => {
                 </div>
 
                 {/* Social Media */}
-                <div className="mt-8 pt-6 border-t border-gray-100">
+                <div className="mt-3 pt-6 border-t border-gray-100">
                   <h4 className="font-semibold text-xl mb-4 text-indigo-900">Connect With Us</h4>
 
-                  <div className="grid grid-cols-3 gap-y-4">
+                  <div className="grid grid-cols-2 gap-y-4">
                     {[
                       { icon: Facebook, label: "Facebook", detail: "ACSSecura" },
                       { icon: Instagram, label: "Instagram", detail: "ACSSecura_official" },
-                      { icon: Twitter, label: "Twitter", detail: "@ACSSecura_official" },
                     ].map(({ icon: Icon, label, detail }) => (
-                      <div key={label} className="flex flex-col items-center gap-2">
+                      <div key={label} className="flex flex-col justify-between items-center gep-2">
                         <div className="p-2 rounded-full border-2 border-indigo-900 text-indigo-900">
                           <Icon className="h-5 w-5" />
                         </div>
@@ -250,7 +249,7 @@ const Contact = () => {
                         required
                         value={formData.message}
                         onChange={handleChange}
-                        className="mt-1 w-full p-2 border rounded-lg border-gray-300 h-36"
+                        className="mt-1 w-full p-2 border rounded-lg border-gray-300 h-59"
                       ></textarea>
                     </div>
                     <button

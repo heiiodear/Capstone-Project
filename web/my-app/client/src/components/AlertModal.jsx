@@ -53,35 +53,44 @@ const AlertModal = ({ alert, onClose, formatDate, onResolve }) => {
 
   return (
     <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
-      <div className="bg-white rounded-lg shadow-lg max-w-2xl w-full p-6 relative">
+      <div className="bg-white rounded-lg shadow-lg w-[90%] max-w-2xl p-6 relative">
         <button
-          onClick={() => {
-            onClose();
-          }}
-          className="absolute top-2 right-2 text-gray-500 hover:text-gray-900 text-xl font-bold m-4 cursor-pointer"
+          onClick={onClose}
+          className="absolute top-2 right-2 text-gray-500 hover:text-gray-900 text-xl font-bold cursor-pointer"
         >
           ✕
         </button>
-        
-        <h1 className="text-2xl font-bold mb-2 text-indigo-900">Alert Details</h1>
-        <p className="text-gray-700 text-s mb-4">Detailed information about this alert</p>
-        <div className="flex items-center gap-2">
-          <h2 className="text-2xl font-semibold mb-2">{alert.name || alert.user_id}</h2>
+
+        <h1 className="text-2xl font-bold mb-1 text-indigo-900">Alert Details</h1>
+        <p className="text-gray-700 text-sm mb-4">Detailed information about this alert</p>
+
+        <div className="flex flex-wrap items-center gap-2 mb-2">
+          <h2 className="text-xl font-semibold">{alert.name || alert.user_id}</h2>
           <span
-            className={`text-xs px-2 py-1 rounded-full ${
-              alert.resolved
-                ? "bg-indigo-200 text-black"
-                : "bg-red-600 text-white"
+            className={`text-xs px-3 py-1 rounded-full ${
+              alert.resolved ? "bg-indigo-200 text-black" : "bg-red-600 text-white"
             }`}
           >
             {alert.resolved ? "Resolved" : "Active"}
           </span>
+          {!alert.resolved && (
+            <button
+              onClick={handleResolve}
+              className="text-xs bg-indigo-900 text-white px-3 py-1 rounded-lg hover:bg-indigo-800"
+            >
+              Resolve
+            </button>
+          )}
         </div>
-        <p className="text-gray-700 text-sm mb-2"><b className="font-semibold">Time: </b>{formatDate(alert.timestamp)}</p>
-        <div className="flex items-center mb-5">
+
+        <p className="text-gray-700 text-sm mb-2">
+          <b className="font-semibold">Time: </b>{formatDate(alert.timestamp)}
+        </p>
+
+        <div className="flex items-start mb-5">
           {!isEditingNote ? (
             <>
-              <p className="text-gray-700">
+              <p className="text-gray-700 text-sm">
                 {noteInput || (
                   alert.resolved
                     ? "Fall incident resolved. No further action required."
@@ -90,8 +99,9 @@ const AlertModal = ({ alert, onClose, formatDate, onResolve }) => {
               </p>
               <button
                 onClick={() => setIsEditingNote(true)}
-                className="bg-white border-white hover:bg-indigo-200 text-sm px-2 py-1 ml-2 rounded-lg cursor-pointer">
-                  <FontAwesomeIcon icon="fa-solid fa-pen" style={{color: "#312E81",}} />
+                className="ml-2 text-sm hover:bg-indigo-200 rounded-full p-1"
+              >
+                <FontAwesomeIcon icon="fa-solid fa-pen" style={{ color: "#312E81" }} />
               </button>
             </>
           ) : (
@@ -101,30 +111,19 @@ const AlertModal = ({ alert, onClose, formatDate, onResolve }) => {
               onChange={(e) => setNoteInput(e.target.value)}
               onKeyDown={handleKeyPress}
               placeholder="Edit note and press Enter to save"
-              className="w-full border border-gray-500 rounded-lg p-2 text-sm mt-3"
+              className="w-full border border-gray-500 rounded-lg p-2 text-sm"
               autoFocus
             />
           )}
         </div>
-      
+
         {alert.video_url && (
           <ReactPlayer
             url={alert.video_url}
             controls
             width="100%"
-            height="400px"
+            height="auto"
           />
-        )}
-
-        {!alert.resolved && (
-          <div className="flex justify-end mt-6">
-            <button
-              onClick={handleResolve}
-              className="bg-indigo-900 text-white text-sm px-4 py-2 rounded-lg hover:bg-indigo-800 cursor-pointer"
-            >
-              Resolved
-            </button>
-          </div>
         )}
       </div>
     </div>

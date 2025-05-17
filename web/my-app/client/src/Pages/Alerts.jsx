@@ -114,7 +114,7 @@ function Alerts() {
           setDiscordEnabled={setDiscordEnabled}
         />
 
-        <div className="flex flex-col sm:flex-row justify-between items-start">
+        <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
           <div className="flex gap-4 items-center">
             <label htmlFor="date-filter" className="text-s font-medium text-gray-700">Date:</label>
             <input
@@ -127,7 +127,7 @@ function Alerts() {
           </div>
 
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6">
-            <div className="flex gap-2 flex-wrapm">
+            <div className="flex gap-2 flex-wrap">
               <button
                 onClick={() => setFilter("all")}
                 className={`px-3 py-1 rounded-lg cursor-pointer ${
@@ -195,13 +195,15 @@ function Alerts() {
                   </p>
                 </div>
         
-                {alert.image_url && (
-                  <img
-                    src={alert.image_url}
-                    alt="Snapshot"
-                    className="h-36 w-auto rounded-lg shadow object-cover"
-                  />
-                )}
+                <div className="flex flex-col sm:flex-row sm:items-start gap-4">
+                  {alert.image_url && (
+                    <img
+                      src={alert.image_url}
+                      alt="Snapshot"
+                      className="w-full md:w-48 h-auto rounded-lg shadow object-cover"
+                    />
+                  )}
+                </div>
               </div>
             </div>
           ))

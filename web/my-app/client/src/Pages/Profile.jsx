@@ -214,7 +214,8 @@ function Profile() {
                 <p className="text-gray-500 cursor-default">{userData.email}</p>
             </div>
 
-            {/* Personal Info */}
+            <div className="max-w-4xl mx-auto p-4">
+                {/* Personal Info */}
             <div className="w-full max-w-xl mx-auto mt-8 bg-white rounded-lg shadow-lg border-2 border-gray-200 p-6 space-y-4">
                 <div className="flex justify-between items-center">
                 <h2 className="text-lg text-indigo-900 font-semibold text-left cursor-default">Personal Information</h2>
@@ -229,21 +230,22 @@ function Profile() {
                     { label: "Email", value: userData.email },
                     // { label: "Password", value: userData.password },
                     {
-                        label: "Discord Webhook URL",
-                        value: (
-                          <div className="relative w-full">
-                            <span className="block pr-6">{userData.discord}</span>
+                        label: (
+                        <div className="flex items-center gap-1">
+                            <span>Discord Webhook URL</span>
                             <button
-                              onClick={() => setIsWebhookOpen(true)}
-                              className="absolute right-0 top-0 cursor-pointer"
+                            onClick={() => setIsWebhookOpen(true)}
+                            className="cursor-pointer"
+                            aria-label="Webhook info"
                             >
-                              <FontAwesomeIcon icon={faCircleInfo} style={{ color: "#6B7280" }} />
+                            <FontAwesomeIcon icon={faCircleInfo} style={{ color: "#6B7280" }} />
                             </button>
-                          </div>
-                        )
-                      },
+                        </div>
+                        ),
+                        value: <span className="text-sm break-all">{userData.discord}</span>,
+                    },
                     { label: "Phone number", value: userData.tel },
-                ].map((field) => (
+                    ].map((field) => (
                 <div key={field.label} className="flex justify-between items-center border-b pb-2">
                     <div>
                     <div className="text-xs text-gray-500 pb-1.5">{field.label}</div>
@@ -283,7 +285,44 @@ function Profile() {
                 </div>
                 ))}
             </div>
+            {/* Delete Confirmation Modal */}
+            {isDeleteConfirmOpen && (
+                <ConfirmationModal
+                    title="Delete Account"
+                    message="Are you sure you want to delete your account? This action cannot be undone."
+                    confirmText="Delete"
+                    confirmColor="bg-red-600 hover:bg-red-700"
+                    onConfirm={handleDeleteConfirm}
+                    onCancel={handleDeleteCancel}
+                />
+            )}
 
+            <div className="max-w-xl mx-auto m-6 space-y-4">
+                <div className="flex justify-end space-x-3">
+                    <button
+                        type="button"
+                        onClick={() => setIsChangePasswordOpen(true)}
+                        className="text-sm font-medium text-white bg-indigo-900 hover:bg-indigo-800 py-2.5 px-4 rounded-lg cursor-pointer"
+                    >
+                        Change Password
+                    </button>
+                    <button
+                        type="button"
+                        onClick={handleDeleteClick}
+                        className="text-sm font-medium text-white bg-red-600 hover:bg-red-700 py-2.5 px-4 rounded-lg cursor-pointer"
+                    >
+                        Delete Account
+                    </button>
+                </div>
+            </div>
+
+            <ChangePasswordModal
+                isOpen={isChangePasswordOpen}
+                onClose={() => setIsChangePasswordOpen(false)}
+                onSave={handleChangePassword}
+            />
+            </div>
+            
             {isEditing && (
                 <EditModal
                 type={editingField}
@@ -366,42 +405,7 @@ function Profile() {
         </div>
     </div>
 )}
-            {/* Delete Confirmation Modal */}
-            {isDeleteConfirmOpen && (
-                <ConfirmationModal
-                    title="Delete Account"
-                    message="Are you sure you want to delete your account? This action cannot be undone."
-                    confirmText="Delete"
-                    confirmColor="bg-red-600 hover:bg-red-700"
-                    onConfirm={handleDeleteConfirm}
-                    onCancel={handleDeleteCancel}
-                />
-            )}
-
-            <div className="max-w-xl mx-auto m-6 space-y-4">
-                <div className="flex justify-end space-x-3">
-                    <button
-                        type="button"
-                        onClick={() => setIsChangePasswordOpen(true)}
-                        className="text-sm font-medium text-white bg-indigo-900 hover:bg-indigo-800 py-2.5 px-4 rounded-lg cursor-pointer"
-                    >
-                        Change Password
-                    </button>
-                    <button
-                        type="button"
-                        onClick={handleDeleteClick}
-                        className="text-sm font-medium text-white bg-red-600 hover:bg-red-700 py-2.5 px-4 rounded-lg cursor-pointer"
-                    >
-                        Delete Account
-                    </button>
-                </div>
-            </div>
-
-            <ChangePasswordModal
-                isOpen={isChangePasswordOpen}
-                onClose={() => setIsChangePasswordOpen(false)}
-                onSave={handleChangePassword}
-            />
+            
         </div>
     );
 }
