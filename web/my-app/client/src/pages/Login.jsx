@@ -48,7 +48,7 @@ function Login() {
     </style>
     <div className="min-h-screen flex justify-center items-center p-4 bg-indigo-100">
       <div className="w-full max-w-md bg-white rounded-lg shadow-md p-6 space-y-4">
-        <div className="text-center text-2xl font-bold text-indigo-900 cursor-default">Projectname</div>
+        <div className="text-center text-2xl font-bold text-indigo-900 cursor-default">Secura</div>
         <div className="text-center text-2xl font-bold text-indigo-900 cursor-default">Welcome back</div>
         <p className="text-center text-gray-500 text-sm cursor-default">Please sign in to access your account</p>
         {message && <div className="text-center text-red-600 text-sm">{message}</div>}
