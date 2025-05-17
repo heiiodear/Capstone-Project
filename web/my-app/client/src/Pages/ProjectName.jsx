@@ -12,7 +12,7 @@ function ProjectName() {
     <div className="min-h-screen bg-indigo-950 flex justify-center items-center">
       <div className="flex flex-col items-center gap-3 md:gap-4 px-4 text-center">
         <div className="text-4xl sm:text-5xl md:text-6xl font-semibold text-white">
-          ProjectName
+          Secura
         </div>
         <button
           onClick={handleClick}
