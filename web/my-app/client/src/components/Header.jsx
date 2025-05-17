@@ -7,6 +7,7 @@ import { fab } from '@fortawesome/free-brands-svg-icons';
 import { far } from '@fortawesome/free-regular-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useAlertNotifications } from './../hooks/useAlertNotifications';
+import logo2 from "./../assets/logo2.png";
 library.add(fas, fab, far);
 import axios from "axios";
 
@@ -87,7 +88,11 @@ function Header() {
                         <FaBars className="w-5 h-5" />
                     </button>
                     <Link to="/dashboard" className="text-xl font-bold">
-                        <span className="hidden sm:inline">Secura</span>
+                        <span className="hidden sm:inline">
+                            <div className="flex justify-center">
+                                <img src={logo2} alt="Logo" className="h-auto w-23 -mb-7 -mt-5 -ml-5" />
+                            </div>
+                        </span>
                     </Link>
                 </div>
 

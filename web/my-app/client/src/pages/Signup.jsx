@@ -8,6 +8,7 @@ import { fab } from '@fortawesome/free-brands-svg-icons';
 import { far } from '@fortawesome/free-regular-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleInfo } from '@fortawesome/free-solid-svg-icons';
+import logo from "./../assets/logo.png";
 library.add(fas, fab, far);
 import axios from "axios";
 
@@ -99,7 +100,9 @@ function Signup() {
     </style>
     <div className="min-h-screen flex items-center justify-center bg-indigo-100 px-4 py-6">
       <div className="w-full max-w-2xl bg-white rounded-lg shadow-md p-8 space-y-6">
-        <div className="text-center text-3xl font-bold text-indigo-900">Projectname</div>
+        <div className="flex justify-center">
+          <img src={logo} alt="Logo" className="h-27 w-auto -mb-12 -mt-5" />
+        </div>
         <div className="text-center text-3xl font-bold text-indigo-900 ">Create an Account</div>
         <p className="text-center text-gray-500 text-sm">Enter your information to register</p>
 
