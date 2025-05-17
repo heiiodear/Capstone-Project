@@ -8,7 +8,6 @@ import { fas } from '@fortawesome/free-solid-svg-icons';
 import { fab } from '@fortawesome/free-brands-svg-icons'; 
 import { far } from '@fortawesome/free-regular-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-// import { useToast } from "./../components/ToastContext";
 import axios from "axios";
 
 library.add(fas, fab, far);
@@ -29,8 +28,6 @@ function Alerts() {
     const stored = localStorage.getItem('discordEnabled');
     return stored ? JSON.parse(stored) : false;
   });
-
-  // const { showNotiToast } = useToast();
 
   useEffect(() => {
     localStorage.setItem('emailEnabled', JSON.stringify(emailEnabled));
@@ -62,10 +59,8 @@ function Alerts() {
       setAlerts((prev) =>
         prev.map((a) => (a._id === id ? { ...a, resolved: newStatus, note: note } : a))
       );
-      // showNotiToast(newStatus ? "Marked as resolved" : "Marked as active");
     } catch (err) {
       console.error("Failed to update alert status:", err);
-      // showNotiToast("Failed to update status");
     }
   };
 
@@ -99,7 +94,7 @@ function Alerts() {
       <Header />
 
       <div className="container mx-auto py-6 px-4">
-        <div className="flex justify-between items-center mb-6 mt-0.75">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
           <h1 className="text-3xl font-bold text-indigo-900">Alert Center</h1>
           <button
             className="flex flex-col items-center text-indigo-900 hover:text-indigo-800 cursor-pointer" 
@@ -119,8 +114,8 @@ function Alerts() {
           setDiscordEnabled={setDiscordEnabled}
         />
 
-        <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
-          <div className="flex gap-4 items-center">
+        <div className="flex flex-col sm:flex-row justify-between items-start gap-4 mb-6">
+          <div className="flex gap-2 items-center">
             <label htmlFor="date-filter" className="text-s font-medium text-gray-700">Date:</label>
             <input
               id="date-filter"
@@ -131,23 +126,21 @@ function Alerts() {
             />
           </div>
 
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6">
-            <div className="flex gap-2 flex-wrap">
-              {["all", "active", "resolved"].map((type) => (
-                <button
-                  key={type}
-                  onClick={() => setFilter(type)}
-                  className={`px-3 py-1 rounded-lg cursor-pointer ${
-                    filter === type ? "bg-indigo-900 text-white" : "border border-gray-300"
-                  }`}
-                >
-                  {type.charAt(0).toUpperCase() + type.slice(1)}
-                </button>
-              ))}
-            </div>
+          <div className="flex gap-2 flex-wrap">
+            {['all', 'active', 'resolved'].map((type) => (
+              <button
+                key={type}
+                onClick={() => setFilter(type)}
+                className={`px-3 py-1 rounded-lg cursor-pointer ${
+                  filter === type ? "bg-indigo-900 text-white" : "border border-gray-300"
+                }`}
+              >
+                {type.charAt(0).toUpperCase() + type.slice(1)}
+              </button>
+            ))}
           </div>
         </div>
-        
+
         {filteredAlerts.length === 0 ? (
           <div className="text-center text-gray-500 py-6">No alerts found</div>
         ) : (
@@ -161,7 +154,7 @@ function Alerts() {
                   : "bg-red-50 border-red-200 hover:bg-red-100"
               }`}
             >
-              <div className="flex justify-between items-start gap-4">
+              <div className="flex flex-col md:flex-row justify-between items-start gap-4">
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
                     <h2 className="font-semibold text-xl text-black">

@@ -1,7 +1,7 @@
 import React from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import './App.css'
-import ProjectName from './pages/ProjectName'
+// import ProjectName from './pages/ProjectName'
 import Login from './pages/Login'
 import Signup from './pages/Signup'
 import ForgotPassword from './pages/ForgotPassword'
@@ -19,8 +19,8 @@ function App() {
     <ToastProvider>
       <BrowserRouter>
         <Routes>
-            <Route path='/' element={<ProjectName />}></Route>
-            <Route path='login' element={<Login />}></Route>
+            {/* <Route path='/' element={<ProjectName />}></Route> */}
+            <Route path='/' element={<Login />}></Route>
             <Route path='register' element={<Signup />}></Route>
             <Route path='forgotpassword' element={<ForgotPassword />}></Route>
             <Route path='verifycode' element={<VerifyCode />}></Route>
