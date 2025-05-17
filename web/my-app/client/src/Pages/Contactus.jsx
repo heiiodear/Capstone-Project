@@ -65,7 +65,7 @@ const Contact = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white pt-16">
       <Header />
 
       {showConfirmPopup && (

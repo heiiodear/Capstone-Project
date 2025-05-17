@@ -187,7 +187,7 @@ function Profile() {
     }
 
     return (
-        <div className="min-h-screen">
+        <div className="min-h-screen pt-16">
             <Header />
         
             <div className="relative">

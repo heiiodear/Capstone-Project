@@ -78,7 +78,7 @@ function Header() {
     // };
 
     return (
-        <header className="bg-indigo-900 text-white shadow-md py-3 px-5 relative z-50">
+        <header className="fixed top-0 left-0 w-full bg-indigo-900 text-white py-3 px-5 z-50">
             <div className="max-w-9xl mx-auto flex justify-between items-center">
                 <div className="flex items-center gap-4">
                     <button
@@ -90,7 +90,7 @@ function Header() {
                     <Link to="/dashboard" className="text-xl font-bold">
                         <span className="hidden sm:inline">
                             <div className="flex justify-center">
-                                <img src={logo2} alt="Logo" className="h-auto w-23 -mb-7 -mt-5 -ml-5" />
+                                <img src={logo2} alt="Logo" className="h-auto w-20 -mb-7 -mt-5 -ml-5" />
                             </div>
                         </span>
                     </Link>

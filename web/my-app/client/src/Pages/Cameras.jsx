@@ -154,7 +154,7 @@ function Cameras() {
     };
 
     return (
-        <div className="min-h-screen bg-white">
+        <div className="min-h-screen bg-white pt-16">
             <Header />
 
             <div className="container mx-auto py-6 px-4">

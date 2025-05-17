@@ -95,7 +95,7 @@ function Alerts() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-white relative">
+    <div className="min-h-screen bg-white relative pt-16">
       <Header />
 
       <div className="container mx-auto py-6 px-4">
