@@ -8,10 +8,10 @@ import { fas } from '@fortawesome/free-solid-svg-icons';
 import { fab } from '@fortawesome/free-brands-svg-icons'; 
 import { far } from '@fortawesome/free-regular-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-library.add(fas, fab, far);
-import ReactPlayer from 'react-player';
+// import { useToast } from "./../components/ToastContext";
 import axios from "axios";
 
+library.add(fas, fab, far);
 
 function Alerts() {
   const [alerts, setAlerts] = useState([]);
@@ -19,6 +19,7 @@ function Alerts() {
   const [selectedAlert, setSelectedAlert] = useState(null);
   const [selectedDate, setSelectedDate] = useState("");
   const [showSettings, setShowSettings] = useState(false);
+
   const [emailEnabled, setEmailEnabled] = useState(() => {
     const stored = localStorage.getItem('emailEnabled');
     return stored ? JSON.parse(stored) : true;
@@ -28,6 +29,8 @@ function Alerts() {
     const stored = localStorage.getItem('discordEnabled');
     return stored ? JSON.parse(stored) : false;
   });
+
+  // const { showNotiToast } = useToast();
 
   useEffect(() => {
     localStorage.setItem('emailEnabled', JSON.stringify(emailEnabled));
@@ -40,11 +43,11 @@ function Alerts() {
   const filteredAlerts = alerts.filter((alert) => {
     const matchFilter =
       filter === "all"
-        ? true
+        ? true  
         : filter === "active"
         ? !alert.resolved
         : alert.resolved;
-  
+
     const alertDate = `${alert.timestamp.substring(0, 4)}-${alert.timestamp.substring(4, 6)}-${alert.timestamp.substring(6, 8)}`;
     const matchDate = selectedDate ? alertDate === selectedDate : true;
     return matchFilter && matchDate;
@@ -59,40 +62,42 @@ function Alerts() {
       setAlerts((prev) =>
         prev.map((a) => (a._id === id ? { ...a, resolved: newStatus, note: note } : a))
       );
+      // showNotiToast(newStatus ? "Marked as resolved" : "Marked as active");
     } catch (err) {
       console.error("Failed to update alert status:", err);
+      // showNotiToast("Failed to update status");
     }
   };
 
   useEffect(() => {
-  const userId = localStorage.getItem("userId");
-  console.log("User ID from localStorage:", userId); 
-  const today = new Date();
+    const userId = localStorage.getItem("userId");
+    const today = new Date();
     const localDate = new Date(today.getTime() - today.getTimezoneOffset() * 60000)
       .toISOString()
       .split("T")[0];
     setSelectedDate(localDate);
 
-  if (!userId) {
-    console.error("User ID not found in localStorage");
-    return;
-  }
+    const fetchAlerts = async () => {
+      if (!userId) return;
 
-  axios.get(`http://localhost:5000/alerts?userId=${userId}`)
-  .then((res) => {
-    console.log("Fetched alerts:", res.data);
-    setAlerts(res.data);
+      try {
+        const res = await axios.get(`http://localhost:5000/alerts?userId=${userId}`);
+        setAlerts(res.data);
+      } catch (err) {
+        console.error("Failed to fetch alerts:", err);
+      }
+    };
 
-    if (res.data.length > 0) {
-      console.log("Example alert:", res.data[0]);
-    }
-  });
-}, []);
+    fetchAlerts();
+
+    const interval = setInterval(fetchAlerts, 5000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white relative">
       <Header />
-      
+
       <div className="container mx-auto py-6 px-4">
         <div className="flex justify-between items-center mb-6 mt-0.75">
           <h1 className="text-3xl font-bold text-indigo-900">Alert Center</h1>
@@ -128,30 +133,17 @@ function Alerts() {
 
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6">
             <div className="flex gap-2 flex-wrap">
-              <button
-                onClick={() => setFilter("all")}
-                className={`px-3 py-1 rounded-lg cursor-pointer ${
-                  filter === "all" ? "bg-indigo-900 text-white" : "border border-gray-300"
-                }`}
-              >
-                All
-              </button>
-              <button
-                onClick={() => setFilter("active")}
-                className={`px-3 py-1 rounded-lg cursor-pointer ${
-                  filter === "active" ? "bg-indigo-900 text-white" : "border border-gray-300"
-                }`}
-              >
-                Active
-              </button>
-              <button
-                onClick={() => setFilter("resolved")}
-                className={`px-3 py-1 rounded-lg cursor-pointer ${
-                  filter === "resolved" ? "bg-indigo-900 text-white" : "border border-gray-300"
-                }`}
-              >
-                Resolved
-              </button>
+              {["all", "active", "resolved"].map((type) => (
+                <button
+                  key={type}
+                  onClick={() => setFilter(type)}
+                  className={`px-3 py-1 rounded-lg cursor-pointer ${
+                    filter === type ? "bg-indigo-900 text-white" : "border border-gray-300"
+                  }`}
+                >
+                  {type.charAt(0).toUpperCase() + type.slice(1)}
+                </button>
+              ))}
             </div>
           </div>
         </div>
@@ -187,29 +179,26 @@ function Alerts() {
                   </div>
                   <p className="text-gray-700 mt-1">{formatDate(alert.timestamp)}</p>
                   <p className="text-gray-700 mt-1">
-                    { alert.note || (
+                    {alert.note || (
                       alert.resolved
-                      ? "Fall incident resolved. No further action required."
-                      : "Immediate assistance required."
+                        ? "Fall incident resolved. No further action required."
+                        : "Immediate assistance required."
                     )}
                   </p>
                 </div>
-        
-                <div className="flex flex-col sm:flex-row sm:items-start gap-4">
-                  {alert.image_url && (
-                    <img
-                      src={alert.image_url}
-                      alt="Snapshot"
-                      className="w-full md:w-48 h-auto rounded-lg shadow object-cover"
-                    />
-                  )}
-                </div>
+                {alert.image_url && (
+                  <img
+                    src={alert.image_url}
+                    alt="Snapshot"
+                    className="w-full md:w-48 h-auto rounded-lg shadow object-cover"
+                  />
+                )}
               </div>
             </div>
           ))
         )}
       </div>
-      
+
       <AlertModal
         alert={selectedAlert}
         onClose={() => setSelectedAlert(null)}

@@ -73,21 +73,13 @@ const AlertModal = ({ alert, onClose, formatDate, onResolve }) => {
           >
             {alert.resolved ? "Resolved" : "Active"}
           </span>
-          {!alert.resolved && (
-            <button
-              onClick={handleResolve}
-              className="text-xs bg-indigo-900 text-white px-3 py-1 rounded-lg hover:bg-indigo-800"
-            >
-              Resolve
-            </button>
-          )}
         </div>
 
         <p className="text-gray-700 text-sm mb-2">
           <b className="font-semibold">Time: </b>{formatDate(alert.timestamp)}
         </p>
 
-        <div className="flex items-start mb-5">
+        <div className="flex items-start mb-5 sm:mb-1">
           {!isEditingNote ? (
             <>
               <p className="text-gray-700 text-sm">
@@ -125,6 +117,18 @@ const AlertModal = ({ alert, onClose, formatDate, onResolve }) => {
             height="auto"
           />
         )}
+
+        {!alert.resolved && (
+          <div className="flex justify-end mt-6">
+            <button
+              onClick={handleResolve}
+              className="bg-indigo-900 text-white text-sm px-4 py-2 rounded-lg hover:bg-indigo-800 cursor-pointer"
+            >
+              Resolved
+            </button>
+          </div>
+        )}
+        
       </div>
     </div>
   );

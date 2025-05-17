@@ -6,10 +6,12 @@ import { fas } from '@fortawesome/free-solid-svg-icons';
 import { fab } from '@fortawesome/free-brands-svg-icons'; 
 import { far } from '@fortawesome/free-regular-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useAlertNotifications } from './../hooks/useAlertNotifications';
 library.add(fas, fab, far);
 import axios from "axios";
 
 function Header() {
+    useAlertNotifications();
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const navigate = useNavigate();
     const [profileImage, setProfileImage] = useState("https://www.engineering.columbia.edu/sites/default/files/styles/full_size_1_1/public/2024-07/Columbia_Engineering_Headshot_1_B.png?itok=n6_TL_JQ");
@@ -100,7 +102,7 @@ function Header() {
                     <Link to="/alerts" className="relative">
                         <FontAwesomeIcon icon="bell" className="absolute -top-2.5 right-0.25 text-white text-xl" />
                         {activeAlerts > 0 && (
-                            <span className="absolute -top-4 -right-3.5 bg-red-600 text-white text-[12px] font-semibold rounded-full px-2 flex items-center justify-center z-50">
+                            <span className="absolute -top-4 -right-3 bg-red-600 text-white text-[12px] font-semibold rounded-full px-2 flex items-center justify-center z-50">
                                 {activeAlerts}
                             </span>
                         )}
