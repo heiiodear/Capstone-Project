@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEye, faEyeSlash } from '@fortawesome/free-regular-svg-icons';
 
 function ChangePasswordModal({ isOpen, onClose, onSave }) {
     const [formData, setFormData] = useState({
@@ -35,14 +37,14 @@ function ChangePasswordModal({ isOpen, onClose, onSave }) {
             return setError("New passwords do not match.");
         }
 
-        onSave(formData); 
+        onSave(formData);
     };
 
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
-            <div className="bg-white p-6 rounded-lg shadow-lg w-96 space-y-4">
+        <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50 px-4">
+            <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md space-y-4">
                 <h2 className="text-lg font-semibold text-indigo-900">
                     Change Password
                 </h2>
@@ -62,9 +64,9 @@ function ChangePasswordModal({ isOpen, onClose, onSave }) {
                         <button
                             type="button"
                             onClick={() => toggleVisibility("currentpass")}
-                            className="absolute top-1/2 right-2 transform -translate-y-1/2 text-gray-500 cursor-pointer"
+                            className="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-500 cursor-pointer"
                         >
-                            {showPassword.currentpass ? <FontAwesomeIcon icon="fa-regular fa-eye-slash" style={{color: "#6B7280",}} /> : <FontAwesomeIcon icon="fa-regular fa-eye" style={{color: "#6B7280"}} />}
+                            <FontAwesomeIcon icon={showPassword.currentpass ? faEyeSlash : faEye} />
                         </button>
                     </div>
                 </div>
@@ -82,9 +84,9 @@ function ChangePasswordModal({ isOpen, onClose, onSave }) {
                         <button
                             type="button"
                             onClick={() => toggleVisibility("newpass")}
-                            className="absolute top-1/2 right-2 transform -translate-y-1/2 text-gray-500 cursor-pointer"
+                            className="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-500 cursor-pointer"
                         >
-                            {showPassword.newpass ? <FontAwesomeIcon icon="fa-regular fa-eye-slash" style={{color: "#6B7280",}} /> : <FontAwesomeIcon icon="fa-regular fa-eye" style={{color: "#6B7280",}} />}
+                            <FontAwesomeIcon icon={showPassword.newpass ? faEyeSlash : faEye} />
                         </button>
                     </div>
                 </div>
@@ -102,9 +104,9 @@ function ChangePasswordModal({ isOpen, onClose, onSave }) {
                         <button
                             type="button"
                             onClick={() => toggleVisibility("confirmpass")}
-                            className="absolute top-1/2 right-2 transform -translate-y-1/2 text-gray-500 cursor-pointer"
+                            className="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-500 cursor-pointer"
                         >
-                            {showPassword.confirmpass ? <FontAwesomeIcon icon="fa-regular fa-eye-slash" style={{color: "#6B7280",}} /> : <FontAwesomeIcon icon="fa-regular fa-eye" style={{color: "#6B7280",}} />}
+                            <FontAwesomeIcon icon={showPassword.confirmpass ? faEyeSlash : faEye} />
                         </button>
                     </div>
                 </div>
@@ -112,13 +114,13 @@ function ChangePasswordModal({ isOpen, onClose, onSave }) {
                 <div className="flex justify-end gap-2 pt-4">
                     <button
                         onClick={onClose}
-                        className="bg-gray-100 text-gray-800 text-sm px-4 py-2 rounded-lg hover:bg-gray-200 cursor-pointer"
+                        className="bg-gray-100 text-gray-800 text-sm px-4 py-2 rounded-lg hover:bg-gray-200"
                     >
                         Cancel
                     </button>
                     <button
                         onClick={handleSave}
-                        className="bg-indigo-900 text-white text-sm px-4 py-2 rounded-lg hover:bg-indigo-800 cursor-pointer"
+                        className="bg-indigo-900 text-white text-sm px-4 py-2 rounded-lg hover:bg-indigo-800"
                     >
                         Save
                     </button>

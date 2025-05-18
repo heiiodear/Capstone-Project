@@ -81,16 +81,20 @@ function Login() {
                 required
                 className="mt-1 w-full border border-gray-300 rounded-lg px-3 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-indigo-500"
               />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute top-1/2 right-3 transform -translate-y-1/2 text-sm text-gray-500 cursor-pointer"
-              >
-              {showPassword
-                ? <FontAwesomeIcon icon={faEyeSlash} style={{ color: "#6B7280" }} />
-                : <FontAwesomeIcon icon={faEye} style={{ color: "#6B7280" }} />
-              }
-             </button>
+              <div className="absolute inset-y-0 right-0 flex items-center pr-3">
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="text-gray-500 focus:outline-none"
+                  aria-label="Toggle password visibility"
+                >
+                  {showPassword ? (
+                    <FontAwesomeIcon icon={faEyeSlash} className="h-4 w-4" />
+                  ) : (
+                    <FontAwesomeIcon icon={faEye} className="h-4 w-4" />
+                  )}
+                </button>
+              </div>
             </div>
             <div className="text-right text-sm mt-1">
               <Link to="/forgotpassword" className="text-indigo-700 hover:underline">
