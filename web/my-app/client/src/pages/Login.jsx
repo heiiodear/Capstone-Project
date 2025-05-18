@@ -35,7 +35,7 @@ function Login() {
 
   return (
     <>
-    <style>
+    {/* <style>
       {`
         input[type="password"]::-ms-reveal,
         input[type="password"]::-ms-clear {
@@ -47,7 +47,7 @@ function Login() {
           display: none !important;
         }
       `}
-    </style>
+    </style> */}
     <div className="min-h-screen flex justify-center items-center p-4 bg-indigo-100">
       <div className="w-full max-w-md bg-white rounded-lg shadow-md p-6 space-y-4">
         <div className="flex justify-center">
@@ -79,7 +79,7 @@ function Login() {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
                 required
-                className="mt-1 w-full border border-gray-300 rounded-lg px-3 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="mt-1 w-full h-11 border border-gray-300 rounded-lg px-3 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-indigo-500"
               />
               <div className="absolute inset-y-0 right-0 flex items-center pr-3">
                 <button

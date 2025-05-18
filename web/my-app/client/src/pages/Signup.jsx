@@ -90,7 +90,7 @@ function Signup() {
 
   return (
     <>
-      <style>
+      {/* <style>
         {`
           input[type="password"]::-ms-reveal,
           input[type="password"]::-ms-clear {
@@ -102,7 +102,7 @@ function Signup() {
             display: none !important;
           }
         `}
-      </style>
+      </style> */}
       <div className="min-h-screen flex items-center justify-center bg-indigo-100 px-4 py-6">
         <div className="w-full max-w-2xl bg-white rounded-lg shadow-md p-8 space-y-6">
           <div className="flex justify-center">
@@ -210,6 +210,7 @@ function Signup() {
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
+                  placeholder="••••••••"
                   required
                   className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 pr-10 focus:ring-2 focus:ring-indigo-500"
                 />
@@ -232,9 +233,10 @@ function Signup() {
                   type={showConfirmPassword ? "text" : "password"}
                   name="confirmPassword"
                   value={formData.confirmPassword}
+                  placeholder="••••••••"
                   onChange={handleChange}
                   required
-                  className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 pr-10 focus:ring-2 focus:ring-indigo-500"
+                  className="mt-1 w-full h-11 rounded-lg border border-gray-300 px-3 py-2 pr-10 focus:ring-2 focus:ring-indigo-500"
                 />
                 {formData.confirmPassword &&
                   formData.password !== formData.confirmPassword && (
