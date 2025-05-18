@@ -24,7 +24,7 @@ function Dashboard() {
             return;
         }
 
-        axios.get("http://localhost:5000/dashboard", {
+        axios.get("https://capstone-server-8hss.onrender.com/dashboard", {
             params: { user_id: userId, date: selectedDate }
         })
         .then((res) => setDashboardData(res.data))

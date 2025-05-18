@@ -31,7 +31,7 @@ function Profile() {
             try {
                 const token = localStorage.getItem("token"); 
                 if (token) {
-                    const response = await axios.get("http://localhost:5000/profile", {
+                    const response = await axios.get("https://capstone-server-8hss.onrender.com/profile", {
                         headers: {
                             Authorization: `Bearer ${token}`,
                         },
@@ -96,7 +96,7 @@ function Profile() {
             } 
 
             const response = await axios.put(
-                "http://localhost:5000/profile",
+                "https://capstone-server-8hss.onrender.com/profile",
                 updatedData,
                 {
                     headers: {
@@ -125,14 +125,14 @@ function Profile() {
         try {
             const token = localStorage.getItem("token");
             const user_id = localStorage.getItem("userId");
-            const response_camera = await axios.get(`http://localhost:5000/cameras?userId=${user_id}`);
+            const response_camera = await axios.get(`https://capstone-server-8hss.onrender.com/cameras?userId=${user_id}`);
             const rooms = response_camera.data;
 
             for (const room of rooms) {
                 const src = room.src || "None";
-                await axios.get(`http://localhost:3000/clear_camera?src=${src}&user_id=${user_id}`);
+                await axios.get(`https://capstone-ai.onrender.com/clear_camera?src=${src}&user_id=${user_id}`);
             }
-            const response = await axios.delete("http://localhost:5000/profile", {
+            const response = await axios.delete("https://capstone-server-8hss.onrender.com/profile", {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -157,7 +157,7 @@ function Profile() {
             const token = localStorage.getItem("token");
     
             const response = await axios.put(
-                "http://localhost:5000/profile/password",
+                "https://capstone-server-8hss.onrender.com/profile/password",
                 {
                     currentPassword: passwordData.currentPassword,
                     newPassword: passwordData.newPassword,
@@ -383,7 +383,7 @@ function Profile() {
             try {
             const token = localStorage.getItem("token");
             await axios.put(
-                "http://localhost:5000/profile/image",
+                "https://capstone-server-8hss.onrender.com/profile/image",
                 { profileImage: newImageUrl },
                 {
                 headers: {

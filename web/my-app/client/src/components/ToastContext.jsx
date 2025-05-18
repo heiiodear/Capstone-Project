@@ -20,7 +20,7 @@ export const ToastProvider = ({ children }) => {
 
     const fetchAlerts = async () => {
       try {
-        const res = await axios.get(`http://localhost:5000/alerts?userId=${userId}`);
+        const res = await axios.get(`https://capstone-server-8hss.onrender.com/alerts?userId=${userId}`);
         const allAlerts = res.data;
 
         // ดึง alert id ที่เคยแจ้งไปแล้ว

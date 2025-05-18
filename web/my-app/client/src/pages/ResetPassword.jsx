@@ -34,7 +34,7 @@ function ResetPassword() {
 
         try {
             const email = location.state?.email;
-            const response = await axios.post("http://localhost:5000/api/reset-password", {
+            const response = await axios.post("https://capstone-server-8hss.onrender.com/api/reset-password", {
                 email,
                 newPassword: password,
             });

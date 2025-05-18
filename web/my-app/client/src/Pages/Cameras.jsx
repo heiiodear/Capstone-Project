@@ -33,12 +33,12 @@ function Cameras() {
             const user_id = localStorage.getItem("userId");
 
             try {
-                const response = await axios.get(`http://localhost:5000/cameras?userId=${user_id}`);
+                const response = await axios.get(`https://capstone-server-8hss.onrender.com/cameras?userId=${user_id}`);
                 const rooms = response.data;
 
                 for (const room of rooms) {
                     const src = room.src || "None";
-                    await axios.get(`http://localhost:3000/clear_camera?src=${src}&user_id=${user_id}`);
+                    await axios.get(`https://capstone-ai.onrender.com/clear_camera?src=${src}&user_id=${user_id}`);
                 }
 
                 window.location.reload();
@@ -58,7 +58,7 @@ function Cameras() {
             return;
         }
 
-        axios.get(`http://localhost:5000/cameras?userId=${user_id}`)  
+        axios.get(`https://capstone-server-8hss.onrender.com/cameras?userId=${user_id}`)  
             .then((response) => {
                 setRooms(response.data); 
             })
@@ -108,7 +108,7 @@ function Cameras() {
         };
 
         if (modalMode === "add") {
-            axios.post('http://localhost:5000/cameras', updatedCamera, {
+            axios.post('https://capstone-server-8hss.onrender.com/cameras', updatedCamera, {
                 headers: { 'Content-Type': 'application/json' },
             })
             .then((response) => {
@@ -120,8 +120,8 @@ function Cameras() {
                 console.error('Error adding camera:', error);
             });
         } else if (modalMode === "edit") {
-            axios.get(`http://localhost:3000/clear_camera?src=${modalData.src}&user_id=${user_id}`);
-            axios.put(`http://localhost:5000/cameras/${modalData._id}`, updatedCamera, {
+            axios.get(`https://capstone-ai.onrender.com/clear_camera?src=${modalData.src}&user_id=${user_id}`);
+            axios.put(`https://capstone-server-8hss.onrender.com/cameras/${modalData._id}`, updatedCamera, {
                 headers: { 'Content-Type': 'application/json' },
             })
             .then((response) => {
@@ -138,7 +138,7 @@ function Cameras() {
     };
 
     const handleDeleteCamera = (id) => {
-        axios.delete(`http://localhost:5000/cameras/${id}`)
+        axios.delete(`https://capstone-server-8hss.onrender.com/cameras/${id}`)
         .then(() => {
             setRooms(prev => prev.filter(room => room._id !== id)); 
         })
@@ -148,7 +148,7 @@ function Cameras() {
 
         for (const room of rooms) {
             const src = room.src || "None";
-            axios.get(`http://localhost:3000/clear_camera?src=${src}&user_id=${user_id}`);
+            axios.get(`https://capstone-ai.onrender.com/clear_camera?src=${src}&user_id=${user_id}`);
         }
         window.location.reload();
     };

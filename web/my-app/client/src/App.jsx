@@ -2,17 +2,17 @@ import React from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import './App.css'
 // import ProjectName from './pages/ProjectName'
-import Login from './pages/Login'
-import Signup from './pages/Signup'
-import ForgotPassword from './pages/ForgotPassword'
-import VerifyCode from './pages/VerifyCode'
-import ResetPassword from './pages/ResetPassword'
-import Profile from './pages/Profile'
-import Dashboard from './pages/Dashboard'
-import Alerts from './pages/Alerts'
-import Cameras from './pages/Cameras'
-import Contactus from './pages/Contactus'
-import { ToastProvider } from "./components/ToastContext";
+import Login from './Pages/Login.jsx'
+import Signup from './Pages/Signup.jsx'
+import ForgotPassword from './Pages/ForgotPassword.jsx'
+import VerifyCode from './Pages/VerifyCode.jsx'
+import ResetPassword from './Pages/ResetPassword.jsx'
+import Profile from './Pages/Profile.jsx'
+import Dashboard from './Pages/Dashboard.jsx'
+import Alerts from './Pages/Alerts.jsx'
+import Cameras from './Pages/Cameras.jsx'
+import Contactus from './Pages/Contactus.jsx'
+import { ToastProvider } from "./components/ToastContext.jsx";
 
 function App() {
   return (

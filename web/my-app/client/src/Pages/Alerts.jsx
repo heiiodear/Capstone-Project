@@ -52,7 +52,7 @@ function Alerts() {
 
   const handleResolve = async (id, newStatus, note) => {
     try {
-      await axios.patch(`http://localhost:5000/alerts/${id}`, { 
+      await axios.patch(`https://capstone-server-8hss.onrender.com/alerts/${id}`, { 
         resolved: newStatus, 
         note: note 
       });
@@ -76,7 +76,7 @@ function Alerts() {
       if (!userId) return;
 
       try {
-        const res = await axios.get(`http://localhost:5000/alerts?userId=${userId}`);
+        const res = await axios.get(`https://capstone-server-8hss.onrender.com/alerts?userId=${userId}`);
         setAlerts(res.data);
       } catch (err) {
         console.error("Failed to fetch alerts:", err);

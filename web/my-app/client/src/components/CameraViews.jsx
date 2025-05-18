@@ -18,7 +18,7 @@ function CameraViews({ name, src, user_id, onEdit, onDelete }) {
           {src ? (
             <img
               className="absolute w-full h-full object-cover rounded-lg"
-              src={`http://localhost:3000/video_feed?src=${src}&user_id=${user_id}&name=${name}&emailEnabled=${emailEnabled}&discordEnabled=${discordEnabled}`}
+              src={`https://capstone-ai.onrender.com/video_feed?src=${src}&user_id=${user_id}&name=${name}&emailEnabled=${emailEnabled}&discordEnabled=${discordEnabled}`}
               alt={`${name} feed`}
             />
           ) : (

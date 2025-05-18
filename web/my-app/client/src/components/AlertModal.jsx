@@ -15,7 +15,7 @@ const AlertModal = ({ alert, onClose, formatDate, onResolve }) => {
 
     try {
       onResolve(alert._id, newStatus, updatedNote);
-      await axios.patch(`http://localhost:5000/alerts/${alert._id}`, {
+      await axios.patch(`https://capstone-server-8hss.onrender.com/alerts/${alert._id}`, {
         resolved: newStatus,
         note: updatedNote,
       });
@@ -33,7 +33,7 @@ const AlertModal = ({ alert, onClose, formatDate, onResolve }) => {
     }
 
     try {
-      await axios.patch(`http://localhost:5000/alerts/${alert._id}`, {
+      await axios.patch(`https://capstone-server-8hss.onrender.com/alerts/${alert._id}`, {
         note: trimmedNote,
       });
       onResolve(alert._id, alert.resolved, trimmedNote); 

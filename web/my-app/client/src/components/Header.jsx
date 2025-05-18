@@ -35,7 +35,7 @@ function Header() {
             }
 
             try {
-                const profileRes = await axios.get("http://localhost:5000/profile", {
+                const profileRes = await axios.get("https://capstone-server-8hss.onrender.com/profile", {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
@@ -43,7 +43,7 @@ function Header() {
                 setProfileImage(profileRes.data.profileImage || profileImage);
 
                 if (user_id) {
-                const alertRes = await axios.get(`http://localhost:5000/dashboard?user_id=${user_id}`);
+                const alertRes = await axios.get(`https://capstone-server-8hss.onrender.com/dashboard?user_id=${user_id}`);
                 console.log("Fetched activeAlerts:", alertRes.data.activeAlerts); 
                 setActiveAlerts(alertRes.data.activeAlerts || 0);
                 }

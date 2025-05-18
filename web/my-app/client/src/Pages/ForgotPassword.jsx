@@ -14,7 +14,7 @@ function ForgotPassword() {
         setError("");
 
         try {
-            const response = await axios.post("http://localhost:5000/api/send-verification-code", { email });
+            const response = await axios.post("https://capstone-server-8hss.onrender.com/api/send-verification-code", { email });
 
             if (response.status === 200) {
                 navigate("/verifycode", { state: { email, code: response.data.code } });

@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { fas } from '@fortawesome/free-solid-svg-icons'; 
-import { fab } from '@fortawesome/free-brands-svg-icons'; 
-import { far } from '@fortawesome/free-regular-svg-icons';
+// import { fas } from '@fortawesome/free-solid-svg-icons'; 
+// import { fab } from '@fortawesome/free-brands-svg-icons'; 
+// import { far } from '@fortawesome/free-regular-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEye, faEyeSlash } from '@fortawesome/free-regular-svg-icons';
 import logo from "./../assets/logo.png";
-library.add(fas, fab, far);
+// library.add(fas, fab, far);
 import axios from "axios";
 
 function Login() {
@@ -21,7 +22,7 @@ function Login() {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const res = await axios.post("http://localhost:5000/login", { email, password });
+      const res = await axios.post("https://capstone-server-8hss.onrender.com/login", { email, password });
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("userId", res.data.user._id);
       setMessage(res.data.message);
@@ -85,8 +86,11 @@ function Login() {
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute top-1/2 right-3 transform -translate-y-1/2 text-sm text-gray-500 cursor-pointer"
               >
-                {showPassword ? <FontAwesomeIcon icon="fa-regular fa-eye-slash" style={{color: "#6B7280",}} /> : <FontAwesomeIcon icon="fa-regular fa-eye" style={{color: "#6B7280",}} />}
-              </button>
+              {showPassword
+                ? <FontAwesomeIcon icon={faEyeSlash} style={{ color: "#6B7280" }} />
+                : <FontAwesomeIcon icon={faEye} style={{ color: "#6B7280" }} />
+              }
+             </button>
             </div>
             <div className="text-right text-sm mt-1">
               <Link to="/forgotpassword" className="text-indigo-700 hover:underline">

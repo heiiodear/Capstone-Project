@@ -24,7 +24,7 @@ const Contact = () => {
 
   const sendFormData = async () => {
     try {
-      const response = await fetch("http://localhost:5000/send-contect", {
+      const response = await fetch("https://capstone-server-8hss.onrender.com/send-contect", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -23,7 +23,7 @@ function SettingModal({
 
         try {
     const token = localStorage.getItem("token"); // Adjust this line if you store token differently
-    await fetch("http://localhost:5000/notification-settings", {
+    await fetch("https://capstone-server-8hss.onrender.com/notification-settings", {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
