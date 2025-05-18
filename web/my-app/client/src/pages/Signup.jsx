@@ -8,10 +8,11 @@ import { fab } from "@fortawesome/free-brands-svg-icons";
 import { far } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleInfo } from "@fortawesome/free-solid-svg-icons";
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import logo from "./../assets/logo.png";
 import axios from "axios";
 
-library.add(fas, fab, far);
+library.add(fas, fab, far, faEye, faEyeSlash);
 
 function Signup() {
   const [formData, setFormData] = useState({
@@ -208,6 +209,7 @@ function Signup() {
                 <input
                   type={showPassword ? "text" : "password"}
                   name="password"
+                  autoComplete="new-password"
                   value={formData.password}
                   onChange={handleChange}
                   placeholder="••••••••"
@@ -220,7 +222,7 @@ function Signup() {
                   className="absolute top-9 right-3 text-sm text-gray-500 cursor-pointer"
                 >
                   <FontAwesomeIcon
-                    icon={showPassword ? ["far", "eye-slash"] : ["far", "eye"]}
+                    icon={showPassword ? faEyeSlash : faEye}
                     style={{ color: "#6B7280" }}
                   />
                 </button>
@@ -234,6 +236,7 @@ function Signup() {
                   name="confirmPassword"
                   value={formData.confirmPassword}
                   placeholder="••••••••"
+                  autoComplete="new-password"
                   onChange={handleChange}
                   required
                   className="mt-1 w-full h-11 rounded-lg border border-gray-300 px-3 py-2 pr-10 focus:ring-2 focus:ring-indigo-500"
@@ -252,11 +255,7 @@ function Signup() {
                   className="absolute top-9 right-3 text-sm text-gray-500 cursor-pointer"
                 >
                   <FontAwesomeIcon
-                    icon={
-                      showConfirmPassword
-                        ? ["far", "eye-slash"]
-                        : ["far", "eye"]
-                    }
+                    icon={showConfirmPassword ? faEyeSlash : faEye}
                     style={{ color: "#6B7280" }}
                   />
                 </button>
