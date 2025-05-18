@@ -81,15 +81,15 @@ const Contact = () => {
 
       <div className="container mx-auto py-6 px-4">
         <div className="max-w-7xl mx-auto">
-          <h1 className="text-3xl font-bold text-indigo-900 mb-3">Contact Us</h1>
-          <p className="text-gray-600 mb-8">
+          <h1 className="text-3xl font-bold text-indigo-900 mb-3 cursor-default">Contact Us</h1>
+          <p className="text-gray-600 mb-8 cursor-default">
             Have questions about Secura? We're here to help.
           </p>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <div className="space-y-6">
               <div className="bg-white shadow-lg rounded-lg border-2 border-gray-200 p-6">
-                <h2 className="text-xl font-medium text-indigo-900 mb-6">
+                <h2 className="text-xl font-medium text-indigo-900 mb-6 cursor-default">
                   Contact Information
                 </h2>
 
@@ -100,9 +100,9 @@ const Contact = () => {
                       <Phone className="h-5 w-5 text-indigo-900" />
                     </div>
                     <div>
-                      <h4 className="font-medium text-lg text-indigo-900">Call Us</h4>
-                      <p className="text-gray-600">Our support team is available 24/7</p>
-                      <p className="hover:underline">(+66) 63 545 1915</p>
+                      <h4 className="font-medium text-lg text-indigo-900 cursor-default">Call Us</h4>
+                      <p className="text-gray-600 cursor-default">Our support team is available 24/7</p>
+                      <p className="hover:underline cursor-default">(+66) 63 545 1915</p>
                     </div>
                   </div>
 
@@ -112,9 +112,9 @@ const Contact = () => {
                       <Mail className="h-5 w-5 text-indigo-900" />
                     </div>
                     <div>
-                      <h4 className="font-medium text-lg text-indigo-900">Email Us</h4>
-                      <p className="text-gray-600">We'll respond within 24 hours</p>
-                      <p className="hover:underline">acssecura2025@gmail.com</p>
+                      <h4 className="font-medium text-lg text-indigo-900 cursor-default">Email Us</h4>
+                      <p className="text-gray-600 cursor-default">We'll respond within 24 hours</p>
+                      <p className="hover:underline cursor-default">acssecura2025@gmail.com</p>
                     </div>
                   </div>
 
@@ -124,8 +124,8 @@ const Contact = () => {
                       <MapPin className="h-5 w-5 text-indigo-900" />
                     </div>
                     <div>
-                      <h4 className="font-medium text-lg text-indigo-900">Visit Us</h4>
-                      <p className="hover:underline">
+                      <h4 className="font-medium text-lg text-indigo-900 cursor-default">Visit Us</h4>
+                      <p className="hover:underline cursor-default">
                         126 Pracha Uthit Rd.
                         <br />
                         Bang Mod, Thung Khru,
@@ -141,8 +141,8 @@ const Contact = () => {
                       <Clock className="h-5 w-5 text-indigo-900" />
                     </div>
                     <div>
-                      <h4 className="font-medium text-lg text-indigo-900">Business Hours</h4>
-                      <div className="text-navy">
+                      <h4 className="font-medium text-lg text-indigo-900 cursor-default">Business Hours</h4>
+                      <div className="text-navy cursor-default">
                         <div>Monday - Friday: 9 AM - 6 PM</div>
                         <div>Saturday: 10AM - 4 PM</div>
                         <div>Sunday: Closed</div>
@@ -153,7 +153,7 @@ const Contact = () => {
 
                 {/* Social Media */}
                 <div className="mt-3 pt-6 border-t border-gray-100">
-                  <h4 className="font-semibold text-xl mb-4 text-indigo-900">Connect With Us</h4>
+                  <h4 className="font-semibold text-xl mb-4 text-indigo-900 cursor-default">Connect With Us</h4>
 
                   <div className="grid grid-cols-2 gap-y-4">
                     {[
@@ -171,8 +171,8 @@ const Contact = () => {
 
                   <hr className="my-6 border-gray-300" />
                   <div className="text-center">
-                    <p className="text-gray-600 mb-2">Follow us for updates, tips, and promotions</p>
-                    <p className="text-indigo-900 font-medium">Secura.com</p>
+                    <p className="text-gray-600 mb-2 cursor-default" >Follow us for updates, tips, and promotions</p>
+                    <p className="text-indigo-900 font-medium cursor-default">Secura.com</p>
                   </div>
                 </div>
               </div>
@@ -181,8 +181,8 @@ const Contact = () => {
             <div>
               {submitted ? (
                 <div className="bg-white shadow-lg p-8 rounded-lg text-center border-2 border-gray-200">
-                  <h3 className="text-2xl font-medium mb-4 text-indigo-900">Thank You!</h3>
-                  <p className="text-gray-600 mb-4">
+                  <h3 className="text-2xl font-medium mb-4 text-indigo-900 cursor-default">Thank You!</h3>
+                  <p className="text-gray-600 mb-4 cursor-default">
                     Your message has been received. We'll get back to you shortly.
                   </p>
                   <button
@@ -194,7 +194,7 @@ const Contact = () => {
                 </div>
               ) : (
                 <div className="bg-white shadow-lg rounded-lg border-2 border-gray-200 p-6">
-                  <h3 className="text-xl text-indigo-900 font-semibold text-navy mb-6">
+                  <h3 className="text-xl text-indigo-900 font-semibold text-navy mb-6 cursor-default">
                     Send Us a Message
                   </h3>
                   <form onSubmit={confirmSubmit} className="space-y-4">

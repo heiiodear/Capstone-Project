@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
+import logo from "../assets/logo.png";
 
 function VerifyCode() {
     const [userCode, setUserCode] = useState("");
@@ -27,7 +28,7 @@ function VerifyCode() {
         <div className="min-h-screen bg-indigo-100 flex justify-center items-center p-4">
             <div className="w-full max-w-md bg-white border border-gray-200 shadow-md rounded-lg p-6 animate-fade-in">
                 <div className="text-center mb-6">
-                    <div className="text-center text-2xl font-bold text-indigo-900 cursor-default">Projectname</div>
+                    <img src={logo} alt="Logo" className="h-auto w-23 -mb-5 -mt-5  mx-auto" />
                     <div className="text-center text-2xl font-bold text-indigo-900 cursor-default">Verify Code</div>
                     <p className="text-sm text-gray-600 cursor-default">Enter the 6-digit code sent to your email</p>
                     <p className="text-sm text-gray-600 cursor-default">Verification code sent to: {email}</p> 

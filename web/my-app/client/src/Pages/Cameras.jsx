@@ -159,7 +159,7 @@ function Cameras() {
 
             <div className="container mx-auto py-6 px-4">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6">
-                    <h1 className="text-3xl font-bold text-indigo-900">Cameras</h1>
+                    <h1 className="text-3xl font-bold text-indigo-900 cursor-default">Cameras</h1>
                     <CamLayout layout={layout} setLayout={setLayout} />
                 </div>
 

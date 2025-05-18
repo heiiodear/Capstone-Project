@@ -76,7 +76,7 @@ function Signup() {
         },
       });
       setMessage(res.data.message);
-      setTimeout(() => navigate("/login"), 2000);
+      setTimeout(() => navigate("/"), 2000);
     } catch (error) {
       setMessage(error.response?.data?.error || "Registration failed");
     }
@@ -103,8 +103,8 @@ function Signup() {
         <div className="flex justify-center">
           <img src={logo} alt="Logo" className="h-27 w-auto -mb-12 -mt-5" />
         </div>
-        <div className="text-center text-3xl font-bold text-indigo-900 ">Create an Account</div>
-        <p className="text-center text-gray-500 text-sm">Enter your information to register</p>
+        <div className="text-center text-3xl font-bold text-indigo-900 cursor-default">Create an Account</div>
+        <p className="text-center text-gray-500 text-sm cursor-default">Enter your information to register</p>
 
         {message && (
           <div
@@ -278,11 +278,12 @@ function Signup() {
           </div>
 
           {/* Terms */}
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-2 ">
             <input
               type="checkbox"
               id="terms"
               checked={acceptTerms}
+              className="cursor-pointer"
               onChange={(e) => {
                 setAcceptTerms(e.target.checked);
                 if (e.target.checked) setShowError(false);
@@ -319,9 +320,9 @@ function Signup() {
           </button>
         </form>
 
-        <div className="text-center text-sm">
+        <div className="text-center text-sm cursor-default">
           Already have an account?{" "}
-          <Link to="/login" className="text-indigo-700 font-medium hover:underline">
+          <Link to="/" className="text-indigo-700 font-medium hover:underline">
             Sign in
           </Link>
         </div>

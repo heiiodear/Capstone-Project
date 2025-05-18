@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import logo from "../assets/logo.png";
 import axios from "axios";
 
 function ForgotPassword() {
@@ -34,7 +35,7 @@ function ForgotPassword() {
         <div className="min-h-screen bg-indigo-100 flex justify-center items-center p-4">
             <div className="w-full max-w-md bg-white border border-gray-200 shadow-md rounded-lg p-6 animate-fade-in">
                 <div className="text-center space-y-2 mb-6">
-                    <div className="text-center text-2xl font-bold text-indigo-900 cursor-default">Projectname</div>
+                    <img src={logo} alt="Logo" className="h-auto w-23 -mb-5 -mt-5  mx-auto" />
                     <div className="text-center text-2xl font-bold text-indigo-900 cursor-default">Reset Password</div>
                     <p className="text-sm text-gray-600 cursor-default">Enter your email to receive a verification code</p>
                 </div>

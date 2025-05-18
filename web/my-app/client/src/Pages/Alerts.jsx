@@ -95,7 +95,7 @@ function Alerts() {
 
       <div className="container mx-auto py-6 px-4">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-          <h1 className="text-3xl font-bold text-indigo-900">Alert Center</h1>
+          <h1 className="text-3xl font-bold text-indigo-900 cursor-default">Alert Center</h1>
           <button
             className="flex flex-col items-center text-indigo-900 hover:text-indigo-800 cursor-pointer" 
             title="Settings"
@@ -142,7 +142,7 @@ function Alerts() {
         </div>
 
         {filteredAlerts.length === 0 ? (
-          <div className="text-center text-gray-500 py-6">No alerts found</div>
+          <div className="text-center text-gray-500 py-6 cursor-default">No alerts found</div>
         ) : (
           filteredAlerts.map((alert, idx) => (
             <div
