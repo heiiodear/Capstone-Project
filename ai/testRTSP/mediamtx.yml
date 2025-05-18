@@ -1,0 +1,9 @@
+rtsp: yes
+rtmp: yes
+hls: yes
+webrtc: yes
+srt: yes
+
+paths:
+  all:
+    source: publisher
