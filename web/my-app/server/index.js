@@ -14,7 +14,8 @@ const app = express();
 app.use(express.json());
 require('dotenv').config(); 
 app.use(cors({
-    origin: 'http://localhost:5173',
+    origin: 'https://secura-web-app-psi.vercel.app',
+    credentials: 'true',
     methods: ['GET', 'POST', 'PUT', 'DELETE','PATCH'], 
     allowedHeaders: ['Content-Type', 'Authorization']
   }));
@@ -578,7 +579,8 @@ app.post('/send-contect', async (req, res) => {
     res.status(500).json({ message: 'Error sending email.' });
   }
 });
+const PORT = process.env.PORT || 5000;
 
-app.listen(5000, () => {
-  console.log("server is running");
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });

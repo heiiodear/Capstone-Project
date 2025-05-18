@@ -22,7 +22,7 @@ function Login() {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const res = await axios.post("https://capstone-server-8hss.onrender.com/login", { email, password });
+      const res = await axios.post("https://capstone-server-8hss.onrender.com/login", { email, password } , { withCredentials: true });
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("userId", res.data.user._id);
       setMessage(res.data.message);
