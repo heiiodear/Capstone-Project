@@ -12,7 +12,7 @@ export const useAlertNotifications = () => {
 
     const fetchAlerts = async () => {
       try {
-        const res = await axios.get(`http://localhost:5000/alerts?userId=${userId}`);
+        const res = await axios.get(`https://capstone-server-8hss.onrender.com/alerts?userId=${userId}`);
         const allAlerts = res.data;
 
         // อ่าน alert ที่เคยแจ้งแล้วจาก localStorage
