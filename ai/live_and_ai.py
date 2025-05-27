@@ -57,6 +57,15 @@ db = client["Capstone"]
 collection = db["fall"]
 user_collection = db["users"]
 
+def calculate_fall_speed(prev_center, curr_center, delta_time):
+    if prev_center is None or curr_center is None or delta_time == 0:
+        return 0.0
+    dx = curr_center[0] - prev_center[0]
+    dy = curr_center[1] - prev_center[1]
+    distance = (dx**2 + dy**2) ** 0.5
+    speed = distance / delta_time  
+    return speed
+
 def handle_fall_event_async(frame, selected_frames, user_id, name, video_filename, image_filename, timestamp, emailEnabled, discordEnabled):
     try:
         raw_video_filename = f"temp_{uuid4()}.mp4"
@@ -188,16 +197,21 @@ def generate_frames(source, user_id, name, emailEnabled, discordEnabled):
     fps = 60
     fps_buffer = 10
     frame_interval = 1.0 / fps
+    MIN_FALL_SPEED = 130
 
     buffer_seconds = 5
     frame_buffer = deque(maxlen=int(buffer_seconds * fps_buffer))
 
     fall_detection_time = 0.0
     last_fall_detected_time = None
-    fall_confirmed = False 
+    fall_confirmed = False
     collecting_post_fall = False
     post_fall_buffer = []
     post_fall_start_time = None
+    prev_center_point = None
+    prev_time = None
+    fall_speed = 0
+    fall_speeds_during_detection = []
 
     POST_FALL_SECONDS = 0
     POST_FALL_FRAMES = int(fps_buffer * POST_FALL_SECONDS)
@@ -228,11 +242,12 @@ def generate_frames(source, user_id, name, emailEnabled, discordEnabled):
             for result in results:
                 boxes = result.boxes
                 keypoints = result.keypoints
+                names = result.names
 
                 if boxes is not None:
                     for i, box in enumerate(boxes):
                         cls = int(box.cls[0].item())
-                        label_name = result.names[cls]
+                        label_name = names[cls]
                         confidence = box.conf[0].item()
                         x1, y1, x2, y2 = map(int, box.xyxy[0])
                         color = (0, 255, 0) if label_name != "fall" else (0, 0, 255)
@@ -247,6 +262,24 @@ def generate_frames(source, user_id, name, emailEnabled, discordEnabled):
                             draw_keypoints(frame, [kpts])
                             draw_skeleton(frame, kpts, SKELETON_CONNECTIONS, color)
 
+                            if len(kpts) > 12:
+                                left_hip = kpts[11]
+                                right_hip = kpts[12]
+                                if left_hip[2] > 0.5 and right_hip[2] > 0.5:
+                                    center_x = int((left_hip[0] + right_hip[0]) / 2)
+                                    center_y = int((left_hip[1] + right_hip[1]) / 2)
+                                    curr_time = time.time()
+
+                                    if prev_center_point is not None and prev_time is not None:
+                                        delta_t = curr_time - prev_time
+                                        fall_speed = calculate_fall_speed(prev_center_point, (center_x, center_y), delta_t)
+
+                                    prev_center_point = (center_x, center_y)
+                                    prev_time = curr_time
+
+                                    cv2.putText(frame, f"Speed: {fall_speed:.2f} px/s",
+                                                (x1, y2 + 20), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 255), 2)
+
                         if label_name == "fall":
                             fall_detected_now = True
 
@@ -256,21 +289,28 @@ def generate_frames(source, user_id, name, emailEnabled, discordEnabled):
                 if last_fall_detected_time is None or now - last_fall_detected_time <= 0.3:
                     fall_detection_time += now - last_fall_detected_time if last_fall_detected_time else 0
                     last_fall_detected_time = now
+                    if fall_speed > 0:
+                        fall_speeds_during_detection.append(fall_speed)
                 else:
                     fall_detection_time = 0
                     last_fall_detected_time = now
+                    fall_speeds_during_detection = []
             else:
                 if last_fall_detected_time and now - last_fall_detected_time <= 0.3:
                     pass
                 else:
                     fall_detection_time = 0
                     last_fall_detected_time = None
+                    fall_speeds_during_detection = []
 
-            if fall_detection_time >= 2.0 and not fall_confirmed:
-                fall_confirmed = True
-                collecting_post_fall = True
-                post_fall_start_time = time.time()
-                post_fall_buffer = []
+            if fall_detection_time >= 2.0 and not fall_confirmed and fall_speeds_during_detection:
+                max_fall_speed = max(fall_speeds_during_detection)
+                if max_fall_speed >= MIN_FALL_SPEED:
+                    fall_confirmed = True
+                    collecting_post_fall = True
+                    post_fall_start_time = time.time()
+                    post_fall_buffer = []
+                    fall_speeds_during_detection = []
 
         if collecting_post_fall:
             post_fall_buffer.append(frame.copy())
@@ -281,7 +321,7 @@ def generate_frames(source, user_id, name, emailEnabled, discordEnabled):
                 video_filename = f"fall_{user_id}_{timestamp}.mp4"
                 image_filename = f"fall_{user_id}_{timestamp}.jpg"
 
-                pre_fall_frames = list(frame_buffer)[-int(fps_buffer * buffer_seconds):] 
+                pre_fall_frames = list(frame_buffer)[-int(fps_buffer * buffer_seconds):]
                 all_frames = pre_fall_frames + post_fall_buffer
 
                 executor.submit(
